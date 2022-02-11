@@ -7,3 +7,8 @@ A to-do list/calendar app.
 This project is a starting point for a Flutter application.
 
 I have not changed anything with these default files yet.
+
+
+#future plans
+
+Adding reminders and work promoting resources to future imporve the experience
