@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
+import 'package:executive_planner/file_io.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  ExecutiveHomePage({Key? key, required this.title}) : super(key: key);
+  ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key) {
+    storage.readFile().then((Map<String, dynamic>? e) {
+      if(e != null) {
+        _events.combine(EventList.fromJson(e));
+      }
+    });
+  }
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,6 +21,7 @@ class ExecutiveHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final FileStorage storage;
   final _events = EventList();
 
   void addEvent(Event e) {
@@ -24,7 +32,7 @@ class ExecutiveHomePage extends StatefulWidget {
   State<ExecutiveHomePage> createState() => _ExecutiveHomePageState();
 }
 
-// todo: EventCreationForm should return something, not arbitrarily access widget
+// TODO: EventCreationForm should return something, not arbitrarily access widget
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   Widget _buildEventList() {
@@ -46,6 +54,11 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     return ListTile(
       title: Text(e.name),
     );
+  }
+
+  void _update() {
+    widget.storage.write(widget._events.toJson());
+    setState(() {});
   }
 
   @override
@@ -73,7 +86,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => form),
-          ).then((_) => setState(() {}));
+          ).then((_) => _update());
         },
         tooltip: 'Add Event',
         child: const Icon(Icons.add),
@@ -82,7 +95,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 }
 
-// todo: We may want to change this to an InheritedWidget
+// TODO: We may want to change this to an InheritedWidget
 class EventCreationForm extends StatefulWidget {
   EventCreationForm(this.parent, {Key? key}) : super(key: key);
   final Event e = Event();
@@ -95,17 +108,6 @@ class EventCreationForm extends StatefulWidget {
 // Define a corresponding State class.
 // This class holds data related to the Form.
 class _EventCreationFormState extends State<EventCreationForm> {
-  // Create a text controller. Later, use it to retrieve the
-  // current value of the TextField.
-  final nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    nameController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

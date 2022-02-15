@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/planner.dart';
 
 void main() {
@@ -25,7 +27,7 @@ class ExecutivePlanner extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.red,
       ),
-      home: ExecutiveHomePage(title: 'Executive Planner'),
+      home: ExecutiveHomePage(title: 'Executive Planner', storage: FileStorage()),
     );
   }
 }
