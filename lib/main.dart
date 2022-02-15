@@ -25,7 +25,7 @@ class ExecutivePlanner extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.red,
       ),
-      home: const ExecutiveHomePage(title: 'Executive Planner'),
+      home: ExecutiveHomePage(title: 'Executive Planner'),
     );
   }
 }

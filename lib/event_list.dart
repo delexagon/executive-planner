@@ -1,21 +1,12 @@
 
 
 class Event {
-  String _name = "Unnamed Event";
-  DateTime? _date;
-  String? _location;
+  String name;
+  DateTime? date;
+  String? location;
 
-  Event({required String name}) {
-    _name = name;
-  }
+  Event({this.name = "Unnamed Event"});
 
-  String get name {
-    return _name;
-  }
-
-  DateTime? get date {
-    return _date;
-  }
 
   /// Sorts events by date, then name. Events with a null date are placed after
   /// those with a defined date. Events with the same name and date may change
@@ -47,7 +38,7 @@ class EventList {
     _list.add(Event(name: "Eugh"));
   }
 
-  void addEvent(Event e) {
+  void add(Event e) {
     _list.add(e);
   }
 

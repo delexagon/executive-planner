@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  const ExecutiveHomePage({Key? key, required this.title}) : super(key: key);
+  ExecutiveHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,30 +14,22 @@ class ExecutiveHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-
-  @override
-  State<ExecutiveHomePage> createState() {
-    return _ExecutiveHomePageState();
-  }
-}
-
-class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   final _events = EventList();
 
-  void _incrementCounter() {
-    _events.addEvent(Event(name: "Woah new event dropped"));
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    });
+  void addEvent(Event e) {
+    _events.add(e);
   }
+
+  @override
+  State<ExecutiveHomePage> createState() => _ExecutiveHomePageState();
+}
+
+// todo: EventCreationForm should return something, not arbitrarily access widget
+class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   Widget _buildEventList() {
     return ListView.builder(
-      itemCount: (_events.length)*2,
+      itemCount: (widget._events.length)*2,
       padding: const EdgeInsets.all(16.0),
       itemBuilder: (context, i) {
         if(i.isOdd) {
@@ -45,7 +37,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         }
 
         final index = i ~/ 2;
-        return _buildEventRow(_events[index]);
+        return _buildEventRow(widget._events[index]);
       }
     );
   }
@@ -76,10 +68,84 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         child: _buildEventList()
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: () {
+          EventCreationForm form = EventCreationForm(widget);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => form),
+          ).then((_) => setState(() {}));
+        },
+        tooltip: 'Add Event',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+    );
+  }
+}
+
+// todo: We may want to change this to an InheritedWidget
+class EventCreationForm extends StatefulWidget {
+  EventCreationForm(this.parent, {Key? key}) : super(key: key);
+  final Event e = Event();
+  final ExecutiveHomePage parent;
+
+  @override
+  _EventCreationFormState createState() => _EventCreationFormState();
+}
+
+// Define a corresponding State class.
+// This class holds data related to the Form.
+class _EventCreationFormState extends State<EventCreationForm> {
+  // Create a text controller. Later, use it to retrieve the
+  // current value of the TextField.
+  final nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: const Text("Create an event"),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+            child: Text(
+              "Set event name:",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            child: TextField(
+              onChanged: (String name) {
+                widget.e.name = name;
+              },
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Unnamed Event',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.parent.addEvent(widget.e);
+              Navigator.pop(context);
+            },
+            child: const Text("Add event"),
+          ),
+        ],
+      ),
     );
   }
 }
