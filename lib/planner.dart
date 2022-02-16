@@ -3,13 +3,7 @@ import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key) {
-    storage.readFile().then((Map<String, dynamic>? e) {
-      if(e != null) {
-        _events.combine(EventList.fromJson(e));
-      }
-    });
-  }
+  const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,7 +16,8 @@ class ExecutiveHomePage extends StatefulWidget {
 
   final String title;
   final FileStorage storage;
-  final _events = EventList();
+  // For some reason, the page is generated twice. _events MUST be persistent.
+  static final EventList _events = EventList();
 
   void addEvent(Event e) {
     _events.add(e);
@@ -32,12 +27,24 @@ class ExecutiveHomePage extends StatefulWidget {
   State<ExecutiveHomePage> createState() => _ExecutiveHomePageState();
 }
 
-// TODO: EventCreationForm should return something, not arbitrarily access widget
+// TODO: EventCreationForm should not arbitrarily access widget
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
+
+  @override
+  void initState() {
+    super.initState();
+    widget.storage.readFile().then((Map<String, dynamic>? json) {
+      if(json != null) {
+        EventList events = EventList.fromJson(json);
+        ExecutiveHomePage._events.combine(events);
+        setState(() {});
+      }
+    });
+  }
 
   Widget _buildEventList() {
     return ListView.builder(
-      itemCount: (widget._events.length)*2,
+      itemCount: (ExecutiveHomePage._events.length)*2,
       padding: const EdgeInsets.all(16.0),
       itemBuilder: (context, i) {
         if(i.isOdd) {
@@ -45,7 +52,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         }
 
         final index = i ~/ 2;
-        return _buildEventRow(widget._events[index]);
+        return _buildEventRow(ExecutiveHomePage._events[index]);
       }
     );
   }
@@ -57,7 +64,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   void _update() {
-    widget.storage.write(widget._events.toJson());
+    widget.storage.write(ExecutiveHomePage._events.toJson());
     setState(() {});
   }
 

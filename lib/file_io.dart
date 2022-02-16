@@ -1,40 +1,35 @@
-import 'dart:io';
 import 'dart:convert';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// TODO: This does not work on web because the web browser cannot store local files.
+// TODO: Make sure that this is safe to do.
 class FileStorage {
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/events.json');
+  Future<SharedPreferences> get _prefs async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs;
   }
 
   Future<Map<String, dynamic>?> readFile() async {
-    try {
-      final file = await _localFile;
+    final prefs = await _prefs;
 
-      // Read the file
-      final contents = await file.readAsString();
-
+    // Read the file
+    final contents = prefs.getString('events');
+    if(contents != null) {
+      print("Found");
+      print(contents);
       return jsonDecode(contents);
-    } catch (e) {
-      // If an error occurs (no file), return null
-      return null;
     }
+    // If no preference, return null
+    return null;
   }
 
   void write(Map<String, dynamic> json) async {
-    final file = await _localFile;
+    final prefs = await _prefs;
     String jstr = jsonEncode(json);
 
     // Write the file
-    file.writeAsString(jstr);
+    prefs.setString('events', jstr);
+    print("saved");
   }
 }

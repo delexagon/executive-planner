@@ -42,8 +42,7 @@ class EventList {
   final _list = <Event>[];
 
   EventList() {
-    _list.add(Event(name: "Boyo"));
-    _list.add(Event(name: "Eugh"));
+    print("new eventlist created");
   }
 
   void add(Event e) {
@@ -76,7 +75,8 @@ class EventList {
     EventList list = EventList();
     int i = 0;
     while(json["event-$i"] != null) {
-      list.add(json["event-$i"].fromJson);
+      list.add(Event.fromJson(json["event-$i"]));
+      i++;
     }
     return list;
   }
