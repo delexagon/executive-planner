@@ -6,4 +6,15 @@ A to-do list/calendar app.
 
 This project is a starting point for a Flutter application.
 
-I have not changed anything with these default files yet.
+This branch requires the packages:
+
+path_provider
+json_annotation
+json_serializable
+build_runner
+
+To add package:
+flutter pub add {package}
+
+To reload json functions:
+flutter pub run build_runner
