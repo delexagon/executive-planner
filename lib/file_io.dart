@@ -16,8 +16,6 @@ class FileStorage {
     // Read the file
     final contents = prefs.getString('events');
     if(contents != null) {
-      print("Found");
-      print(contents);
       return jsonDecode(contents);
     }
     // If no preference, return null
@@ -30,6 +28,5 @@ class FileStorage {
 
     // Write the file
     prefs.setString('events', jstr);
-    print("saved");
   }
 }

@@ -41,9 +41,7 @@ class EventList {
 
   final _list = <Event>[];
 
-  EventList() {
-    print("new eventlist created");
-  }
+  EventList();
 
   void add(Event e) {
     _list.add(e);
