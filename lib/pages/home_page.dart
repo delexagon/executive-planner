@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
-import 'package:executive_planner/pages/event_creation_form.dart';
+import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:intl/intl.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
@@ -27,6 +27,11 @@ class ExecutiveHomePage extends StatefulWidget {
   static void addEvent(Event e) {
     _events.add(e);
     _events.sort();
+  }
+
+  // TODO: Make a reasonable way to remove events.
+  static void removeEvent(Event e) {
+
   }
 
   @override
@@ -74,12 +79,33 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     return ListTile(
       title: name,
       subtitle: date,
+      onLongPress: () {
+        _changeEventList(context, e);
+      }
     );
   }
 
   void _update() {
     widget.storage.write(ExecutiveHomePage._events.toJson());
     setState(() {});
+  }
+
+  void _changeEventList(BuildContext context, Event? e) async {
+    bool isNew = (e == null);
+    e ??= Event();
+    bool? changeList = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EventChangeForm(event: e!, isNew: isNew)),
+    );
+    changeList ??= false;
+    if(changeList) {
+      if(isNew) {
+        ExecutiveHomePage.addEvent(e);
+      } else {
+        ExecutiveHomePage.removeEvent(e);
+      }
+    }
+    _update();
   }
 
   @override
@@ -103,10 +129,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EventCreationForm()),
-          ).then((_) => _update());
+          _changeEventList(context, null);
         },
         tooltip: 'Add Event',
         child: const Icon(Icons.add),

@@ -1,40 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
-import 'package:executive_planner/pages/home_page.dart';
-
-// TODO: Clean up import chain
 
 // TODO: We may want to change this to an InheritedWidget?
-class EventCreationForm extends StatefulWidget {
-  const EventCreationForm({Key? key}) : super(key: key);
+class EventChangeForm extends StatefulWidget {
+  final Event event;
+  final bool isNew;
+
+  const EventChangeForm({required this.event, required this.isNew, Key? key}) : super(key: key);
+
   @override
-  _EventCreationFormState createState() => _EventCreationFormState();
+  _EventChangeFormState createState() => _EventChangeFormState();
 }
 
 // Define a corresponding State class.
 // This class holds data related to the Form.
-class _EventCreationFormState extends State<EventCreationForm> {
-  String name = "Unnamed Event";
-  DateTime? date;
-  TimeOfDay? time;
-
-  Event buildEvent() {
-    Event e = Event(name: name);
-    if(date != null) {
-      if(time != null) {
-        e.date = DateTime(
-            date!.year, date!.month, date!.day, time!.hour, time!.minute);
-      } else {
-        e.date = DateTime(date!.year, date!.month, date!.day);
-      }
-      e.date = e.date!.toUtc();
-    }
-    return e;
-  }
-
-  void pushEvent() {
-    ExecutiveHomePage.addEvent(buildEvent());
-  }
+class _EventChangeFormState extends State<EventChangeForm> {
 
   Widget timePicker() {
     return TextButton(
@@ -43,7 +23,12 @@ class _EventCreationFormState extends State<EventCreationForm> {
             initialTime: const TimeOfDay(hour: 0, minute: 0),
             context: context,
           ).then((TimeOfDay? time) {
-            this.time = time;
+            if(widget.event.date != null && time != null) {
+              widget.event.date = DateTime(
+                  widget.event.date!.year, widget.event.date!.month, widget.event.date!.day,
+                  time.hour, time.minute
+              );
+            }
           });
         },
         child: const Text("Change time")
@@ -59,7 +44,7 @@ class _EventCreationFormState extends State<EventCreationForm> {
             lastDate: DateTime(DateTime.now().year + 10),
             initialDate: DateTime.now(),
           ).then((DateTime? date) {
-            this.date = date;
+            widget.event.date = date;
           });
         },
         child: const Text("Change date")
@@ -81,7 +66,7 @@ class _EventCreationFormState extends State<EventCreationForm> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextField(
         onChanged: (String name) {
-          this.name = name;
+          widget.event.name = name;
         },
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
@@ -91,16 +76,21 @@ class _EventCreationFormState extends State<EventCreationForm> {
     );
   }
 
-  Widget addEventButton() {
+  Widget changeEventButton() {
+    Widget changeText;
+    if(widget.isNew) {
+      changeText = const Text("Add event", style: TextStyle(fontSize: 20));
+    } else {
+      changeText = const Text("Remove event", style: TextStyle(fontSize: 20));
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
       child: TextButton(
         onPressed: () {
-          pushEvent();
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         },
         // Add a textButtonTheme instead?
-        child: const Text("Add event", style: TextStyle(fontSize: 20)),
+        child: changeText,
       ),
     );
   }
@@ -122,7 +112,7 @@ class _EventCreationFormState extends State<EventCreationForm> {
           datePicker(),
           paddedText("Time:"),
           timePicker(),
-          addEventButton(),
+          changeEventButton(),
         ],
       ),
     );
