@@ -5,7 +5,7 @@ import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:intl/intl.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
+  const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -85,7 +85,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   void _update() {
-
+    ExecutiveHomePage._events.sort();
     widget.storage.write(ExecutiveHomePage._events.toJson());
     setState(() {});
   }
