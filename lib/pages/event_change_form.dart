@@ -95,7 +95,6 @@ class _EventChangeFormState extends State<EventChangeForm> {
         onPressed: () {
           Navigator.pop(context, true);
         },
-        // Add a textButtonTheme instead?
         child: changeText,
       ),
     );
