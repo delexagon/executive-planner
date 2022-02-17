@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 /// This allows the `User` class to access private members in
@@ -7,6 +8,8 @@ part 'event_list.g.dart';
 
 @JsonSerializable()
 class Event {
+  static final DateFormat dateFormat = DateFormat('MMM d, y hh:mm a');
+
   @JsonKey(required: true)
   String name;
   // The date of the event IN UTC. Use .toLocal to transform it to local time.
@@ -14,6 +17,14 @@ class Event {
   String? location;
 
   Event({this.name = "Unnamed Event"});
+
+  String dateString() {
+    if(date == null) {
+      return "No date";
+    } else {
+      return dateFormat.format(date!.toLocal());
+    }
+  }
 
   /// Sorts events by date, then name. Events with a null date are placed after
   /// those with a defined date. Events with the same name and date may change

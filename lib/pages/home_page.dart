@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
-import 'package:intl/intl.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
+  const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -16,7 +15,6 @@ class ExecutiveHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final DateFormat dateFormat = DateFormat('MMM d, y H:m');
   final String title;
   final FileStorage storage;
   // For some reason, the page is generated twice. _events MUST be persistent.
@@ -72,7 +70,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     Widget name = Text(e.name);
     Widget date;
     if(e.date != null) {
-      date = Text(widget.dateFormat.format(e.date!.toLocal()));
+      date = Text(e.dateString());
     } else {
       date = const Text("Reminder");
     }

@@ -51,7 +51,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
             });
           });
         },
-        child: Text(widget.event.date.toString())
+        child: Text(widget.event.dateString())
     );
   }
 
@@ -107,7 +107,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text("Create an event"),
+        title: const Text("Change an event"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
