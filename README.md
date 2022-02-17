@@ -19,3 +19,7 @@ flutter pub add {package}
 
 To reload json functions:
 flutter pub run build_runner
+
+## Future plans
+
+Adding reminders and work promoting resources to future imporve the experience
