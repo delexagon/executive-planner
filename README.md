@@ -2,13 +2,24 @@
 
 A to-do list/calendar app.
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
+Now with basic functionality.
 
-I have not changed anything with these default files yet.
+This project requires the packages:
 
+json_annotation
+json_serializable
+build_runner
+shared_preferences
+intl
 
-#future plans
+To add package:
+flutter pub add {package}
+
+To reload json functions:
+flutter pub run build_runner
+
+## Future plans
 
 Adding reminders and work promoting resources to future imporve the experience
