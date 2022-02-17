@@ -86,6 +86,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   void _update() {
+    ExecutiveHomePage._events.sort();
     widget.storage.write(ExecutiveHomePage._events.toJson());
     setState(() {});
   }

@@ -24,10 +24,12 @@ class _EventChangeFormState extends State<EventChangeForm> {
             context: context,
           ).then((TimeOfDay? time) {
             if(widget.event.date != null && time != null) {
-              widget.event.date = DateTime(
-                  widget.event.date!.year, widget.event.date!.month, widget.event.date!.day,
-                  time.hour, time.minute
-              );
+              setState(() {
+                widget.event.date = DateTime(
+                    widget.event.date!.year, widget.event.date!.month, widget.event.date!.day,
+                    time.hour, time.minute
+                );
+              });
             }
           });
         },
@@ -44,10 +46,12 @@ class _EventChangeFormState extends State<EventChangeForm> {
             lastDate: DateTime(DateTime.now().year + 10),
             initialDate: DateTime.now(),
           ).then((DateTime? date) {
-            widget.event.date = date;
+            setState(() {
+              widget.event.date = date;
+            });
           });
         },
-        child: const Text("Change date")
+        child: Text(widget.event.date.toString())
     );
   }
 
@@ -66,11 +70,13 @@ class _EventChangeFormState extends State<EventChangeForm> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextField(
         onChanged: (String name) {
-          widget.event.name = name;
+          setState(() {
+            widget.event.name = name;
+          });
         },
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Unnamed Event',
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: widget.event.name,
         ),
       ),
     );
@@ -108,9 +114,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
         children: <Widget>[
           paddedText("Event name:"),
           eventNameField(),
-          paddedText("Date:"),
+          paddedText("Change date:"),
           datePicker(),
-          paddedText("Time:"),
           timePicker(),
           changeEventButton(),
         ],
