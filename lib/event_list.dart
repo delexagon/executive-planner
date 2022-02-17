@@ -9,6 +9,7 @@ part 'event_list.g.dart';
 class Event {
   @JsonKey(required: true)
   String name;
+  // The date of the event IN UTC. Use .toLocal to transform it to local time.
   DateTime? date;
   String? location;
 

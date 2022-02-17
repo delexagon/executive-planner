@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
+import 'package:executive_planner/pages/event_creation_form.dart';
+import 'package:intl/intl.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
+  ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,13 +16,17 @@ class ExecutiveHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
+  final DateFormat dateFormat = DateFormat('MMM d, y H:m');
   final String title;
   final FileStorage storage;
   // For some reason, the page is generated twice. _events MUST be persistent.
+  // Static is the only way I know to fix this.
+  // TODO: Fix _events.
   static final EventList _events = EventList();
 
-  void addEvent(Event e) {
+  static void addEvent(Event e) {
     _events.add(e);
+    _events.sort();
   }
 
   @override
@@ -43,23 +49,31 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   Widget _buildEventList() {
-    return ListView.builder(
-      itemCount: (ExecutiveHomePage._events.length)*2,
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        if(i.isOdd) {
-          return const Divider();
-        }
+    List<Widget> widgets= <Widget>[];
+    for(int i = 0; i < ExecutiveHomePage._events.length; i++) {
+      widgets.add(_buildEventRow(ExecutiveHomePage._events[i]));
+      widgets.add(const Divider());
+    }
 
-        final index = i ~/ 2;
-        return _buildEventRow(ExecutiveHomePage._events[index]);
-      }
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: widgets,
+      ),
     );
   }
 
   Widget _buildEventRow(Event e) {
+    Widget name = Text(e.name);
+    Widget date;
+    if(e.date != null) {
+      date = Text(widget.dateFormat.format(e.date!.toLocal()));
+    } else {
+      date = const Text("Reminder");
+    }
     return ListTile(
-      title: Text(e.name),
+      title: name,
+      subtitle: date,
     );
   }
 
@@ -85,75 +99,17 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: _buildEventList()
+          child: _buildEventList()
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          EventCreationForm form = EventCreationForm(widget);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => form),
+            MaterialPageRoute(builder: (context) => const EventCreationForm()),
           ).then((_) => _update());
         },
         tooltip: 'Add Event',
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-// TODO: We may want to change this to an InheritedWidget
-class EventCreationForm extends StatefulWidget {
-  EventCreationForm(this.parent, {Key? key}) : super(key: key);
-  final Event e = Event();
-  final ExecutiveHomePage parent;
-
-  @override
-  _EventCreationFormState createState() => _EventCreationFormState();
-}
-
-// Define a corresponding State class.
-// This class holds data related to the Form.
-class _EventCreationFormState extends State<EventCreationForm> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Create an event"),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-            child: Text(
-              "Set event name:",
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextField(
-              onChanged: (String name) {
-                widget.e.name = name;
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Unnamed Event',
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.parent.addEvent(widget.e);
-              Navigator.pop(context);
-            },
-            child: const Text("Add event"),
-          ),
-        ],
       ),
     );
   }
