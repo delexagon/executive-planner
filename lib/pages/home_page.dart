@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
-import 'package:intl/intl.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
@@ -28,9 +27,9 @@ class ExecutiveHomePage extends StatefulWidget {
     _events.sort();
   }
 
-  // TODO: Make a reasonable way to remove events.
+  // TODO: Make a more reasonable way to remove events.
   static void removeEvent(Event e) {
-
+    _events.remove(e);
   }
 
   @override

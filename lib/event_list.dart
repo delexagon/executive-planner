@@ -48,6 +48,7 @@ class Event {
   Map<String, dynamic> toJson() => _$EventToJson(this);
 }
 
+// TODO: Add the 54 methods that would allow this to actually extend List.
 class EventList {
   Comparator<Event> comparator = Event.dateCompare;
 
@@ -57,6 +58,10 @@ class EventList {
 
   void add(Event e) {
     _list.add(e);
+  }
+
+  void remove(Event e) {
+    _list.remove(e);
   }
 
   int get length {
