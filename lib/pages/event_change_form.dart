@@ -3,7 +3,11 @@ import 'package:executive_planner/event_list.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
 class EventChangeForm extends StatefulWidget {
+  /// The event this form is considering. This must be provided so the resulting
+  /// event can be handled by the caller of the form.
   final Event event;
+  /// Makes this form change between adding a new event or changing an existing
+  /// event.
   final bool isNew;
 
   const EventChangeForm({required this.event, required this.isNew, Key? key}) : super(key: key);
@@ -16,6 +20,8 @@ class EventChangeForm extends StatefulWidget {
 // This class holds data related to the Form.
 class _EventChangeFormState extends State<EventChangeForm> {
 
+  /// Generates a widget which changes the time of the event if the date is
+  /// already set.
   Widget timePicker() {
     return TextButton(
         onPressed: () {
@@ -37,6 +43,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// Generates a widget which allows the user to set the date of an event.
+  /// Currently, setting a date resets the time.
   Widget datePicker() {
     return TextButton(
         onPressed: () {
@@ -55,6 +63,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// Pads text a standard amount.
   Widget paddedText(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
@@ -65,6 +74,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// Changes the name of the event.
   Widget eventNameField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -82,6 +92,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// A button which allows the user to add/remove an event.
   Widget changeEventButton() {
     Widget changeText;
     if(widget.isNew) {

@@ -15,6 +15,7 @@ class ExecutivePlanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Planner',
       theme: ThemeData(
         // This is the theme of your application.
@@ -28,7 +29,7 @@ class ExecutivePlanner extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.deepPurple,
       ),
-      home: ExecutiveHomePage(title: 'Executive Planner', storage: FileStorage(),
+      home: ExecutiveHomePage(title: 'Planner', storage: FileStorage(),
         events: ExecutiveHomePage.masterList,),
     );
   }
