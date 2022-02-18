@@ -4,6 +4,7 @@ import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/home_page.dart';
 
 void main() {
+  ExecutiveHomePage.initMaster();
   runApp(const ExecutivePlanner());
 }
 
@@ -27,7 +28,8 @@ class ExecutivePlanner extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.deepPurple,
       ),
-      home: ExecutiveHomePage(title: 'Executive Planner', storage: FileStorage()),
+      home: ExecutiveHomePage(title: 'Executive Planner', storage: FileStorage(),
+        events: ExecutiveHomePage.masterList,),
     );
   }
 }

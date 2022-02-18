@@ -4,7 +4,8 @@ import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
-  const ExecutiveHomePage({Key? key, required this.title, required this.storage}) : super(key: key);
+  const ExecutiveHomePage({Key? key, required this.title, required this.storage,
+    required this.events}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -17,19 +18,35 @@ class ExecutiveHomePage extends StatefulWidget {
 
   final String title;
   final FileStorage storage;
-  // For some reason, the page is generated twice. _events MUST be persistent.
-  // Static is the only way I know to fix this.
-  // TODO: Fix _events.
-  static final EventList _events = EventList();
+  // masterList holds ALL EVENTS in the program.
+  // events holds the events being considered by this current home page.
+  static final EventList masterList = EventList();
+  final EventList events;
 
-  static void addEvent(Event e) {
-    _events.add(e);
-    _events.sort();
+  static void initMaster() {
+    FileStorage storage = FileStorage();
+    storage.readFile().then((Map<String, dynamic>? json) {
+      if (json != null) {
+        EventList events = EventList.fromJson(json);
+        ExecutiveHomePage.masterList.combine(events);
+      }
+    });
+  }
+
+  void addMEvent(Event e) {
+    masterList.add(e);
+    if(events != masterList) {
+      events.add(e);
+    }
+    events.sort();
   }
 
   // TODO: Make a more reasonable way to remove events.
-  static void removeEvent(Event e) {
-    _events.remove(e);
+  void removeMEvent(Event e) {
+    masterList.remove(e);
+    if(events != masterList) {
+      events.remove(e);
+    }
   }
 
   @override
@@ -39,22 +56,10 @@ class ExecutiveHomePage extends StatefulWidget {
 // TODO: EventCreationForm should not arbitrarily access widget
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
-  @override
-  void initState() {
-    super.initState();
-    widget.storage.readFile().then((Map<String, dynamic>? json) {
-      if(json != null) {
-        EventList events = EventList.fromJson(json);
-        ExecutiveHomePage._events.combine(events);
-        setState(() {});
-      }
-    });
-  }
-
   Widget _buildEventList() {
     List<Widget> widgets= <Widget>[];
-    for(int i = 0; i < ExecutiveHomePage._events.length; i++) {
-      widgets.add(_buildEventRow(ExecutiveHomePage._events[i]));
+    for(int i = 0; i < widget.events.length; i++) {
+      widgets.add(_buildEventRow(widget.events[i]));
       widgets.add(const Divider());
     }
 
@@ -84,8 +89,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   void _update() {
-    ExecutiveHomePage._events.sort();
-    widget.storage.write(ExecutiveHomePage._events.toJson());
+    widget.events.sort();
+    widget.storage.write(ExecutiveHomePage.masterList.toJson());
     setState(() {});
   }
 
@@ -99,9 +104,9 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     changeList ??= false;
     if(changeList) {
       if(isNew) {
-        ExecutiveHomePage.addEvent(e);
+        widget.addMEvent(e);
       } else {
-        ExecutiveHomePage.removeEvent(e);
+        widget.removeMEvent(e);
       }
     }
     _update();
