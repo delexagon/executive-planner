@@ -21,8 +21,14 @@ class Event {
   DateTime? date;
   /// The location of the event, if entered. This is not yet handled or displayed.
   String? location;
+  /// The sub-events of this event.
+  final EventList _subevents = EventList();
 
   Event({this.name = "Unnamed Event"});
+
+  EventList get subevents {
+    return _subevents;
+  }
 
   /// Generate an English readable date string for this object. If the time is
   /// 12:00 AM, it is assumed time was not set and it is not displayed.

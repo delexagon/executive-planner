@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
+import 'package:executive_planner/widgets/event_list_display.dart';
 
 class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage({Key? key, required this.title, required this.storage,
@@ -68,39 +69,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Stores the searchbar/search icon for display.
   late Widget search;
 
-  /// Creates a list of widgets displaying the data in events.
-  Widget _buildEventList() {
-    List<Widget> widgets= <Widget>[];
-    for(int i = 0; i < widget.events.length; i++) {
-      widgets.add(_buildEventRow(widget.events[i]));
-      widgets.add(const Divider());
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: widgets,
-      ),
-    );
-  }
-
-  /// Creates a widget displaying the info of a single event.
-  Widget _buildEventRow(Event e) {
-    Widget name = Text(e.name);
-    Widget date;
-    if(e.date != null) {
-      date = Text(e.dateString());
-    } else {
-      date = const Text("Reminder");
-    }
-    return ListTile(
-      title: name,
-      subtitle: date,
-      onLongPress: () {
-        _changeEventList(context, event: e);
-      }
-    );
-  }
 
   /// Generates a search icon which can be tapped to become a text field.
   Widget _searchIcon() {
@@ -201,7 +169,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-          child: _buildEventList()
+          child: EventListDisplay(
+            events: widget.events,
+            onLongPress: (Event e) {
+              _changeEventList(context, event: e);
+            }
+          )
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
