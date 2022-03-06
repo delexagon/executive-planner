@@ -25,7 +25,7 @@ class Event {
   String? location;
   /// The sub-events of this event.
   // TODO: Add JSON for subevents
-  final EventList _subevents = ExecutiveHomePage.masterList;
+  final EventList _subevents = EventList();
 
   Event({this.name = "Unnamed Event"});
 

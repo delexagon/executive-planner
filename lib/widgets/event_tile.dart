@@ -81,9 +81,12 @@ class _EventTileState extends State<EventTile> {
                 },
               trailing: const Icon(Icons.arrow_drop_up),
             ),
-            EventListDisplay(
-              events: widget.event.subevents,
-              onLongPress: widget.onLongPress,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+              child: EventListDisplay(
+                events: widget.event.subevents,
+                onLongPress: widget.onLongPress,
+              ),
             ),
           ]
       );

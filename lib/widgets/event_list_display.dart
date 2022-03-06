@@ -26,6 +26,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
     List<Widget> tiles = <Widget>[];
 
     for(int i = 0; i < widget.events.length; i++) {
+      tiles.add(const Divider());
       tiles.add(EventTile(
           event: widget.events[i],
           onLongPress: widget.onLongPress)
