@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:executive_planner/event_list.dart';
+import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/search.dart';
 
 // TODO: We may want to change this to an InheritedWidget?

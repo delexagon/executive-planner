@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:executive_planner/event_list.dart';
+import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 
 

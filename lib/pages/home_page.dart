@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:executive_planner/event_list.dart';
-import 'package:executive_planner/file_io.dart';
+import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
