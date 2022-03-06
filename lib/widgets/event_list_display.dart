@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/widgets/event_tile.dart';
 import 'package:executive_planner/event_list.dart';
 
-// TODO: We may want to change this to an InheritedWidget?
+/// EventListDisplay displays all events in events in a list, surprise surprise.
+/// onLongPress will be called depending on which event tile is pressed, and will
+/// recursively be given to subevents.
+/// Note that this widget has an arbitrary size, and must be wrapped in a scrollable
+/// widget.
 class EventListDisplay extends StatefulWidget {
   final EventList events;
   final Function(Event e)? onLongPress;

@@ -18,7 +18,6 @@ class _EventTileState extends State<EventTile> {
 
   bool isExpanded = false;
 
-
   /// Pads text a standard amount.
   Widget paddedText(String text) {
     return Padding(
@@ -31,6 +30,21 @@ class _EventTileState extends State<EventTile> {
   }
 
   Widget _buildPanel() {
+    if(widget.event.subevents.length == 0) {
+      return Column(
+          children: [
+            ListTile(
+                title: Text(widget.event.name),
+                subtitle: Text(widget.event.dateString()),
+                onLongPress: () {
+                  if(widget.onLongPress != null) {
+                    widget.onLongPress!(widget.event);
+                  }
+                }
+            )
+          ]
+      );
+    }
     if(!isExpanded) {
       return Column(
         children: [
@@ -42,10 +56,11 @@ class _EventTileState extends State<EventTile> {
               setState(() {});
             },
             onLongPress: () {
-              if(widget.onLongPress != null) {
+              if (widget.onLongPress != null) {
                 widget.onLongPress!(widget.event);
               }
-            }
+            },
+            trailing: const Icon(Icons.arrow_drop_down),
           )
         ]
       );
@@ -63,7 +78,8 @@ class _EventTileState extends State<EventTile> {
                   if(widget.onLongPress != null) {
                     widget.onLongPress!(widget.event);
                   }
-                }
+                },
+              trailing: const Icon(Icons.arrow_drop_up),
             ),
             EventListDisplay(
               events: widget.event.subevents,

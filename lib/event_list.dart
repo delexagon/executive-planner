@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:executive_planner/pages/home_page.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -19,10 +20,12 @@ class Event {
   String name;
   /// The date of the event IN UTC. Use .toLocal to transform it to local time.
   DateTime? date;
-  /// The location of the event, if entered. This is not yet handled or displayed.
+  /// The location of the event, if entered.
+  // TODO: Display location
   String? location;
   /// The sub-events of this event.
-  final EventList _subevents = EventList();
+  // TODO: Add JSON for subevents
+  final EventList _subevents = ExecutiveHomePage.masterList;
 
   Event({this.name = "Unnamed Event"});
 
@@ -30,8 +33,9 @@ class Event {
     return _subevents;
   }
 
-  /// Generate an English readable date string for this object. If the time is
-  /// 12:00 AM, it is assumed time was not set and it is not displayed.
+  /// Generate an English readable date string for this object, in the correct
+  /// time zone. If the time is 12:00 AM, it is assumed time was not set and
+  /// it is not displayed.
   String dateString() {
     if(date == null) {
       return "No date";

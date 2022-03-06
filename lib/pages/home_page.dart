@@ -166,15 +166,13 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-          child: EventListDisplay(
-            events: widget.events,
-            onLongPress: (Event e) {
-              _changeEventList(context, event: e);
-            }
-          )
+      body: SingleChildScrollView(
+        child: EventListDisplay(
+          events: widget.events,
+          onLongPress: (Event e) {
+            _changeEventList(context, event: e);
+          }
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
