@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:executive_planner/pages/home_page.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -80,17 +79,28 @@ class Event {
 class EventList {
 
   final _list = <Event>[];
+  Comparator<Event> sortFunc = Event.dateCompare;
 
   EventList();
 
   /// Add an event to the list.
   void add(Event e) {
     _list.add(e);
+    _sort();
   }
 
   /// Remove an event from the list.
   void remove(Event e) {
     _list.remove(e);
+  }
+
+  bool contains(Event e) {
+    for(Event event in _list) {
+      if(e == event) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// The length of the list.
@@ -107,12 +117,13 @@ class EventList {
     for(int i = 0; i < e.length; i++) {
       _list.add(e[i]);
     }
+    _sort();
   }
 
-  /// Sorts list by given comparator. Various sorts can be found in the Event
-  /// class.
-  void sort(Comparator<Event> compare) {
-    _list.sort(compare);
+  /// Sorts list by event comparator. Various sorts can be found in the Event
+  /// class. Should be called automatically when the list is modified.
+  void _sort() {
+    _list.sort(sortFunc);
   }
 
   // TODO: Add more types of search.

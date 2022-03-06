@@ -3,7 +3,9 @@ import 'package:executive_planner/event_list.dart';
 import 'package:executive_planner/file_io.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
+import 'package:executive_planner/widgets/search.dart';
 
+// TODO: Automatically hide unwanted events (subevents, trash, completed?)
 class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage({Key? key, required this.title, required this.storage,
     required this.events}) : super(key: key);
@@ -45,7 +47,6 @@ class ExecutiveHomePage extends StatefulWidget {
     if(events != masterList) {
       events.add(e);
     }
-    events.sort(Event.dateCompare);
   }
 
   /// Removes event from both current and masterList.
@@ -62,55 +63,69 @@ class ExecutiveHomePage extends StatefulWidget {
 
 // TODO: EventCreationForm should not arbitrarily access widget
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
-  _ExecutiveHomePageState() {
-    search = _searchIcon();
-  }
-
-  /// Stores the searchbar/search icon for display.
-  late Widget search;
-
+  _ExecutiveHomePageState();
 
   /// Generates a search icon which can be tapped to become a text field.
   Widget _searchIcon() {
     return IconButton(
       onPressed: () {
-        search = _searchBar();
-        setState(() {});
+        _search(context);
       },
       icon: const Icon(Icons.search),
     );
   }
 
-  // TODO: Make this look less terrible.
-  /// A text field that allows the user to search.
-  Widget _searchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: SizedBox(
-        width: 200,
-        height: 4,
-        child: TextField(
-          textInputAction: TextInputAction.search,
-          onSubmitted: (String search) {
-            _searchEventList(context, search);
-          },
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            fillColor: Colors.white,
-            hintText: "Search",
-          ),
+  void _goToSearchPage(BuildContext context, EventList events) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ExecutiveHomePage(
+          title: "Search results", storage: widget.storage,
+          events: events,
         )
       )
     );
+    _update();
+  }
+
+  void _search(BuildContext context) async {
+    if(Overlay.of(context) != null) {
+      OverlayState overlayState = Overlay.of(context)!;
+      OverlayEntry overlayEntry;
+      // Flutter doesn't allow you to reference overlayEntry before it is created,
+      // even though the buttons in search need to reference it.
+      Function removeOverlayEntry = () {};
+      overlayEntry = OverlayEntry(builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+          child: Card(
+            child: Center(
+              child: DecoratedBox(
+                decoration: const BoxDecoration(color: Colors.white),
+                child: AdvancedSearch(
+                  events: widget.events,
+                  selectedOnly: true,
+                  onSubmit: (EventList e) {
+                    _goToSearchPage(context, e);
+                    removeOverlayEntry();
+                  },
+                  onExit: () {
+                    removeOverlayEntry();
+                  },
+                ),
+              )
+            )
+          )
+        );
+      });
+      removeOverlayEntry = () {overlayEntry.remove();};
+      overlayState.insert(overlayEntry);
+    }
   }
 
   /// Sorts events, saves the data to disk, resets the searchbar to an icon
   /// and regenerates the display.
   void _update() {
-    widget.events.sort(Event.dateCompare);
     widget.storage.write(ExecutiveHomePage.masterList.toJson());
-    search = _searchIcon();
     setState(() {});
   }
 
@@ -135,18 +150,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     _update();
   }
 
-  /// Creates new HomePage fitting only the search criteria.
-  void _searchEventList(BuildContext context, String searchStr) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ExecutiveHomePage(
-        title: searchStr, storage: widget.storage,
-        events: widget.events.search(searchStr)),
-      )
-    );
-    _update();
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -159,7 +162,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         actions: [
-          search,
+          _searchIcon(),
         ],
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by

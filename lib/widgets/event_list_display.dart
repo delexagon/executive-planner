@@ -10,9 +10,13 @@ import 'package:executive_planner/event_list.dart';
 /// widget.
 class EventListDisplay extends StatefulWidget {
   final EventList events;
+  final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
+  final EventList? setToColor;
 
-  const EventListDisplay({required this.events, Key? key, this.onLongPress}) : super(key: key);
+  const EventListDisplay({
+    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor
+  }) : super(key: key);
 
   @override
   _EventListDisplayState createState() => _EventListDisplayState();
@@ -24,15 +28,15 @@ class _EventListDisplayState extends State<EventListDisplay> {
 
   List<Widget> _buildPanel() {
     List<Widget> tiles = <Widget>[];
-
     for(int i = 0; i < widget.events.length; i++) {
       tiles.add(const Divider());
       tiles.add(EventTile(
-          event: widget.events[i],
-          onLongPress: widget.onLongPress)
-      );
+        event: widget.events[i],
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
+        setToColor: widget.setToColor,
+      ));
     }
-
     return tiles;
   }
 
