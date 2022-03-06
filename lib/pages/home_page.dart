@@ -103,7 +103,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                 decoration: const BoxDecoration(color: Colors.white),
                 child: AdvancedSearch(
                   events: widget.events,
-                  selectedOnly: true,
                   onSubmit: (EventList e) {
                     _goToSearchPage(context, e);
                     removeOverlayEntry();
@@ -137,7 +136,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     event ??= Event();
     bool? changeList = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EventChangeForm(event: event!, isNew: isNew)),
+      MaterialPageRoute(builder: (context) => EventChangeForm(event: event!, events: widget.events, isNew: isNew)),
     );
     changeList ??= false;
     if(changeList) {

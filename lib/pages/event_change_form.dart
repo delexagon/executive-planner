@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/event_list.dart';
+import 'package:executive_planner/widgets/search.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
 class EventChangeForm extends StatefulWidget {
   /// The event this form is considering. This must be provided so the resulting
   /// event can be handled by the caller of the form.
   final Event event;
+  final EventList events;
   /// Makes this form change between adding a new event or changing an existing
   /// event.
   final bool isNew;
 
-  const EventChangeForm({required this.event, required this.isNew, Key? key}) : super(key: key);
+  const EventChangeForm({required this.event, required this.isNew, required this.events, Key? key}) : super(key: key);
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
@@ -58,6 +60,17 @@ class _EventChangeFormState extends State<EventChangeForm> {
               widget.event.date = date;
             });
           });
+        },
+        child: Text(widget.event.dateString())
+    );
+  }
+
+  /// Generates a widget which allows the user to set the date of an event.
+  /// Currently, setting a date resets the time.
+  Widget subEventPicker() {
+    return TextButton(
+        onPressed: () {
+          _search(context);
         },
         child: Text(widget.event.dateString())
     );
@@ -111,6 +124,41 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  void _search(BuildContext context) async {
+    if(Overlay.of(context) != null) {
+      OverlayState overlayState = Overlay.of(context)!;
+      OverlayEntry overlayEntry;
+      // Flutter doesn't allow you to reference overlayEntry before it is created,
+      // even though the buttons in search need to reference it.
+      Function removeOverlayEntry = () {};
+      overlayEntry = OverlayEntry(builder: (context) {
+        return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+            child: Card(
+                child: Center(
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: AdvancedSearch(
+                        events: widget.events,
+                        selectedOnly: true,
+                        onSubmit: (EventList e) {
+                          widget.event.subevents = e;
+                          removeOverlayEntry();
+                        },
+                        onExit: () {
+                          removeOverlayEntry();
+                        },
+                      ),
+                    )
+                )
+            )
+        );
+      });
+      removeOverlayEntry = () {overlayEntry.remove();};
+      overlayState.insert(overlayEntry);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,6 +175,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
           paddedText("Change date:"),
           datePicker(),
           timePicker(),
+          paddedText("Change sub-events:"),
+          subEventPicker(),
           changeEventButton(),
         ],
       ),

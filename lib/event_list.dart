@@ -24,13 +24,9 @@ class Event {
   String? location;
   /// The sub-events of this event.
   // TODO: Add JSON for subevents
-  final EventList _subevents = EventList();
+  EventList subevents = EventList();
 
   Event({this.name = "Unnamed Event"});
-
-  EventList get subevents {
-    return _subevents;
-  }
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and

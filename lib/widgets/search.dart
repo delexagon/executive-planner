@@ -107,30 +107,44 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   }
 
   /// A button which completes the search.
+  // TODO: Decide if the X and
   Widget searchButton() {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            if(widget.onExit != null) {
-              widget.onExit!();
-            }
-          },
-        ),
-        TextButton(
-          onPressed: () {
-            if(widget.onSubmit != null) {
-              if(!widget.selectedOnly) {
-                widget.onSubmit!(currentEvents);
-              } else {
-                widget.onSubmit!(selectedEvents);
-              }
-            }
-          },
-          child: const Text("Search", style: TextStyle(fontSize: 20)),
-        ),
-      ],
+    return Center(
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              icon: const Icon(Icons.close),
+              iconSize: 30,
+              onPressed: () {
+                if(widget.onExit != null) {
+                  widget.onExit!();
+                }
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+              child: TextButton(
+                onPressed: () {
+                  if(widget.onSubmit != null) {
+                    if(!widget.selectedOnly) {
+                      widget.onSubmit!(currentEvents);
+                    } else {
+                      widget.onSubmit!(selectedEvents);
+                    }
+                  }
+                },
+                child: const Text("OK", style: TextStyle(fontSize: 20)),
+              ),
+            ),
+          ),
+        ],
+      )
+
     );
   }
 
@@ -138,11 +152,11 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        searchButton(),
+        const Divider(),
         searchField(),
         const Divider(),
         listView(),
-        const Divider(),
-        searchButton(),
       ],
     );
   }
