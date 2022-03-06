@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 
-
+/// An individual event tile. This class should only be called by [EventListDisplay].
+/// This class also calls more [EventListDisplay]s.
 class EventTile extends StatefulWidget {
   final Event event;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final EventList? setToColor;
 
+  /// Only [EventListDisplay] should call this function.
   const EventTile({
     required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor
   }) : super(key: key);
@@ -34,6 +36,9 @@ class _EventTileState extends State<EventTile> {
     );
   }
 
+  // TODO: User should be able to quickly add subevents to all events.
+  /// Builds a single tile.
+  /// Very long, because there are a number of variations for how tiles should look.
   Widget _buildPanel() {
     Decoration? decoration;
     Widget? icon;

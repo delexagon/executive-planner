@@ -12,6 +12,7 @@ class EventListDisplay extends StatefulWidget {
   final EventList events;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
+  /// Events in this list, if present, are colored light blue.
   final EventList? setToColor;
 
   const EventListDisplay({
@@ -22,8 +23,6 @@ class EventListDisplay extends StatefulWidget {
   _EventListDisplayState createState() => _EventListDisplayState();
 }
 
-// Define a corresponding State class.
-// This class holds data related to the Form.
 class _EventListDisplayState extends State<EventListDisplay> {
 
   List<Widget> _buildPanel() {

@@ -3,43 +3,61 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/backend/event_list.dart';
 
-/// The search widget is an overlay allowing to search for and select a list of events
-/// "events"
 // TODO: Events modified in search screens are probably left unmodified in the original eventlist
 // TODO: Make search use more than just name
+/// The search widget is an overlay allowing to search for and select a list of events.
 class AdvancedSearch extends StatefulWidget {
+  /// Stores the events that are being searched from.
   final EventList events;
+  /// A function which is called when the X button is pressed.
   final Function? onExit;
+  /// A function called with the EventList
   final Function(EventList e)? onSubmit;
+  /// States whether the search will only return selected items, or whether it
+  /// will return all items currently in the search results when it is submitted.
   final bool selectedOnly;
 
+  /// [events]
+  /// Stores the events that are being searched from.
+  ///
+  /// [onExit]
+  /// A function which is called when the X button is pressed.
+  ///
+  /// [onSubmit]
+  /// A function that gives the searched EventList when submitted.
+  ///
+  /// [selectedOnly]
+  /// States whether the search will only return selected items, or whether it
+  /// will return all items currently in the search results when it is submitted.
   const AdvancedSearch({
-    required this.events, this.selectedOnly = false, Key? key, this.onSubmit, this.onExit
+    Key? key, required this.events, this.selectedOnly = false, this.onSubmit, this.onExit
   }) : super(key: key);
 
   @override
   _AdvancedSearchState createState() => _AdvancedSearchState();
 }
 
-// Define a corresponding State class.
-// This class holds data related to the Form.
 class _AdvancedSearchState extends State<AdvancedSearch> {
+  /// All currently shown events in the search; modified as the user changes search terms
   EventList currentEvents = EventList();
+  /// Events the user has specially selected; only modified by user
   EventList selectedEvents = EventList();
 
+  // TODO: Make this used in searching
   /// Search types which are enabled.
   /// In order: name, tag, priority, location, date
   /// If modified, please also update the typeCheckboxes() function.
-  // TODO: Make this used in searching
   List<bool> searchTypesEnabled = [true, false, false, false, false];
 
+  /// Initializes search to include all events in list.
   @override
   void initState() {
     super.initState();
     currentEvents.combine(widget.events);
   }
 
-  // TODO: Make redoing searches faster?
+  // TODO: Add other methods of searching
+  /// Recalculates search based on the new search terms.
   void redoSearch(String searchStr) {
     currentEvents = widget.events.search(searchStr);
     for(int i = 0; i < selectedEvents.length; i++) {
@@ -49,7 +67,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     }
   }
 
-  /// Changes the search.
+  /// The text field that the user enters their search into; search results are
+  /// recalculated as the user enters stuff.
   Widget searchField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -67,7 +86,9 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     );
   }
 
-  // TODO: Make this take up way less space
+  // TODO: Make this take up way less UI space
+  /// Generates a list of checkboxes which allow the user to select search types.
+  /// Not currently used.
   Widget typeCheckboxes() {
     List<String> searchTypes = ["Name", "Tags", "Priority", "Location", "Date"];
     List<Widget> checkboxes = <Widget>[];
@@ -86,8 +107,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return Column(children: checkboxes);
   }
 
-  /// This displays all currently selected events
-  /// If you long press on events here, they remain permanently selected in the search
+  /// This displays all currently searched events.
+  /// If you tap on events here, they remain permanently present in the search.
   Widget listView() {
     return Expanded(
       child: SingleChildScrollView(
@@ -106,8 +127,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     );
   }
 
-  /// A button which completes the search.
-  // TODO: Decide if the X and
+  /// A row containing buttons which complete and exit the search.
   Widget searchButton() {
     return Center(
       child: Stack(
@@ -144,7 +164,6 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
           ),
         ],
       )
-
     );
   }
 
