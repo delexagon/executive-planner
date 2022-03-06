@@ -19,10 +19,8 @@ class Event {
   String name;
   /// The date of the event IN UTC. Use .toLocal to transform it to local time.
   DateTime? date;
-  /// The location of the event, if entered.
   // TODO: Display location
   String? location;
-  /// The sub-events of this event.
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
 

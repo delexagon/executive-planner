@@ -3,23 +3,33 @@ import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/search.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
+/// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends StatefulWidget {
   /// The event this form is considering. This must be provided so the resulting
   /// event can be handled by the caller of the form.
   final Event event;
+  /// EventList held for the search display when adding subevents.
   final EventList events;
   /// Makes this form change between adding a new event or changing an existing
   /// event.
   final bool isNew;
 
+  /// [event]:
+  /// The event this form is considering. This must be provided so the resulting
+  /// event can be handled by the caller of the form.
+  ///
+  /// [isNew]:
+  /// Makes this form change between adding a new event or changing an existing
+  /// event.
+  ///
+  /// [events]:
+  /// EventList held for the search display when adding subevents.
   const EventChangeForm({required this.event, required this.isNew, required this.events, Key? key}) : super(key: key);
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
 }
 
-// Define a corresponding State class.
-// This class holds data related to the Form.
 class _EventChangeFormState extends State<EventChangeForm> {
 
   /// Generates a widget which changes the time of the event if the date is
@@ -124,6 +134,10 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// Basically a copy of the _search function in [ExecutiveHomePage], but
+  /// the functionality is different:
+  /// Only selected events are given as the EventList, rather than all in search results.
+  /// Changes subevents list to the subevents found by the search.
   void _search(BuildContext context) async {
     if(Overlay.of(context) != null) {
       OverlayState overlayState = Overlay.of(context)!;
