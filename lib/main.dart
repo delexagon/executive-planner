@@ -25,8 +25,20 @@ class ExecutivePlanner extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: ExecutiveHomePage(title: 'Planner', storage: FileStorage(),
-        events: ExecutiveHomePage.masterList,),
+      routes: {
+        '/': (context) => ExecutiveHomePage(
+              title: 'Planner',
+              storage: FileStorage(),
+              events: ExecutiveHomePage.masterList,
+            ),
+        '/calendar': (context) => ExecutiveHomePage(
+              title: 'Calendar',
+              storage: FileStorage(),
+              events: ExecutiveHomePage.masterList,
+            ),
+            
+      },
+      
     );
   }
 }
