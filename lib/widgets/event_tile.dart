@@ -74,6 +74,8 @@ class _EventTileState extends State<EventTile> {
           if (widget.onTap != null) {
             widget.onTap!(widget.event);
             setState(() {});
+          } else {
+            descMode = true;
           }
         },
         onLongPress: () {

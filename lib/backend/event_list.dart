@@ -1,5 +1,7 @@
+import 'dart:collection';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:executive_planner/backend/misc.dart';
 
 /// This allows the `User` class to access private members in
 /// the generated file. The value for this is *.g.dart, where
@@ -19,12 +21,16 @@ class Event {
   String name;
   /// The date of the event IN UTC. Use .toLocal to transform it to local time.
   DateTime? date;
-  // TODO: Display location
-  String? location;
+  /// A description of the event.
+  String description;
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
+  /// A list of tags of this event.
+  /// Tags will be automatically formatted with toTitleCase when added to this list;
+  /// make sure you are aware of this when modifying functions in Event!
+  HashSet<String> tags = HashSet<String>();
 
-  Event({this.name = "Unnamed Event"});
+  Event({this.name = "Unnamed Event", this.description = ""});
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
@@ -39,6 +45,24 @@ class Event {
         return "${dateFormat.format(date!.toLocal())} ${timeFormat.format(date!.toLocal())}";
       }
     }
+  }
+
+  /// Add a tag to the event
+  bool addTag(String tag) {
+    return tags.add(tag);
+  }
+
+  /// Returns if a particular tag is stored in this event
+  bool hasTag(String tag) {
+    if(tags.contains(tag)) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Remove a tag from the event, and returns whether the event was correctly removed or not.
+  bool removeTag(String tag) {
+    return tags.remove(tag);
   }
 
   /// Sorts events by date, then name. Events with a null date are placed after
@@ -120,12 +144,43 @@ class EventList {
     _list.sort(sortFunc);
   }
 
-  // TODO: Add more types of search.
-  /// Return an EventList containing the strings that have searchStr in their name.
-  EventList search(String searchStr) {
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchName(String searchStr) {
     EventList part = EventList();
-    for(int i = 0; i < _list.length; i++) {
-      if(_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+    for (int i = 0; i < _list.length; i++) {
+      if (_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+        part.add(_list[i]);
+      }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing events on a specific date or time
+  EventList searchDate(DateTime date) {
+    EventList part = EventList();
+
+    if(date.hour == 0 && date.minute == 0) {
+      for (int i = 0; i < _list.length; i++) {
+        if(date.isSameDate(_list[i].date)) {
+          part.add(_list[i]);
+        }
+      }
+    } else {
+      for (int i = 0; i < _list.length; i++) {
+        if(date.isSameMoment(_list[i].date)) {
+          part.add(_list[i]);
+        }
+      }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing the events that have a specific tag.
+  EventList searchTags(String searchStr) {
+    searchStr = searchStr.toTitleCase();
+    EventList part = EventList();
+    for (int i = 0; i < _list.length; i++) {
+      if (_list[i].hasTag(searchStr.toTitleCase())) {
         part.add(_list[i]);
       }
     }
@@ -142,6 +197,7 @@ class EventList {
     EventList list = EventList();
     int i = 0;
     while(json["event-$i"] != null) {
+      list.toJson();
       list.add(Event.fromJson(json["event-$i"]));
       i++;
     }
