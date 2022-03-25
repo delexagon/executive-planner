@@ -179,6 +179,48 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  /// A button which allows the user to add/remove an event.
+  Widget selectTags() {
+    Widget tagAdder = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: TextField(
+        onSubmitted: (String tag) {
+          setState(() {
+            widget.event.addTag(tag);
+          });
+        },
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: "Add a tag",
+        ),
+      ),
+    );
+    Widget tagRemover = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: TextField(
+        onSubmitted: (String tag) {
+          setState(() {
+            widget.event.addTag(tag);
+          });
+        },
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: "Add a tag",
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
+      child: Column(
+        children: [
+          tagAdder,
+          tagRemover,
+        ],
+      ),
+    );
+  }
+
+
   /// Basically a copy of the _search function in [ExecutiveHomePage], but
   /// the functionality is different:
   /// Only selected events are given as the EventList, rather than all in search results.

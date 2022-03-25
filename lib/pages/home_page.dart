@@ -187,41 +187,47 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         ),
         // Hamburger :)
         drawer: Drawer(
-            child: ListView(padding: EdgeInsets.zero, children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          child: ListView(
+            padding: EdgeInsets.zero, children: [
+              SizedBox(
+                height: 70,
+                child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                ),
+                child: Text(
+                  'Executive Planner',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+              ),
             ),
-            child: Text('Executive Planner'),
-          ),
-          OutlinedButton(
+            OutlinedButton(
               style: OutlinedButton.styleFrom(fixedSize: const Size(10, 50)),
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const Calendar(title: "Calendar")));
-              },
-              child: const Text('Calendar')),
-          const Divider(),
-          Expanded(
-            child: Container(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    const Calendar(title: "Calendar")));
+            },
+            child: const Text('Calendar')),
+            const Divider(),
+            Container(
               color: Theme.of(context).scaffoldBackgroundColor,
               height: 10,
             ),
-          ),
-          ListTile(
-            // Each entry in ListTile represents a navigation item in the hamburger menu
-            title: const Text('Home'),
-            onTap: () {},
-          ),
-          ListTile(
-            // Each entry in ListTile represents a navigation item in the hamburger menu
-            title: const Text('Settings'),
-            onTap: () {},
-          )
-        ])),
+            ListTile(
+              // Each entry in ListTile represents a navigation item in the hamburger menu
+              title: const Text('Back'),
+              onTap: () { Navigator.pop(context); Navigator.pop(context); },
+            ),
+            ListTile(
+              // Each entry in ListTile represents a navigation item in the hamburger menu
+              title: const Text('Settings'),
+              onTap: () {},
+            )
+          ])
+        ),
         body: SingleChildScrollView(
           child: EventListDisplay(
               events: widget.events,

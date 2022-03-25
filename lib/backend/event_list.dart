@@ -83,6 +83,14 @@ class Event {
     return tags.remove(tag);
   }
 
+  String tagsString() {
+    String build = "";
+    for(String tag in tags) {
+      build += tag + ", ";
+    }
+    return build.substring(0, build.length-2);
+  }
+
   /// Sorts events by date, then name. Events with a null date are placed after
   /// those with a defined date. Events with the same name and date may change
   /// order.
