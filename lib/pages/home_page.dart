@@ -140,7 +140,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Writes events to file whenever they are modified.
   void _update() {
     widget.storage.write(ExecutiveHomePage.masterList.toJson());
-    widget.events.update();
     setState(() {});
   }
 

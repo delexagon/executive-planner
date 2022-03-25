@@ -131,8 +131,10 @@ class _EventTileState extends State<EventTile> {
     }
   }
 
+  // TODO: Updating events should probably notify the home page somehow.
   @override
   Widget build(BuildContext context) {
+    widget.event.update();
     return _buildPanel();
   }
 }
