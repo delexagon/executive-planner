@@ -28,7 +28,7 @@ Make events aware of their sub and super-events, and update their tags according
 Expand search functionality.
 
 ## Immediate future plans  
-Introducing event recurrences.
+Introducing event recurrences.  
 Making the calendar work.
 
 ## Farther future but still maybe soon  
