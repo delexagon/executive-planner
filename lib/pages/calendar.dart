@@ -21,7 +21,7 @@ class Calendar extends StatelessWidget {
         appBar: AppBar(
           leading: Builder(builder: (context) =>
             IconButton(onPressed: () { Navigator.pop(context); },
-          icon: const Icon(Icons.arrow_back))),
+              icon: const Icon(Icons.arrow_back))),
           title: Text(title),
         ),
         body: SfCalendar(
