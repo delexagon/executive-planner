@@ -14,6 +14,7 @@ json_serializable
 build_runner  
 shared_preferences  
 intl
+syncfusion_flutter_calendar
 
 To add package:  
 `flutter pub add {package}`  
