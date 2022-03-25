@@ -98,7 +98,7 @@ class Event {
     return build.substring(0, build.length-2);
   }
 
-  /// Sorts events by date, then name. Events with a null date are placed after
+  /// Sorts events by date, then priority, then name. Events with a null date are placed after
   /// those with a defined date. Events with the same name and date may change
   /// order.
   static int dateCompare(Event a, Event b) {
@@ -112,8 +112,57 @@ class Event {
     if(a.date == null && b.date != null) {
       return 1;
     }
-
+    int priority = b.priority.index - a.priority.index;
+    if(priority != 0) {
+      return priority;
+    }
     return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
+
+  /// Sorts events by priority, then date, then name. Events with a null date are placed after
+  /// those with a defined date. Events with the same name and date may change
+  /// order.
+  static int priorityCompare(Event a, Event b) {
+    int priority = b.priority.index - a.priority.index;
+    if(priority != 0) {
+      return priority;
+    }
+    if(a.date != null && b.date != null) {
+      int before = a.date!.compareTo(b.date!);
+      if (before != 0) return before;
+    }
+    if(a.date != null && b.date == null) {
+      return -1;
+    }
+    if(a.date == null && b.date != null) {
+      return 1;
+    }
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
+
+  /// Sorts events by name, then priority, then date. Events with a null date are placed after
+  /// those with a defined date. Events with the same name and date may change
+  /// order.
+  static int nameCompare(Event a, Event b) {
+    int name = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    if(name != 0) {
+      return name;
+    }
+    int priority = b.priority.index - a.priority.index;
+    if(priority != 0) {
+      return priority;
+    }
+    if(a.date != null && b.date != null) {
+      int before = a.date!.compareTo(b.date!);
+      if (before != 0) return before;
+    }
+    if(a.date != null && b.date == null) {
+      return -1;
+    }
+    if(a.date == null && b.date != null) {
+      return 1;
+    }
+    return 0;
   }
 
   /// Automatically generated JSON function, in event_list.g.dart.
@@ -137,7 +186,7 @@ class EventList {
   /// Add an event to the list.
   void add(Event e) {
     _list.add(e);
-    _sort();
+    sort();
   }
 
   /// Remove an event from the list.
@@ -168,12 +217,12 @@ class EventList {
     for(int i = 0; i < e.length; i++) {
       _list.add(e[i]);
     }
-    _sort();
+    sort();
   }
 
   /// Sorts list by event comparator. Various sorts can be found in the Event
   /// class. Should be called automatically when the list is modified.
-  void _sort() {
+  void sort() {
     _list.sort(sortFunc);
   }
 

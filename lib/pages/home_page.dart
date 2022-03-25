@@ -91,13 +91,13 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// [ExecutiveHomePage].
   void _goToSearchPage(BuildContext context, EventList events) async {
     await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ExecutiveHomePage(
-                  title: "Search results",
-                  storage: widget.storage,
-                  events: events,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExecutiveHomePage(
+          title: "Search results",
+          storage: widget.storage,
+          events: events,
+        )));
     _update();
   }
 
@@ -113,22 +113,22 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       Function removeOverlayEntry = () {};
       overlayEntry = OverlayEntry(builder: (context) {
         return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-            child: Card(
-              child: Center(
-                child: DecoratedBox(
-                decoration: const BoxDecoration(color: Colors.white),
-                child: AdvancedSearch(
-                events: widget.events,
-                onSubmit: (EventList e) {
-                  _goToSearchPage(context, e);
-                  removeOverlayEntry();
-                },
-                onExit: () {
-                  removeOverlayEntry();
-                },
-              ),
-            ))));
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+          child: Card(
+            child: Center(
+              child: DecoratedBox(
+              decoration: const BoxDecoration(color: Colors.white),
+              child: AdvancedSearch(
+              events: widget.events,
+              onSubmit: (EventList e) {
+                _goToSearchPage(context, e);
+                removeOverlayEntry();
+              },
+              onExit: () {
+                removeOverlayEntry();
+              },
+            ),
+          ))));
       });
       removeOverlayEntry = () {
         overlayEntry.remove();
@@ -152,8 +152,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     bool? changeList = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => EventChangeForm(
-              event: event!, events: widget.events, isNew: isNew)),
+        builder: (context) => EventChangeForm(
+          event: event!, events: widget.events, isNew: isNew)),
     );
     changeList ??= false;
     if (changeList) {
@@ -212,6 +212,43 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             },
             child: const Text('Calendar')),
             const Divider(),
+            RadioListTile<Comparator<Event>>(
+              title: const Text('Sort by name'),
+              value: Event.nameCompare,
+              groupValue: widget.events.sortFunc,
+              onChanged: (Comparator<Event>? value) {
+                setState(() {
+                  widget.events.sortFunc = value!;
+                  widget.events.sort();
+                  setState(() {});
+                });
+              },
+            ),
+            RadioListTile<Comparator<Event>>(
+              title: const Text('Sort by date'),
+              value: Event.dateCompare,
+              groupValue: widget.events.sortFunc,
+              onChanged: (Comparator<Event>? value) {
+                setState(() {
+                  widget.events.sortFunc = value!;
+                  widget.events.sort();
+                  setState(() {});
+                });
+              },
+            ),
+            RadioListTile<Comparator<Event>>(
+              title: const Text('Sort by priority'),
+              value: Event.priorityCompare,
+              groupValue: widget.events.sortFunc,
+              onChanged: (Comparator<Event>? value) {
+                setState(() {
+                  widget.events.sortFunc = value!;
+                  widget.events.sort();
+                  setState(() {});
+                });
+              },
+            ),
+            const Divider(),
             Container(
               color: Theme.of(context).scaffoldBackgroundColor,
               height: 10,
@@ -230,10 +267,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         ),
         body: SingleChildScrollView(
           child: EventListDisplay(
-              events: widget.events,
-              onLongPress: (Event e) {
-                _changeEventList(context, event: e);
-              }),
+            events: widget.events,
+            onLongPress: (Event e) {
+              _changeEventList(context, event: e);
+            }),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
