@@ -134,7 +134,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
   /// Pads text a standard amount.
   Widget paddedText(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(10, 20, 0, 4),
       child: Text(
         text,
         style: Theme.of(context).textTheme.headline6,
@@ -145,7 +145,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
   /// Changes the name of the event.
   Widget eventNameField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: TextField(
         onChanged: (String name) {
           setState(() {
@@ -169,7 +169,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       changeText = const Text("Remove event", style: TextStyle(fontSize: 20));
     }
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       child: TextButton(
         onPressed: () {
           Navigator.pop(context, true);
@@ -180,9 +180,9 @@ class _EventChangeFormState extends State<EventChangeForm> {
   }
 
   /// A button which allows the user to add/remove an event.
-  Widget selectTags() {
+  Widget tagSelector() {
     Widget tagAdder = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: TextField(
         onSubmitted: (String tag) {
           setState(() {
@@ -195,28 +195,34 @@ class _EventChangeFormState extends State<EventChangeForm> {
         ),
       ),
     );
+    List<Widget> panels = <Widget>[];
+    for(String tag in widget.event.tags) {
+      panels.add(
+        CheckboxListTile(
+          title: Text(tag),
+          value: false,
+          onChanged: (bool? thisIsTotallyANecessaryBoolHere) {
+            if(thisIsTotallyANecessaryBoolHere == true) {
+              thisIsTotallyANecessaryBoolHere = false;
+              widget.event.removeTag(tag);
+            }
+            setState(() {});
+          },
+        ),
+      );
+    }
     Widget tagRemover = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: TextField(
-        onSubmitted: (String tag) {
-          setState(() {
-            widget.event.addTag(tag);
-          });
-        },
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: "Add a tag",
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: ExpansionTile(
+        title: Text("Remove tags ("+widget.event.tags.length.toString()+")"),
+        children: panels,
       ),
     );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 30),
-      child: Column(
-        children: [
-          tagAdder,
-          tagRemover,
-        ],
-      ),
+    return Column(
+      children: [
+        tagAdder,
+        tagRemover,
+      ],
     );
   }
 
@@ -260,6 +266,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
     }
   }
 
+  // TODO: Let the user collapse features which are used less often.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,22 +275,26 @@ class _EventChangeFormState extends State<EventChangeForm> {
         // the App.build method, and use it to set our appbar title.
         title: const Text("Change an event"),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          paddedText("Event name:"),
-          eventNameField(),
-          paddedText("Event description:"),
-          descriptionField(),
-          paddedText("Change date:"),
-          datePicker(),
-          timePicker(),
-          paddedText("Change priority:"),
-          priorityDropdown(),
-          paddedText("Change sub-events:"),
-          subEventPicker(),
-          changeEventButton(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            paddedText("Event name:"),
+            eventNameField(),
+            paddedText("Event description:"),
+            descriptionField(),
+            paddedText("Change date:"),
+            datePicker(),
+            timePicker(),
+            paddedText("Change priority:"),
+            priorityDropdown(),
+            paddedText("Select tags:"),
+            tagSelector(),
+            paddedText("Change sub-events:"),
+            subEventPicker(),
+            changeEventButton(),
+          ],
+        ),
       ),
     );
   }
