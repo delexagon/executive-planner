@@ -55,6 +55,34 @@ class _EventChangeFormState extends State<EventChangeForm> {
     );
   }
 
+  Widget priorityDropdown() {
+    List<DropdownMenuItem<int>> items = Event.priorities.map((String value) {
+      return DropdownMenuItem<int>(
+        value: Event.priorities.indexOf(value),
+        child: Text(value),
+      );
+    }).toList();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: DropdownButton<int>(
+        value: widget.event.priority.index,
+        icon: const Icon(Icons.arrow_drop_down),
+        iconSize: 24,
+        elevation: 16,
+        style: const TextStyle(color: Colors.deepPurple),
+        underline: Container(
+          height: 2,
+          color: Colors.deepPurpleAccent,
+        ),
+        onChanged: (int? newValue) {
+          widget.event.priority = Priority.values[newValue!];
+          setState(() {});
+        },
+        items: items,
+      ),
+    );
+  }
+
   /// Generates a widget which allows the user to set the date of an event.
   /// Currently, setting a date resets the time.
   Widget datePicker() {
@@ -208,6 +236,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
           paddedText("Change date:"),
           datePicker(),
           timePicker(),
+          paddedText("Change priority:"),
+          priorityDropdown(),
           paddedText("Change sub-events:"),
           subEventPicker(),
           changeEventButton(),

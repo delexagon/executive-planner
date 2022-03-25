@@ -66,6 +66,18 @@ class _EventTileState extends State<EventTile> {
         );
       }
     }
+    TextStyle titleColor;
+    if(widget.event.priority == Priority.low) {
+      titleColor = const TextStyle(color: Colors.blue);
+    } else if(widget.event.priority == Priority.medium) {
+      titleColor = const TextStyle(color: Colors.green);
+    } else if(widget.event.priority == Priority.high) {
+      titleColor = const TextStyle(color: Colors.orange);
+    } else if(widget.event.priority == Priority.critical) {
+      titleColor = TextStyle(color: Colors.red.shade900);
+    } else {
+      titleColor = const TextStyle(color: Colors.black);
+    }
     String subtitleString;
     if(!descMode) {
       subtitleString = widget.event.dateString();
@@ -75,7 +87,10 @@ class _EventTileState extends State<EventTile> {
     tile = Container(
       decoration: decoration,
       child: ListTile(
-        title: Text(widget.event.name),
+        title: Text(
+          widget.event.name,
+          style: titleColor,
+        ),
         subtitle: Text(subtitleString),
         onTap: () {
           if (widget.onTap != null) {

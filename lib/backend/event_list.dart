@@ -8,7 +8,10 @@ import 'package:executive_planner/backend/misc.dart';
 /// the star denotes the source file name.
 part 'event_list.g.dart';
 
+/// An enum for possible priorities. If you modify this, please also modify the
+/// priorities list in Event.
 enum Priority {
+  none,
   low,
   medium,
   high,
@@ -18,6 +21,9 @@ enum Priority {
 // TODO: Add subevents and tags.
 @JsonSerializable()
 class Event {
+  /// List of possible priorities for events; should have the same order and
+  /// values as listed in the enum.
+  static final List<String> priorities = ["None", "Low", "Medium", "High", "Critical"];
   /// Format for displaying dates, not including times.
   static final DateFormat dateFormat = DateFormat('MMM d, y');
   /// Format for displaying times.
@@ -30,6 +36,8 @@ class Event {
   DateTime? date;
   /// A description of the event.
   String description;
+  /// The priority of the event (low, medium, high, or critical).
+  Priority priority;
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
   /// A list of tags of this event.
@@ -37,7 +45,10 @@ class Event {
   /// make sure you are aware of this when modifying functions in Event!
   HashSet<String> tags = HashSet<String>();
 
-  Event({this.name = "Unnamed Event", this.description = "No description"});
+  Event({
+    this.name = "Unnamed Event",
+    this.description = "No description",
+    this.priority = Priority.none});
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
