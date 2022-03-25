@@ -8,6 +8,13 @@ import 'package:executive_planner/backend/misc.dart';
 /// the star denotes the source file name.
 part 'event_list.g.dart';
 
+enum Priority {
+  low,
+  medium,
+  high,
+  critical
+}
+
 // TODO: Add subevents and tags.
 @JsonSerializable()
 class Event {
@@ -30,7 +37,7 @@ class Event {
   /// make sure you are aware of this when modifying functions in Event!
   HashSet<String> tags = HashSet<String>();
 
-  Event({this.name = "Unnamed Event", this.description = ""});
+  Event({this.name = "Unnamed Event", this.description = "No description"});
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and

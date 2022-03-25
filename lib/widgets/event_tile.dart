@@ -24,6 +24,7 @@ class EventTile extends StatefulWidget {
 class _EventTileState extends State<EventTile> {
 
   bool isExpanded = false;
+  bool descMode = false;
 
   /// Pads text a standard amount.
   Widget paddedText(String text) {
@@ -65,17 +66,24 @@ class _EventTileState extends State<EventTile> {
         );
       }
     }
+    String subtitleString;
+    if(!descMode) {
+      subtitleString = widget.event.dateString();
+    } else {
+      subtitleString = widget.event.description;
+    }
     tile = Container(
       decoration: decoration,
       child: ListTile(
         title: Text(widget.event.name),
-        subtitle: Text(widget.event.dateString()),
+        subtitle: Text(subtitleString),
         onTap: () {
           if (widget.onTap != null) {
             widget.onTap!(widget.event);
             setState(() {});
           } else {
-            descMode = true;
+            descMode = !descMode;
+            setState(() {});
           }
         },
         onLongPress: () {

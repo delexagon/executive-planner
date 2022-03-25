@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/event_list.dart';

@@ -82,7 +82,24 @@ class _EventChangeFormState extends State<EventChangeForm> {
         onPressed: () {
           _search(context);
         },
-        child: Text(widget.event.dateString())
+        child: const Text("Set subevents"),
+    );
+  }
+
+  /// The text field that the user enters the event description into
+  Widget descriptionField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: TextField(
+        maxLines: 3,
+        onChanged: (String descStr) {
+          widget.event.description = descStr;
+        },
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: widget.event.description,
+        ),
+      ),
     );
   }
 
@@ -186,6 +203,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
         children: <Widget>[
           paddedText("Event name:"),
           eventNameField(),
+          paddedText("Event description:"),
+          descriptionField(),
           paddedText("Change date:"),
           datePicker(),
           timePicker(),

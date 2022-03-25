@@ -16,11 +16,11 @@ Event _$EventFromJson(Map<String, dynamic> json) {
   )
     ..date =
         json['date'] == null ? null : DateTime.parse(json['date'] as String)
-    ..location = json['location'] as String?;
+    ..description = json['description'] as String;
 }
 
 Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
       'name': instance.name,
       'date': instance.date?.toIso8601String(),
-      'location': instance.location,
+      'description': instance.description,
     };

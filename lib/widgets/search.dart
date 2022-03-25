@@ -59,7 +59,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   // TODO: Add other methods of searching
   /// Recalculates search based on the new search terms.
   void redoSearch(String searchStr) {
-    currentEvents = widget.events.search(searchStr);
+    currentEvents = widget.events.searchName(searchStr);
     for(int i = 0; i < selectedEvents.length; i++) {
       if(!currentEvents.contains(selectedEvents[i])) {
         currentEvents.add(selectedEvents[i]);
