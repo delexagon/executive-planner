@@ -50,6 +50,13 @@ class Event {
     this.description = "No description",
     this.priority = Priority.none});
 
+  void update() {
+    if(date != null && DateTime.now().isAfter(date!)) {
+      addTag("Overdue");
+      priority = Priority.critical;
+    }
+  }
+
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
   /// it is not displayed.
@@ -199,6 +206,12 @@ class EventList {
       }
     }
     return part;
+  }
+
+  void update() {
+    for(Event event in _list) {
+      event.update();
+    }
   }
 
   /// Return an EventList containing the events that have a specific tag.

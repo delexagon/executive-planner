@@ -115,10 +115,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
             child: Card(
-                child: Center(
-                    child: DecoratedBox(
-              decoration: const BoxDecoration(color: Colors.white),
-              child: AdvancedSearch(
+              child: Center(
+                child: DecoratedBox(
+                decoration: const BoxDecoration(color: Colors.white),
+                child: AdvancedSearch(
                 events: widget.events,
                 onSubmit: (EventList e) {
                   _goToSearchPage(context, e);
@@ -140,6 +140,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Writes events to file whenever they are modified.
   void _update() {
     widget.storage.write(ExecutiveHomePage.masterList.toJson());
+    widget.events.update();
     setState(() {});
   }
 

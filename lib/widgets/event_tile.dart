@@ -81,6 +81,9 @@ class _EventTileState extends State<EventTile> {
     String subtitleString;
     if(!descMode) {
       subtitleString = widget.event.dateString();
+      if(widget.event.tags.isNotEmpty) {
+        subtitleString += "\nTags: " + widget.event.tagsString();
+      }
     } else {
       subtitleString = widget.event.description;
     }
