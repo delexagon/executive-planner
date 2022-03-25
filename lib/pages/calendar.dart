@@ -19,12 +19,9 @@ class Calendar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: Builder(builder: (context) => IconButton(onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ExecutiveHomePage(title: "Home", storage: FileStorage(), events: ExecutiveHomePage.masterList)));
-          }, icon: const Icon(Icons.arrow_back))),
+          leading: Builder(builder: (context) =>
+            IconButton(onPressed: () { Navigator.pop(context); },
+          icon: const Icon(Icons.arrow_back))),
           title: Text(title),
         ),
         body: SfCalendar(
