@@ -28,11 +28,9 @@ Make events aware of their sub and super-events, and update their tags according
 Expand search functionality.
 
 ## Immediate future plans  
-Introducing event recurrences, descriptions, tags, location.  
-Allow event tiles to show description on tap.  
-Update events to current time.
+Introducing event recurrences.
+Making the calendar work.
 
 ## Farther future but still maybe soon  
 Mass edit of searched events.  
-Leveling system (maybe).  
-App menu.
+Leveling system (maybe).
