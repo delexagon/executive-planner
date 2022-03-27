@@ -12,11 +12,13 @@ class EventListDisplay extends StatelessWidget {
   final EventList events;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
+  final Function(Event e)? onDrag;
+
   /// Events in this list, if present, are colored light blue.
   final EventList? setToColor;
 
   const EventListDisplay({
-    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor
+    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag
   }) : super(key: key);
 
   List<Widget> _buildPanel() {
@@ -27,6 +29,7 @@ class EventListDisplay extends StatelessWidget {
         event: events[i],
         onTap: onTap,
         onLongPress: onLongPress,
+        onDrag: onDrag,
         setToColor: setToColor,
       ));
     }
