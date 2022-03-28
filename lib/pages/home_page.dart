@@ -208,7 +208,11 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                    const Calendar(title: "Calendar")));
+                    CalendarView(
+                      events: widget.events
+                      ),
+                      )
+                      );
             },
             child: const Text('Calendar')),
             const Divider(),
