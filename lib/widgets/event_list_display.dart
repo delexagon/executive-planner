@@ -8,29 +8,46 @@ import 'package:executive_planner/backend/event_list.dart';
 /// recursively be given to subevents.
 /// Note that this widget has an arbitrary size, and must be wrapped in a scrollable
 /// widget.
-class EventListDisplay extends StatelessWidget {
+class EventListDisplay extends StatefulWidget {
   final EventList events;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
+  final Function(EventList events)? searchFunc;
 
   /// Events in this list, if present, are colored light blue.
   final EventList? setToColor;
 
   const EventListDisplay({
-    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag
+    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor,
+    this.onDrag, this.searchFunc,
   }) : super(key: key);
 
+
+  @override
+  _EventListDisplayState createState() => _EventListDisplayState();
+}
+
+class _EventListDisplayState extends State<EventListDisplay> {
+
   List<Widget> _buildPanel() {
+    if(widget.searchFunc != null) {
+      widget.searchFunc!(widget.events);
+    }
     List<Widget> tiles = <Widget>[];
-    for(int i = 0; i < events.length; i++) {
+    for(int i = 0; i < widget.events.length; i++) {
       tiles.add(const Divider());
       tiles.add(EventTile(
-        event: events[i],
-        onTap: onTap,
-        onLongPress: onLongPress,
-        onDrag: onDrag,
-        setToColor: setToColor,
+        event: widget.events[i],
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
+        onDrag: (Event e) {
+          if(widget.onDrag != null) {
+            widget.onDrag!(e);
+            setState(() {});
+          }
+        },
+        setToColor: widget.setToColor,
       ));
     }
     return tiles;

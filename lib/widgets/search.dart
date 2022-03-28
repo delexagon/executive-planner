@@ -53,7 +53,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   @override
   void initState() {
     super.initState();
-    currentEvents.combine(widget.events);
+    currentEvents.union(widget.events);
   }
 
   // TODO: Add other methods of searching

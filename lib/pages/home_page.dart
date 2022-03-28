@@ -13,10 +13,13 @@ import 'package:executive_planner/widgets/search.dart';
 /// Only displays events in [events].
 class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage(
-      {Key? key,
-      required this.title,
-      required this.storage,
-      required this.events})
+      {
+        Key? key,
+        required this.title,
+        required this.storage,
+        required this.events,
+        this.isRoot = true,
+      })
       : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -42,13 +45,15 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Necessary to consider and selectively show searches.
   final EventList events;
 
+  final bool isRoot;
+
   /// Initializes the HomePage masterList to whatever is stored in files.
   static void initMaster() {
     FileStorage storage = FileStorage();
     storage.readFile().then((Map<String, dynamic>? json) {
       if (json != null) {
         EventList events = EventList.fromJson(json);
-        ExecutiveHomePage.masterList.combine(events);
+        ExecutiveHomePage.masterList.union(events);
       }
     });
   }
@@ -111,6 +116,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
       Function removeOverlayEntry = () {};
+      EventList events;
+      if(widget.isRoot) {
+        events = ExecutiveHomePage.masterList;
+      } else {
+        events = widget.events;
+      }
       overlayEntry = OverlayEntry(builder: (context) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
@@ -119,7 +130,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               child: DecoratedBox(
               decoration: BoxDecoration(color: Theme.of(context).canvasColor),
               child: AdvancedSearch(
-              events: widget.events,
+              events: events,
               onSubmit: (EventList e) {
                 _goToSearchPage(context, e);
                 removeOverlayEntry();
@@ -174,6 +185,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    Function(EventList events)? searchFunc;
+    if (widget.isRoot) {
+      searchFunc = (EventList events) {
+        events.removeAll(events.searchTags("Completed", true));
+      };
+    }
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -273,7 +290,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             },
             onDrag: (Event e) {
               e.addTag("Completed");
-            }
+            },
+            searchFunc: searchFunc,
           ),
         ),
         floatingActionButton: FloatingActionButton(

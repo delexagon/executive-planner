@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/pages/home_page.dart';
 
+import 'backend/event_list.dart';
+
 /// The entry point of the application.
 ///
 /// Generates an [ExecutivePlanner] [StatelessWidget] which holds everything else.
@@ -29,7 +31,8 @@ class ExecutivePlanner extends StatelessWidget {
         '/': (context) => ExecutiveHomePage(
               title: 'Planner',
               storage: FileStorage(),
-              events: ExecutiveHomePage.masterList,
+              events: EventList().union(ExecutiveHomePage.masterList),
+              isRoot: true,
             ),
         '/calendar': (context) => ExecutiveHomePage(
               title: 'Calendar',

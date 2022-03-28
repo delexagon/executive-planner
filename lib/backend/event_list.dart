@@ -212,12 +212,26 @@ class EventList {
     return _list[index];
   }
 
-  /// Adds all events in e to the current list.
-  void combine(EventList e) {
+  /// Adds all events in e to the current list, and returns it.
+  /// This modifies the list you use it on!
+  EventList union(EventList e) {
     for(int i = 0; i < e.length; i++) {
       _list.add(e[i]);
     }
     sort();
+    return this;
+  }
+
+  /// Adds all events in e to the current list, and returns it.
+  /// This modifies the list you use it on!
+  EventList removeAll(EventList e) {
+    for(Event event in _list) {
+      if(e.contains(event)) {
+        _list.remove(event);
+      }
+    }
+    sort();
+    return EventList();
   }
 
   /// Sorts list by event comparator. Various sorts can be found in the Event
@@ -264,12 +278,20 @@ class EventList {
   }
 
   /// Return an EventList containing the events that have a specific tag.
-  EventList searchTags(String searchStr) {
+  EventList searchTags(String searchStr, [bool appears = true]) {
     searchStr = searchStr.toTitleCase();
     EventList part = EventList();
-    for (int i = 0; i < _list.length; i++) {
-      if (_list[i].hasTag(searchStr.toTitleCase())) {
-        part.add(_list[i]);
+    if(appears) {
+      for (int i = 0; i < _list.length; i++) {
+        if (_list[i].hasTag(searchStr.toTitleCase())) {
+          part.add(_list[i]);
+        }
+      }
+    } else {
+      for (int i = 0; i < _list.length; i++) {
+        if (!_list[i].hasTag(searchStr.toTitleCase())) {
+          part.add(_list[i]);
+        }
       }
     }
     return part;
