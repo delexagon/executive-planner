@@ -69,10 +69,10 @@ class _EventChangeFormState extends State<EventChangeForm> {
         icon: const Icon(Icons.arrow_drop_down),
         iconSize: 24,
         elevation: 16,
-        style: const TextStyle(color: Colors.deepPurple),
+        style: TextStyle(color: Theme.of(context).colorScheme.primary),
         underline: Container(
           height: 2,
-          color: Colors.deepPurpleAccent,
+          color: Theme.of(context).colorScheme.secondary,
         ),
         onChanged: (int? newValue) {
           widget.event.priority = Priority.values[newValue!];
@@ -244,7 +244,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
             child: Card(
                 child: Center(
                     child: DecoratedBox(
-                      decoration: const BoxDecoration(color: Colors.white),
+                      decoration: BoxDecoration(color: Theme.of(context).canvasColor),
                       child: AdvancedSearch(
                         events: widget.events,
                         selectedOnly: true,

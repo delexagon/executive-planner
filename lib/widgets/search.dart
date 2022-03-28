@@ -104,7 +104,10 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         )
       );
     }
-    return Column(children: checkboxes);
+    return ListView(
+        scrollDirection: Axis.horizontal,
+        children: checkboxes
+    );
   }
 
   /// This displays all currently searched events.

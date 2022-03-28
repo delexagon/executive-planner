@@ -117,7 +117,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           child: Card(
             child: Center(
               child: DecoratedBox(
-              decoration: const BoxDecoration(color: Colors.white),
+              decoration: BoxDecoration(color: Theme.of(context).canvasColor),
               child: AdvancedSearch(
               events: widget.events,
               onSubmit: (EventList e) {
@@ -274,7 +274,11 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             events: widget.events,
             onLongPress: (Event e) {
               _changeEventList(context, event: e);
-            }),
+            },
+            onDrag: (Event e) {
+              e.addTag("Completed");
+            }
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

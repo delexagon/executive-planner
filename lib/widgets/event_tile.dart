@@ -8,11 +8,12 @@ class EventTile extends StatefulWidget {
   final Event event;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
+  final Function(Event e)? onDrag;
   final EventList? setToColor;
 
   /// Only [EventListDisplay] should call this function.
   const EventTile({
-    required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor
+    required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag,
   }) : super(key: key);
 
   @override
@@ -87,30 +88,45 @@ class _EventTileState extends State<EventTile> {
     } else {
       subtitleString = widget.event.description;
     }
-    tile = Container(
-      decoration: decoration,
-      child: ListTile(
-        title: Text(
-          widget.event.name,
-          style: titleColor,
-        ),
-        subtitle: Text(subtitleString),
-        onTap: () {
-          if (widget.onTap != null) {
-            widget.onTap!(widget.event);
-            setState(() {});
-          } else {
-            descMode = !descMode;
-            setState(() {});
-          }
-        },
-        onLongPress: () {
-          if (widget.onLongPress != null) {
-            widget.onLongPress!(widget.event);
-            setState(() {});
-          }
-        },
-        trailing: icon,
+    tile = GestureDetector(
+
+      onDoubleTap: () {
+        if (widget.onDrag != null) {
+          widget.onDrag!(widget.event);
+          setState(() {});
+        }
+      },
+      onHorizontalDragEnd: (DragEndDetails details) {
+        if (widget.onDrag != null) {
+          widget.onDrag!(widget.event);
+          setState(() {});
+        }
+      },
+      child: Container(
+        decoration: decoration,
+        child: ListTile(
+          onTap: () {
+            if (widget.onTap != null) {
+              widget.onTap!(widget.event);
+              setState(() {});
+            } else {
+              descMode = !descMode;
+              setState(() {});
+            }
+          },
+          onLongPress: () {
+            if (widget.onLongPress != null) {
+              widget.onLongPress!(widget.event);
+              setState(() {});
+            }
+          },
+          title: Text(
+            widget.event.name,
+            style: titleColor,
+          ),
+          subtitle: Text(subtitleString),
+          trailing: icon,
+        )
       )
     );
     if(isExpanded) {
@@ -122,6 +138,7 @@ class _EventTileState extends State<EventTile> {
             child: EventListDisplay(
               events: widget.event.subevents,
               onLongPress: widget.onLongPress,
+              onDrag: widget.onDrag,
             ),
           ),
         ]
