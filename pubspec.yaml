@@ -39,7 +39,7 @@ dependencies:
   build_runner: ^2.1.7
   shared_preferences: ^2.0.13
   intl: ^0.17.0
-  syncfusion_flutter_calendar: ^19.4.56
+  table_calendar: ^3.0.5
 
 dev_dependencies:
   flutter_test:

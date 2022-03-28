@@ -212,6 +212,11 @@ class EventList {
     return _list[index];
   }
 
+  /// Returns stored events as List<Event>
+  List<Event> asList() {
+    return _list;
+  }
+
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
   EventList union(EventList e) {
@@ -266,6 +271,16 @@ class EventList {
         if(date.isSameMoment(_list[i].date)) {
           part.add(_list[i]);
         }
+      }
+    }
+    return part;
+  }
+
+  EventList searchRange(DateTime startDate, DateTime endDate) {
+    EventList part = EventList();
+    for (int i = 0; i < _list.length; i++) {
+      if(startDate.isBefore(_list[i].date!) && endDate.isAfter(_list[i].date!)) {
+        part.add(_list[i]);
       }
     }
     return part;
