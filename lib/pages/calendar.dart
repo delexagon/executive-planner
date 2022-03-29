@@ -14,6 +14,8 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarState extends State<CalendarView> {
+  late final EventList _selectedEventsList;
+
   // Default to month view
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode.toggledOff;
@@ -23,12 +25,16 @@ class _CalendarState extends State<CalendarView> {
   DateTime? _rangeEnd;
 
   late final ValueNotifier<List<Event>> _selectedEvents;
+  // The events that are currently selected, as an EventList for EventListDisplay
+  
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
+    _selectedEventsList = _getEventListForDay(_focusedDay);
   }
 
   @override
@@ -64,7 +70,7 @@ class _CalendarState extends State<CalendarView> {
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
-      _selectedEvents.value = _getEventsForDay(selectedDay);
+      _selectedEvents.value = _selectedEventsList.asList();
     }
   }
 
@@ -78,11 +84,14 @@ class _CalendarState extends State<CalendarView> {
     });
     // Since start and end dates could be null
     if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
+      _selectedEventsList = _getEventListForRange(start, end);
+      _selectedEvents.value = _selectedEventsList.asList();
     } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
+      _selectedEventsList = _getEventListForDay(start);
+      _selectedEvents.value = _selectedEventsList.asList();
     } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
+      _selectedEventsList = _getEventListForDay(end);
+      _selectedEvents.value = _selectedEventsList.asList();
     }
   }
 
@@ -134,9 +143,11 @@ class _CalendarState extends State<CalendarView> {
               _focusedDay = focusedDay;
             },
           ),
-          EventListDisplay(
-            events: widget.events,
-          ),
+          SingleChildScrollView(
+            child: EventListDisplay(
+              events: _selectedEventsList,
+            ),
+          )
         ],
       ),
     );
