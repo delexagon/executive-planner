@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/search.dart';
+import 'package:executive_planner/widgets/tag_model.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
 /// Allows a user to modify an existing event or add a new event.
@@ -8,8 +9,10 @@ class EventChangeForm extends StatefulWidget {
   /// The event this form is considering. This must be provided so the resulting
   /// event can be handled by the caller of the form.
   final Event event;
+
   /// EventList held for the search display when adding subevents.
   final EventList events;
+
   /// Makes this form change between adding a new event or changing an existing
   /// event.
   final bool isNew;
@@ -24,13 +27,20 @@ class EventChangeForm extends StatefulWidget {
   ///
   /// [events]:
   /// EventList held for the search display when adding subevents.
-  const EventChangeForm({required this.event, required this.isNew, required this.events, Key? key}) : super(key: key);
+  const EventChangeForm(
+      {required this.event,
+      required this.isNew,
+      required this.events,
+      Key? key})
+      : super(key: key);
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
 }
 
 class _EventChangeFormState extends State<EventChangeForm> {
+  MaterialColor _backButtonColor = Colors.grey;
+  MaterialColor _confirmButtonColor = Colors.blue;
 
   /// Generates a widget which changes the time of the event if the date is
   /// already set.
@@ -41,18 +51,19 @@ class _EventChangeFormState extends State<EventChangeForm> {
             initialTime: const TimeOfDay(hour: 0, minute: 0),
             context: context,
           ).then((TimeOfDay? time) {
-            if(widget.event.date != null && time != null) {
+            if (widget.event.date != null && time != null) {
               setState(() {
                 widget.event.date = DateTime(
-                    widget.event.date!.year, widget.event.date!.month, widget.event.date!.day,
-                    time.hour, time.minute
-                );
+                    widget.event.date!.year,
+                    widget.event.date!.month,
+                    widget.event.date!.day,
+                    time.hour,
+                    time.minute);
               });
             }
           });
         },
-        child: const Text("Change time")
-    );
+        child: const Text("Change time"));
   }
 
   Widget priorityDropdown() {
@@ -99,18 +110,17 @@ class _EventChangeFormState extends State<EventChangeForm> {
             });
           });
         },
-        child: Text(widget.event.dateString())
-    );
+        child: Text(widget.event.dateString()));
   }
 
   /// Generates a widget which allows the user to set the date of an event.
   /// Currently, setting a date resets the time.
   Widget subEventPicker() {
     return TextButton(
-        onPressed: () {
-          _search(context);
-        },
-        child: const Text("Set subevents"),
+      onPressed: () {
+        _search(context);
+      },
+      child: const Text("Set subevents"),
     );
   }
 
@@ -163,76 +173,225 @@ class _EventChangeFormState extends State<EventChangeForm> {
   /// A button which allows the user to add/remove an event.
   Widget changeEventButton() {
     Widget changeText;
-    if(widget.isNew) {
-      changeText = const Text("Add event", style: TextStyle(fontSize: 20));
+    if (widget.isNew) {
+      changeText = const Text("Add event", style: TextStyle(fontSize: 30));
     } else {
-      changeText = const Text("Remove event", style: TextStyle(fontSize: 20));
+      changeText = const Text("Remove event", style: TextStyle(fontSize: 30));
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-      child: TextButton(
-        onPressed: () {
-          Navigator.pop(context, true);
-        },
-        child: changeText,
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pop(context, true);
+      },
+      child: changeText,
+      style: ElevatedButton.styleFrom(
+        primary: _confirmButtonColor,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       ),
     );
   }
 
-  /// A button which allows the user to add/remove an event.
+  Widget cancelButton() {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+      child: const Text("Cancel", style: TextStyle(fontSize: 30)),
+      style: ElevatedButton.styleFrom(
+        primary: _backButtonColor,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      ),
+    );
+  }
+
+
+  // ============ //
+  //     Tags     //
+  // ============ //
+
+  // Input box for adding/searching tags
   Widget tagSelector() {
-    Widget tagAdder = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: TextField(
-        onSubmitted: (String tag) {
-          setState(() {
-            widget.event.addTag(tag);
-          });
-        },
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: "Add a tag",
-        ),
+    Widget tagAdder = TextField(
+      controller: _searchTextEditingController,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (String tag) {
+        setState(() {
+          widget.event.addTag(tag);
+          widget.events.addTagToMasterList(tag);
+        });
+        _searchTextEditingController.clear();
+      },
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: "Add a tag",
       ),
     );
-    List<Widget> panels = <Widget>[];
-    for(String tag in widget.event.tags) {
-      panels.add(
-        CheckboxListTile(
-          title: Text(tag),
-          value: false,
-          onChanged: (bool? thisIsTotallyANecessaryBoolHere) {
-            if(thisIsTotallyANecessaryBoolHere == true) {
-              thisIsTotallyANecessaryBoolHere = false;
-              widget.event.removeTag(tag);
-            }
-            setState(() {});
-          },
-        ),
-      );
-    }
-    Widget tagRemover = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: ExpansionTile(
-        title: Text("Remove tags ("+widget.event.tags.length.toString()+")"),
-        children: panels,
+
+    return tagAdder;
+  }
+
+  // searchTextEditingController listens for text being typed into tagSelector input
+  final TextEditingController _searchTextEditingController =
+      TextEditingController();
+  String get _searchText => _searchTextEditingController.text.trim();
+
+  // Initialize listener
+  @override
+  void initState() {
+    super.initState();
+    _searchTextEditingController.addListener(() => refreshState(() {}));
+  }
+  refreshState(VoidCallback fn) {
+    if (mounted) setState(fn);
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _searchTextEditingController.dispose();
+  }
+
+  // Displays tag suggestions according to queries from incomplete text being typed in
+  // searchTextEditingController sends over the text being typed in, which searches for matching tags in the master tag list in event_list.dart.
+  // TODO: Find a way for the master tag list to persist through reloads. Can maybe link to EventList in some way?
+  Widget _buildSuggestionWidget() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (!_searchText.isEmpty)
+        const Text('Suggestions'),
+      Wrap(
+        alignment: WrapAlignment.start,
+        children: _filterSearchResultList()
+            .asList()
+            .where((tagModel) =>
+                widget.events.getTagMasterList().contains(tagModel))
+            .map((tagModel) => tagChip(
+                  tagModel: tagModel,
+                  onTap: () => {
+                    setState(() {
+                      widget.event.addEventTag(tagModel);
+                      _searchTextEditingController.clearComposing();
+                    })
+                  },
+                  action: 'Add',
+                  color: Colors.lightBlueAccent,
+                  accentColor: const Color.fromARGB(255, 54, 149, 193),
+                ))
+            .toList(),
       ),
-    );
-    return Column(
-      children: [
-        tagAdder,
-        tagRemover,
-      ],
+    ]);
+  }
+
+  // Displays tag suggestions
+  _displayTagWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: _filterSearchResultList().isNotEmpty
+          ? _buildSuggestionWidget()
+          : const Text('No Labels added'),
     );
   }
 
+  // Queries the master tag list based on the text being typed in.
+  TagList _filterSearchResultList() {
+    if (_searchText.isEmpty) return widget.event.tags;
+    return widget.events.getTagMasterList().queryTags(_searchText);
+  }
+
+  // Defines how each tag will appear in the tag widget
+  Widget tagChip({
+    tagModel,
+    onTap,
+    action,
+    color,
+    accentColor,
+  }) {
+    return InkWell(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 5.0,
+                horizontal: 5.0,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 10.0,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(100.0),
+                ),
+                child: Text(
+                  '${tagModel.title}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
+            ),
+            action == 'Remove' ? Positioned(
+              right: 0,
+              child: CircleAvatar(
+                backgroundColor: accentColor,
+                radius: 8.0,
+                child: const Icon(
+                  Icons.clear,
+                  size: 10.0,
+                  color: Colors.white,
+                ),
+              ),
+            ) : const SizedBox.shrink()
+          ],
+        ));
+  }
+
+  // Displays selected tags
+  Widget tagDisplay() {
+    return widget.event.tags.length > 0
+        ? Column(
+          children: [
+            Wrap(
+              alignment: WrapAlignment.start,
+              children: widget.event.tags
+                  .asList()
+                  .map((tagModel) => tagChip(
+                        tagModel: tagModel,
+                        onTap: () => setState((() {
+                          widget.event.tags.removeEventTag(tagModel);
+                        })),
+                        action: 'Remove',
+                        color: Colors.deepOrangeAccent,
+                        accentColor: Colors.orange.shade600,
+                      ))
+                  .toSet()
+                  .toList(),
+            ),
+            
+          ])
+        : Container();
+  }
+
+  // Main wrapper for all tag widgets
+  Widget tagPicker() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+              tagDisplay(),
+              tagSelector(),
+              _displayTagWidget(),
+      ],)
+    );
+  }
 
   /// Basically a copy of the _search function in [ExecutiveHomePage], but
   /// the functionality is different:
   /// Only selected events are given as the EventList, rather than all in search results.
   /// Changes subevents list to the subevents found by the search.
   void _search(BuildContext context) async {
-    if(Overlay.of(context) != null) {
+    if (Overlay.of(context) != null) {
       OverlayState overlayState = Overlay.of(context)!;
       OverlayEntry overlayEntry;
       // Flutter doesn't allow you to reference overlayEntry before it is created,
@@ -244,24 +403,23 @@ class _EventChangeFormState extends State<EventChangeForm> {
             child: Card(
                 child: Center(
                     child: DecoratedBox(
-                      decoration: BoxDecoration(color: Theme.of(context).canvasColor),
-                      child: AdvancedSearch(
-                        events: widget.events,
-                        selectedOnly: true,
-                        onSubmit: (EventList e) {
-                          widget.event.subevents = e;
-                          removeOverlayEntry();
-                        },
-                        onExit: () {
-                          removeOverlayEntry();
-                        },
-                      ),
-                    )
-                )
-            )
-        );
+              decoration: BoxDecoration(color: Theme.of(context).canvasColor),
+              child: AdvancedSearch(
+                events: widget.events,
+                selectedOnly: true,
+                onSubmit: (EventList e) {
+                  widget.event.subevents = e;
+                  removeOverlayEntry();
+                },
+                onExit: () {
+                  removeOverlayEntry();
+                },
+              ),
+            ))));
       });
-      removeOverlayEntry = () {overlayEntry.remove();};
+      removeOverlayEntry = () {
+        overlayEntry.remove();
+      };
       overlayState.insert(overlayEntry);
     }
   }
@@ -270,32 +428,44 @@ class _EventChangeFormState extends State<EventChangeForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Change an event"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            paddedText("Event name:"),
-            eventNameField(),
-            paddedText("Event description:"),
-            descriptionField(),
-            paddedText("Change date:"),
-            datePicker(),
-            timePicker(),
-            paddedText("Change priority:"),
-            priorityDropdown(),
-            paddedText("Select tags:"),
-            tagSelector(),
-            paddedText("Change sub-events:"),
-            subEventPicker(),
-            changeEventButton(),
-          ],
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: const Text("Change an event"),
         ),
-      ),
-    );
+        body: SingleChildScrollView(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              paddedText("Event name:"),
+              eventNameField(),
+              paddedText("Event description:"),
+              descriptionField(),
+              paddedText("Select tags:"),
+              tagPicker(),
+              paddedText("Change date:"),
+              datePicker(),
+              timePicker(),
+              paddedText("Change priority:"),
+              priorityDropdown(),
+              paddedText("Change sub-events:"),
+              subEventPicker(),
+            ],
+          ),
+        )),
+        bottomSheet: // Add and cancel buttons are shown persistently in the bottom sheet
+            Container(
+          margin: const EdgeInsets.only(
+              bottom: 25), // Pushes the bottom sheet up a little
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              cancelButton(),
+              changeEventButton(),
+            ],
+          ),
+        ));
   }
 }

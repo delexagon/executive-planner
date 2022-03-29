@@ -19,30 +19,34 @@ class EventListDisplay extends StatefulWidget {
   final EventList? setToColor;
 
   const EventListDisplay({
-    required this.events, Key? key, this.onTap, this.onLongPress, this.setToColor,
-    this.onDrag, this.searchFunc,
+    required this.events,
+    Key? key,
+    this.onTap,
+    this.onLongPress,
+    this.setToColor,
+    this.onDrag,
+    this.searchFunc,
   }) : super(key: key);
-
 
   @override
   _EventListDisplayState createState() => _EventListDisplayState();
 }
 
 class _EventListDisplayState extends State<EventListDisplay> {
-
   List<Widget> _buildPanel() {
-    if(widget.searchFunc != null) {
+    if (widget.searchFunc != null) {
       widget.searchFunc!(widget.events);
     }
+    
     List<Widget> tiles = <Widget>[];
-    for(int i = 0; i < widget.events.length; i++) {
+    for (int i = 0; i < widget.events.length; i++) {
       tiles.add(const Divider());
       tiles.add(EventTile(
         event: widget.events[i],
         onTap: widget.onTap,
         onLongPress: widget.onLongPress,
         onDrag: (Event e) {
-          if(widget.onDrag != null) {
+          if (widget.onDrag != null) {
             widget.onDrag!(e);
             setState(() {});
           }
