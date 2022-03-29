@@ -1,3 +1,5 @@
+// ignore_for_file: directives_ordering
+
 import 'package:flutter/material.dart';
 
 import 'package:executive_planner/widgets/event_tile.dart';
@@ -9,15 +11,6 @@ import 'package:executive_planner/backend/event_list.dart';
 /// Note that this widget has an arbitrary size, and must be wrapped in a scrollable
 /// widget.
 class EventListDisplay extends StatefulWidget {
-  final EventList events;
-  final Function(Event e)? onTap;
-  final Function(Event e)? onLongPress;
-  final Function(Event e)? onDrag;
-  final Function(EventList events)? searchFunc;
-
-  /// Events in this list, if present, are colored light blue.
-  final EventList? setToColor;
-
   const EventListDisplay({
     required this.events,
     Key? key,
@@ -28,17 +21,26 @@ class EventListDisplay extends StatefulWidget {
     this.searchFunc,
   }) : super(key: key);
 
+  
+  final EventList events;
+  final Function(Event e)? onTap;
+  final Function(Event e)? onLongPress;
+  final Function(Event e)? onDrag;
+  final Function(EventList events)? searchFunc;
+
+  /// Events in this list, if present, are colored light blue.
+  final EventList? setToColor;
+
   @override
   _EventListDisplayState createState() => _EventListDisplayState();
 }
 
 class _EventListDisplayState extends State<EventListDisplay> {
   List<Widget> _buildPanel() {
-    if (widget.searchFunc != null) {
-      widget.searchFunc!(widget.events);
-    }
+    // ignore: prefer_null_aware_method_calls
+    if (widget.searchFunc!=null) widget.searchFunc!(widget.events);
     
-    List<Widget> tiles = <Widget>[];
+    final List<Widget> tiles = <Widget>[];
     for (int i = 0; i < widget.events.length; i++) {
       tiles.add(const Divider());
       tiles.add(EventTile(
@@ -52,7 +54,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
           }
         },
         setToColor: widget.setToColor,
-      ));
+      ),);
     }
     return tiles;
   }

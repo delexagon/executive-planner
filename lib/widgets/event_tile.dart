@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
+import 'package:flutter/material.dart';
 
 /// An individual event tile. This class should only be called by [EventListDisplay].
 /// This class also calls more [EventListDisplay]s.
 class EventTile extends StatefulWidget {
+  /// Only [EventListDisplay] should call this function.
+  const EventTile({
+    required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag,
+  }) : super(key: key);
+
   final Event event;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
   final EventList? setToColor;
-
-  /// Only [EventListDisplay] should call this function.
-  const EventTile({
-    required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag,
-  }) : super(key: key);
 
   @override
   _EventTileState createState() => _EventTileState();
@@ -55,7 +55,7 @@ class _EventTileState extends State<EventTile> {
           onPressed: () {
             isExpanded = true;
             setState(() {});
-          }
+          },
         );
       } else {
         icon = IconButton(
@@ -63,7 +63,7 @@ class _EventTileState extends State<EventTile> {
             onPressed: () {
               isExpanded = false;
               setState(() {});
-            }
+            },
         );
       }
     }
@@ -83,7 +83,7 @@ class _EventTileState extends State<EventTile> {
     if(!descMode) {
       subtitleString = widget.event.dateString();
       if(widget.event.tags.isNotEmpty) {
-        subtitleString += "\nTags: " + widget.event.tagsString();
+        subtitleString += '\nTags: ${widget.event.tagsString()}';
       }
     } else {
       subtitleString = widget.event.description;
@@ -126,8 +126,8 @@ class _EventTileState extends State<EventTile> {
           ),
           subtitle: Text(subtitleString),
           trailing: icon,
-        )
-      )
+        ),
+      ),
     );
     if(isExpanded) {
       return Column(
@@ -141,7 +141,7 @@ class _EventTileState extends State<EventTile> {
               onDrag: widget.onDrag,
             ),
           ),
-        ]
+        ],
       );
     } else {
       return tile;

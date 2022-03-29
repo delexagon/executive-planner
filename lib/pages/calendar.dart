@@ -1,14 +1,13 @@
+import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/pages/home_page.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:executive_planner/backend/event_list.dart';
 
 class CalendarView extends StatefulWidget {
-  final EventList events;
   const CalendarView({required this.events, Key? key}) : super(key: key);
-
+  final EventList events;
   @override
   _CalendarState createState() => _CalendarState();
 }
@@ -57,6 +56,7 @@ class _CalendarState extends State<CalendarView> {
   }
 
   // Converts _getEventListForRange into List<Events>
+  // ignore: unused_element
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
     return _getEventListForRange(start, end).asList();
   }
@@ -99,7 +99,7 @@ class _CalendarState extends State<CalendarView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Calendar"),
+        title: const Text('Calendar'),
         leading: Builder(
             builder: (context) => IconButton(
                 onPressed: () {
@@ -107,11 +107,11 @@ class _CalendarState extends State<CalendarView> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ExecutiveHomePage(
-                              title: "Home",
+                              title: 'Home',
                               storage: FileStorage(),
-                              events: ExecutiveHomePage.masterList)));
+                              events: ExecutiveHomePage.masterList,),),);
                 },
-                icon: const Icon(Icons.arrow_back))),
+                icon: const Icon(Icons.arrow_back),),),
       ),
       body: Column(
         children: [

@@ -1,10 +1,10 @@
-import 'package:executive_planner/pages/calendar.dart';
-import 'package:flutter/material.dart';
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
+import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
+import 'package:flutter/material.dart';
 
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
@@ -49,10 +49,10 @@ class ExecutiveHomePage extends StatefulWidget {
 
   /// Initializes the HomePage masterList to whatever is stored in files.
   static void initMaster() {
-    FileStorage storage = FileStorage();
-    storage.readFile().then((Map<String, dynamic>? json) {
+    final FileStorage storage = FileStorage();
+    storage.readFile().then((json) {
       if (json != null) {
-        EventList events = EventList.fromJson(json);
+        final EventList events = EventList.fromJson(json as Map<String, dynamic>);
         ExecutiveHomePage.masterList.union(events);
       }
     });
@@ -99,10 +99,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       context,
       MaterialPageRoute(
         builder: (context) => ExecutiveHomePage(
-          title: "Search results",
+          title: 'Search results',
           storage: widget.storage,
           events: events,
-        )));
+        ),),);
     _update();
   }
 
@@ -111,7 +111,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Search results are all pushed to new [ExecutiveHomePage] screen.
   void _search(BuildContext context) async {
     if (Overlay.of(context) != null) {
-      OverlayState overlayState = Overlay.of(context)!;
+      final OverlayState overlayState = Overlay.of(context)!;
       OverlayEntry overlayEntry;
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
@@ -139,8 +139,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                 removeOverlayEntry();
               },
             ),
-          ))));
-      });
+          ),),),);
+      },);
       removeOverlayEntry = () {
         overlayEntry.remove();
       };
@@ -158,13 +158,13 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// If event is uninitialized, this will give an screen for adding a new event.
   /// Otherwise, it will edit a current event.
   void _changeEventList(BuildContext context, {Event? event}) async {
-    bool isNew = (event == null);
+    final bool isNew = event == null;
     event ??= Event();
     bool? changeList = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventChangeForm(
-          event: event!, events: widget.events, isNew: isNew)),
+          event: event!, events: widget.events, isNew: isNew,),),
     );
     changeList ??= false;
     if (changeList) {
@@ -188,12 +188,11 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     Function(EventList events)? searchFunc;
     if (widget.isRoot) {
       searchFunc = (EventList events) {
-        events.removeAll(events.searchTags("Completed", true));
+        events.removeAll(events.searchTags('Completed'));
       };
     }
     return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: true,
           actions: [
             _searchIcon(),
           ],
@@ -226,12 +225,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   MaterialPageRoute(
                     builder: (context) =>
                     CalendarView(
-                      events: widget.events
+                      events: widget.events,
                       ),
-                      )
+                      ),
                       );
             },
-            child: const Text('Calendar')),
+            child: const Text('Calendar'),),
             const Divider(),
             RadioListTile<Comparator<Event>>(
               title: const Text('Sort by name'),
@@ -284,7 +283,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               title: const Text('Settings'),
               onTap: () {},
             )
-          ])
+          ],),
         ),
         body: SingleChildScrollView(
           child: EventListDisplay(
@@ -293,7 +292,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               _changeEventList(context, event: e);
             },
             onDrag: (Event e) {
-              e.addTag("Completed");
+              e.addTag('Completed');
             },
             searchFunc: searchFunc,
           ),

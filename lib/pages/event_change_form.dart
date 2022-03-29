@@ -1,11 +1,20 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unnecessary_string_interpolations, avoid_redundant_argument_values
+
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:executive_planner/widgets/tag_model.dart';
+import 'package:flutter/material.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
 /// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends StatefulWidget {
+  const EventChangeForm(
+      {required this.event,
+      required this.isNew,
+      required this.events,
+      Key? key,})
+      : super(key: key);
+
   /// The event this form is considering. This must be provided so the resulting
   /// event can be handled by the caller of the form.
   final Event event;
@@ -27,20 +36,15 @@ class EventChangeForm extends StatefulWidget {
   ///
   /// [events]:
   /// EventList held for the search display when adding subevents.
-  const EventChangeForm(
-      {required this.event,
-      required this.isNew,
-      required this.events,
-      Key? key})
-      : super(key: key);
+  
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
 }
 
 class _EventChangeFormState extends State<EventChangeForm> {
-  MaterialColor _backButtonColor = Colors.grey;
-  MaterialColor _confirmButtonColor = Colors.blue;
+  final MaterialColor _backButtonColor = Colors.grey;
+  final MaterialColor _confirmButtonColor = Colors.blue;
 
   /// Generates a widget which changes the time of the event if the date is
   /// already set.
@@ -58,16 +62,16 @@ class _EventChangeFormState extends State<EventChangeForm> {
                     widget.event.date!.month,
                     widget.event.date!.day,
                     time.hour,
-                    time.minute);
+                    time.minute,);
               });
             }
           });
         },
-        child: const Text("Change time"));
+        child: const Text('Change time'),);
   }
 
   Widget priorityDropdown() {
-    List<DropdownMenuItem<int>> items = Event.priorities.map((String value) {
+    final List<DropdownMenuItem<int>> items = Event.priorities.map((String value) {
       return DropdownMenuItem<int>(
         value: Event.priorities.indexOf(value),
         child: Text(value),
@@ -110,7 +114,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
             });
           });
         },
-        child: Text(widget.event.dateString()));
+        child: Text(widget.event.dateString()),);
   }
 
   /// Generates a widget which allows the user to set the date of an event.
@@ -120,7 +124,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       onPressed: () {
         _search(context);
       },
-      child: const Text("Set subevents"),
+      child: const Text('Set subevents'),
     );
   }
 
@@ -174,19 +178,19 @@ class _EventChangeFormState extends State<EventChangeForm> {
   Widget changeEventButton() {
     Widget changeText;
     if (widget.isNew) {
-      changeText = const Text("Add event", style: TextStyle(fontSize: 30));
+      changeText = const Text('Add event', style: TextStyle(fontSize: 30));
     } else {
-      changeText = const Text("Remove event", style: TextStyle(fontSize: 30));
+      changeText = const Text('Remove event', style: TextStyle(fontSize: 30));
     }
     return ElevatedButton(
       onPressed: () {
         Navigator.pop(context, true);
       },
-      child: changeText,
       style: ElevatedButton.styleFrom(
         primary: _confirmButtonColor,
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       ),
+      child: changeText,
     );
   }
 
@@ -195,11 +199,11 @@ class _EventChangeFormState extends State<EventChangeForm> {
       onPressed: () {
         Navigator.pop(context, false);
       },
-      child: const Text("Cancel", style: TextStyle(fontSize: 30)),
       style: ElevatedButton.styleFrom(
         primary: _backButtonColor,
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       ),
+      child: const Text('Cancel', style: TextStyle(fontSize: 30)),
     );
   }
 
@@ -210,7 +214,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
 
   // Input box for adding/searching tags
   Widget tagSelector() {
-    Widget tagAdder = TextField(
+    final Widget tagAdder = TextField(
       controller: _searchTextEditingController,
       textInputAction: TextInputAction.search,
       onSubmitted: (String tag) {
@@ -222,7 +226,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
-        hintText: "Add a tag",
+        hintText: 'Add a tag',
       ),
     );
 
@@ -240,7 +244,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
     super.initState();
     _searchTextEditingController.addListener(() => refreshState(() {}));
   }
-  refreshState(VoidCallback fn) {
+  void refreshState(VoidCallback fn) {
     if (mounted) setState(fn);
   }
   @override
@@ -254,14 +258,14 @@ class _EventChangeFormState extends State<EventChangeForm> {
   // TODO: Find a way for the master tag list to persist through reloads. Can maybe link to EventList in some way?
   Widget _buildSuggestionWidget() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      if (!_searchText.isEmpty)
+      if (_searchText.isNotEmpty)
         const Text('Suggestions'),
       Wrap(
         alignment: WrapAlignment.start,
         children: _filterSearchResultList()
             .asList()
             .where((tagModel) =>
-                widget.events.getTagMasterList().contains(tagModel))
+                widget.events.getTagMasterList().contains(tagModel),)
             .map((tagModel) => tagChip(
                   tagModel: tagModel,
                   onTap: () => {
@@ -273,14 +277,14 @@ class _EventChangeFormState extends State<EventChangeForm> {
                   action: 'Add',
                   color: Colors.lightBlueAccent,
                   accentColor: const Color.fromARGB(255, 54, 149, 193),
-                ))
+                ),)
             .toList(),
       ),
-    ]);
+    ],);
   }
 
   // Displays tag suggestions
-  _displayTagWidget() {
+  Padding _displayTagWidget() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: _filterSearchResultList().isNotEmpty
@@ -297,11 +301,11 @@ class _EventChangeFormState extends State<EventChangeForm> {
 
   // Defines how each tag will appear in the tag widget
   Widget tagChip({
-    tagModel,
-    onTap,
-    action,
-    color,
-    accentColor,
+    required EventTag tagModel,
+    required VoidCallback onTap,
+    String? action,
+    Color? color,
+    Color? accentColor,
   }) {
     return InkWell(
         onTap: onTap,
@@ -330,7 +334,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
                 ),
               ),
             ),
-            action == 'Remove' ? Positioned(
+            if (action == 'Remove') Positioned(
               right: 0,
               child: CircleAvatar(
                 backgroundColor: accentColor,
@@ -341,9 +345,9 @@ class _EventChangeFormState extends State<EventChangeForm> {
                   color: Colors.white,
                 ),
               ),
-            ) : const SizedBox.shrink()
+            ) else const SizedBox.shrink()
           ],
-        ));
+        ),);
   }
 
   // Displays selected tags
@@ -352,23 +356,22 @@ class _EventChangeFormState extends State<EventChangeForm> {
         ? Column(
           children: [
             Wrap(
-              alignment: WrapAlignment.start,
               children: widget.event.tags
                   .asList()
                   .map((tagModel) => tagChip(
                         tagModel: tagModel,
-                        onTap: () => setState((() {
+                        onTap: () => setState(() {
                           widget.event.tags.removeEventTag(tagModel);
-                        })),
+                        },),
                         action: 'Remove',
                         color: Colors.deepOrangeAccent,
                         accentColor: Colors.orange.shade600,
-                      ))
+                      ),)
                   .toSet()
                   .toList(),
             ),
             
-          ])
+          ],)
         : Container();
   }
 
@@ -382,7 +385,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
               tagDisplay(),
               tagSelector(),
               _displayTagWidget(),
-      ],)
+      ],),
     );
   }
 
@@ -392,7 +395,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
   /// Changes subevents list to the subevents found by the search.
   void _search(BuildContext context) async {
     if (Overlay.of(context) != null) {
-      OverlayState overlayState = Overlay.of(context)!;
+      final OverlayState overlayState = Overlay.of(context)!;
       OverlayEntry overlayEntry;
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
@@ -415,8 +418,8 @@ class _EventChangeFormState extends State<EventChangeForm> {
                   removeOverlayEntry();
                 },
               ),
-            ))));
-      });
+            ),),),);
+      },);
       removeOverlayEntry = () {
         overlayEntry.remove();
       };
@@ -431,7 +434,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text("Change an event"),
+          title: const Text('Change an event'),
         ),
         body: SingleChildScrollView(
             child: Padding(
@@ -439,26 +442,26 @@ class _EventChangeFormState extends State<EventChangeForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              paddedText("Event name:"),
+              paddedText('Event name:'),
               eventNameField(),
-              paddedText("Event description:"),
+              paddedText('Event description:'),
               descriptionField(),
-              paddedText("Select tags:"),
+              paddedText('Select tags:'),
               tagPicker(),
-              paddedText("Change date:"),
+              paddedText('Change date:'),
               datePicker(),
               timePicker(),
-              paddedText("Change priority:"),
+              paddedText('Change priority:'),
               priorityDropdown(),
-              paddedText("Change sub-events:"),
+              paddedText('Change sub-events:'),
               subEventPicker(),
             ],
           ),
-        )),
+        ),),
         bottomSheet: // Add and cancel buttons are shown persistently in the bottom sheet
             Container(
           margin: const EdgeInsets.only(
-              bottom: 25), // Pushes the bottom sheet up a little
+              bottom: 25,), // Pushes the bottom sheet up a little
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -466,6 +469,6 @@ class _EventChangeFormState extends State<EventChangeForm> {
               changeEventButton(),
             ],
           ),
-        ));
+        ),);
   }
 }

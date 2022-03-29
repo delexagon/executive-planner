@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-
+import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/pages/home_page.dart';
-
-import 'backend/event_list.dart';
+import 'package:flutter/material.dart';
 
 /// The entry point of the application.
 ///
@@ -32,7 +30,6 @@ class ExecutivePlanner extends StatelessWidget {
               title: 'Planner',
               storage: FileStorage(),
               events: EventList().union(ExecutiveHomePage.masterList),
-              isRoot: true,
             ),
         '/calendar': (context) => ExecutiveHomePage(
               title: 'Calendar',
@@ -45,4 +42,3 @@ class ExecutivePlanner extends StatelessWidget {
     );
   }
 }
-

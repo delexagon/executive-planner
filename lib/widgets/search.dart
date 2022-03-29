@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
-
-import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/widgets/event_list_display.dart';
+import 'package:flutter/material.dart';
 
 // TODO: Events modified in search screens are probably left unmodified in the original eventlist
 // TODO: Make search use more than just name
 /// The search widget is an overlay allowing to search for and select a list of events.
 class AdvancedSearch extends StatefulWidget {
+  const AdvancedSearch({
+    Key? key, required this.events, this.selectedOnly = false, this.onSubmit, this.onExit,
+  }) : super(key: key);
+
   /// Stores the events that are being searched from.
   final EventList events;
   /// A function which is called when the X button is pressed.
@@ -29,9 +32,7 @@ class AdvancedSearch extends StatefulWidget {
   /// [selectedOnly]
   /// States whether the search will only return selected items, or whether it
   /// will return all items currently in the search results when it is submitted.
-  const AdvancedSearch({
-    Key? key, required this.events, this.selectedOnly = false, this.onSubmit, this.onExit
-  }) : super(key: key);
+  
 
   @override
   _AdvancedSearchState createState() => _AdvancedSearchState();
@@ -80,7 +81,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         },
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
-          hintText: "Search",
+          hintText: 'Search',
         ),
       ),
     );
@@ -90,8 +91,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {
-    List<String> searchTypes = ["Name", "Tags", "Priority", "Location", "Date"];
-    List<Widget> checkboxes = <Widget>[];
+    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Location', 'Date'];
+    final List<Widget> checkboxes = <Widget>[];
     for(int i = 0; i < searchTypesEnabled.length && i < searchTypes.length; i++) {
       checkboxes.add(
         CheckboxListTile(
@@ -101,12 +102,12 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
             searchTypesEnabled[i] = !searchTypesEnabled[i];
             setState(() { });
           },
-        )
+        ),
       );
     }
     return ListView(
         scrollDirection: Axis.horizontal,
-        children: checkboxes
+        children: checkboxes,
     );
   }
 
@@ -124,9 +125,9 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
             } else {
               selectedEvents.add(e);
             }
-          }
+          },
         ),
-      )
+      ),
     );
   }
 
@@ -161,12 +162,12 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
                     }
                   }
                 },
-                child: const Text("OK", style: TextStyle(fontSize: 20)),
+                child: const Text('OK', style: TextStyle(fontSize: 20)),
               ),
             ),
           ),
         ],
-      )
+      ),
     );
   }
 

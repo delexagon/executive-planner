@@ -1,35 +1,31 @@
-import 'package:executive_planner/backend/misc.dart';
-import 'package:flutter/material.dart';
-import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/widgets/search.dart';
+
 
 
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
 
 class EventTag {
-  String id;
-  String title;
-
   EventTag({
     required this.id,
     required this.title,
   });
+
+  String id;
+  String title;
 }
 
 // Stores a collection of EventTag objects
 class TagList {
-  final List<EventTag> tags;
-
   TagList({
     required this.tags,
   });
+  final List<EventTag> tags;
 
   List<EventTag> asList() {
     return tags;
   }
   String asString() {
-    return tags.map((tag) => tag.title).join(", ");
+    return tags.map((tag) => tag.title).join(', ');
   }
 
   List<String> asStringList() {
@@ -44,7 +40,7 @@ class TagList {
     tags.add(EventTag(
       id: title,
       title: title,
-    ));
+    ),);
     return true;
   }
 
@@ -57,7 +53,7 @@ class TagList {
   }
 
   void mergeTagLists(TagList tags) {
-    for (EventTag tag in tags.tags) {
+    for (final EventTag tag in tags.tags) {
       addEventTag(tag);
     }
   }
@@ -100,4 +96,3 @@ class TagList {
   bool get isNotEmpty => tags.isNotEmpty;
   bool contains(EventTag tag) => tags.contains(tag);
 }
-

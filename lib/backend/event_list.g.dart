@@ -12,7 +12,7 @@ Event _$EventFromJson(Map<String, dynamic> json) {
     requiredKeys: const ['name'],
   );
   return Event(
-    name: json['name'] as String? ?? "Unnamed Event",
+    name: json['name'] as String? ?? 'Unnamed Event',
   )
     ..date =
         json['date'] == null ? null : DateTime.parse(json['date'] as String)
