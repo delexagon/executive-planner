@@ -21,7 +21,6 @@ class EventListDisplay extends StatefulWidget {
     this.searchFunc,
   }) : super(key: key);
 
-  
   final EventList events;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
@@ -38,23 +37,28 @@ class EventListDisplay extends StatefulWidget {
 class _EventListDisplayState extends State<EventListDisplay> {
   List<Widget> _buildPanel() {
     // ignore: prefer_null_aware_method_calls
-    if (widget.searchFunc!=null) widget.searchFunc!(widget.events);
-    
+    if (widget.searchFunc != null) widget.searchFunc!(widget.events);
     final List<Widget> tiles = <Widget>[];
-    for (int i = 0; i < widget.events.length; i++) {
-      tiles.add(const Divider());
-      tiles.add(EventTile(
-        event: widget.events[i],
-        onTap: widget.onTap,
-        onLongPress: widget.onLongPress,
-        onDrag: (Event e) {
-          if (widget.onDrag != null) {
-            widget.onDrag!(e);
-            setState(() {});
-          }
-        },
-        setToColor: widget.setToColor,
-      ),);
+    if (widget.events.length != 0) {
+      for (int i = 0; i < widget.events.length; i++) {
+        tiles.add(const Divider());
+        tiles.add(
+          EventTile(
+            event: widget.events[i],
+            onTap: widget.onTap,
+            onLongPress: widget.onLongPress,
+            onDrag: (Event e) {
+              if (widget.onDrag != null) {
+                widget.onDrag!(e);
+                setState(() {});
+              }
+            },
+            setToColor: widget.setToColor,
+          ),
+        );
+      }
+    } else {
+      tiles.add(eventListEmpty(context));
     }
     return tiles;
   }
@@ -65,4 +69,28 @@ class _EventListDisplayState extends State<EventListDisplay> {
       children: _buildPanel(),
     );
   }
+}
+
+Widget eventListEmpty(BuildContext context) {
+  // ignore: dead_code
+  return SizedBox(
+    width: double.infinity,
+    height: 500,
+    child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(
+            Icons.task,
+            color: Colors.grey,
+            size: 100,
+          ),
+          Text(
+            'No tasks to show!',
+            style: TextStyle(fontSize: 20, color: Colors.grey),
+          )
+        ],
+      ),
+    ),
+  );
 }

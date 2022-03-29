@@ -143,11 +143,11 @@ class _CalendarState extends State<CalendarView> {
               _focusedDay = focusedDay;
             },
           ),
-          SingleChildScrollView(
-            child: EventListDisplay(
+           if (_selectedEventsList.length != 0) SingleChildScrollView(
+            child:EventListDisplay(
               events: _selectedEventsList,
             ),
-          )
+          ) else eventListEmpty(context)
         ],
       ),
     );
