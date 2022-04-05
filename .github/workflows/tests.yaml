@@ -17,31 +17,32 @@ jobs:
     steps:
       # Checkout code from Github to run tests
       - name: Checkout Branch
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       # Install current flutter version
       - name: Install and set Flutter version
-      - uses: subosito/flutter-action@v2.3.0
+        uses: subosito/flutter-action@v2.3.0
         with:
           flutter-version: '2.10.0'
           channel: 'stable'
       # Update packages if necessary
       - name: Update Packages
-      - run: flutter pub get
+        run: flutter pub get
       # Run flutter static analysis
       - name: Run Static Code Analysis
-      - run: flutter analyze
+        run: flutter analyze
       # Run flutter tests
       # TODO: make some tests!
       - name: Run Flutter Tests
-      - run: flutter test --coverage
+        run: flutter test --coverage
+
   build:
     steps:
-      - name: Build for Web
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '2.5.3'
-      - run: flutter pub get
-      - run: flutter test
-      - run: flutter build web
+    - name: Build for Web
+      uses: actions/checkout@v2
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '2.5.3'
+      run: flutter pub get
+      run: flutter test
+      run: flutter build web
 
