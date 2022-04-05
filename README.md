@@ -48,7 +48,7 @@ Each functional component of the Executive Planner project is represented as a s
 5. Be sure to install the related dependencies for whatever platform you plan on building for.
 6. Run `flutter doctor` to see a report on your installation and a list of missing components (if any)
 7. In the directory containing the cloned repository, run `flutter pub install` to install Executive Planner's dependencies.
-8. You're done! Edit and run the project from your preferred IDE, and use `flutter analysis` and `flutter test` to test your code before committing.
+8. You're done! Edit and run the project from your preferred IDE, and use `flutter analyze` and `flutter test` to test your code before committing.
 
 
 ### Additional Info
