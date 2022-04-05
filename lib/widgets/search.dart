@@ -142,9 +142,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
               icon: const Icon(Icons.close),
               iconSize: 30,
               onPressed: () {
-                if(widget.onExit != null) {
-                  widget.onExit!();
-                }
+                widget.onExit!();
+                
               },
             ),
           ),

@@ -24,7 +24,7 @@ class FileStorage {
   }
 
   /// Writes a JSON map into the 'events' string in SharedPreferences.
-  void write(Map<String, dynamic> json) async {
+  Future write(Map<String, dynamic> json) async {
     final prefs = await _prefs;
     final String jstr = jsonEncode(json);
 

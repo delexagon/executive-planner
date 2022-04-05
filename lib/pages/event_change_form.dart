@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_string_interpolations, avoid_redundant_argument_values
+// ignore_for_file: unnecessary_string_interpolations, avoid_redundant_argument_values, avoid_dynamic_calls
 
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/widgets/search.dart';
@@ -393,13 +393,15 @@ class _EventChangeFormState extends State<EventChangeForm> {
   /// the functionality is different:
   /// Only selected events are given as the EventList, rather than all in search results.
   /// Changes subevents list to the subevents found by the search.
-  void _search(BuildContext context) async {
+  Future _search(BuildContext context) async {
     if (Overlay.of(context) != null) {
       final OverlayState overlayState = Overlay.of(context)!;
       OverlayEntry overlayEntry;
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
       Function removeOverlayEntry = () {};
+
+      
       overlayEntry = OverlayEntry(builder: (context) {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),

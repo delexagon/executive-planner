@@ -94,7 +94,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   /// Loads new page when search results are submitted, generating a new
   /// [ExecutiveHomePage].
-  void _goToSearchPage(BuildContext context, EventList events) async {
+  Future _goToSearchPage(BuildContext context, EventList events) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -109,7 +109,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Generates an [AdvancedSearch] as an [OverlayEntry].
   ///
   /// Search results are all pushed to new [ExecutiveHomePage] screen.
-  void _search(BuildContext context) async {
+  Future _search(BuildContext context) async {
     if (Overlay.of(context) != null) {
       final OverlayState overlayState = Overlay.of(context)!;
       OverlayEntry overlayEntry;
@@ -133,9 +133,11 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               events: events,
               onSubmit: (EventList e) {
                 _goToSearchPage(context, e);
+                // ignore: avoid_dynamic_calls
                 removeOverlayEntry();
               },
               onExit: () {
+                // ignore: avoid_dynamic_calls
                 removeOverlayEntry();
               },
             ),
@@ -157,7 +159,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Changes pages to EventChangeForm, allowing editing of events.
   /// If event is uninitialized, this will give an screen for adding a new event.
   /// Otherwise, it will edit a current event.
-  void _changeEventList(BuildContext context, {Event? event}) async {
+  Future _changeEventList(BuildContext context, {Event? event}) async {
     final bool isNew = event == null;
     event ??= Event();
     bool? changeList = await Navigator.push(
