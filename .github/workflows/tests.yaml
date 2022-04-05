@@ -45,7 +45,6 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: '2.5.3'
-        dart-version: '2.16.2'
     - name: Update Flutter and Dart
       run: flutter upgrade
     - name: Update Packages
