@@ -2,6 +2,11 @@
 
 A to-do list/calendar app, created for Software Design & Documentation in Spring 2022.
 
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/delexagon/executive-planner/Executive_Planner_Tests/testing?label=Testing&style=flat-square) 
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/delexagon/executive-planner/Executive_Planner_Tests/development?label=Development%20&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/delexagon/executive-planner/Executive_Planner_Tests/master?label=Master&style=flat-square)
+
+
 ---
 **Team Members:** Zachary Love, Michael Kokkatt, Sam DeMarrais, Miriam Rundell, Kevin Scott
 
