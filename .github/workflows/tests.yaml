@@ -46,7 +46,12 @@ jobs:
       with:
         flutter-version: '2.5.3'
         dart-version: '2.16.2'
-    - run: flutter pub get
-    - run: flutter test
-    - run: flutter build web
+    - name: Update Flutter and Dart
+      run: flutter upgrade
+    - name: Update Packages
+      run: flutter pub get
+    - name: Run Flutter Tests
+      run: flutter test
+    - name: Build for Web
+      run: flutter build web
 
