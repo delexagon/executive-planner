@@ -24,6 +24,8 @@ jobs:
         with:
           flutter-version: '2.10.0'
           channel: 'stable'
+      - name: Install and set Dart version
+        uses: dart-lang/setup-dart@v1
       # Update packages if necessary
       - name: Update Packages
         run: flutter pub get
