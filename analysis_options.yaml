@@ -10,6 +10,7 @@ include: package:lint/analysis_options.yaml
 # You might want to exclude auto-generated files from dart analysis
 analyzer:
   exclude:
+     - flutter/** # Ignore flutter dependencies installed for GitHub Actions
     #- '**.freezed.dart'
 
 # You can customize the lint rules set to your own liking. A list of all rules
@@ -21,6 +22,8 @@ linter:
     
     # Make constructors the first thing in every class
     sort_constructors_first: true
+
+    avoid_dynamic_calls: false
 
     # Choose wisely, but you don't have to
     # prefer_double_quotes: true

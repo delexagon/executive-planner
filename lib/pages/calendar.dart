@@ -116,8 +116,8 @@ class _CalendarState extends State<CalendarView> {
       body: Column(
         children: [
           TableCalendar<Event>(
-            firstDay: DateTime.utc(2022, 1, 1),
-            lastDay: DateTime.utc(2023, 1, 1),
+            firstDay: DateTime.utc(2022),
+            lastDay: DateTime.utc(2023),
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             rangeStartDay: _rangeStart,
