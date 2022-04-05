@@ -5,7 +5,7 @@ name: Executive_Planner_Tests
 on:
   # Pushes to the main branch
   push:
-    branches: [ master ]
+    branches: [ master, testing ]
   # Pull requests to the main branch
   pull_request:
     branches: [ master ]
