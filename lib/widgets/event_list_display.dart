@@ -65,9 +65,14 @@ class _EventListDisplayState extends State<EventListDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    if (widget.events.length == 0) {
+      return eventListEmpty(context);
+    } else {
+      
+    }
+    return SingleChildScrollView(child: Column(
       children: _buildPanel(),
-    );
+    ));
   }
 }
 

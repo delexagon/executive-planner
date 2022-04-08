@@ -4,6 +4,8 @@ import 'package:executive_planner/pages/home_page.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:executive_planner/widgets/bottom_nav_bar.dart';
+
 
 class CalendarView extends StatefulWidget {
   const CalendarView({required this.events, Key? key}) : super(key: key);
@@ -118,68 +120,75 @@ class _CalendarState extends State<CalendarView> {
         ),
       ),
       body: Column(
-        children: [
-          TableCalendar<Event>(
-            firstDay: DateTime.utc(2022),
-            lastDay: DateTime.utc(2023),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
-            calendarFormat: _calendarFormat,
-            rangeSelectionMode: _rangeSelectionMode,
-            eventLoader: _getEventsForDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            // Customize UI using CalendarStyle
-            calendarStyle: const CalendarStyle(
-              outsideDaysVisible: false,
-            ),
-            onDaySelected: _onDaySelected,
-            onRangeSelected: _onRangeSelected,
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-              if (format == CalendarFormat.month) {
-                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month, 1);
-                if (_focusedDay.month == 2) {
-                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
-                } else if (_focusedDay.month == 4 ||
-                    _focusedDay.month == 6 ||
-                    _focusedDay.month == 9 ||
-                    _focusedDay.month == 11) {
-                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 30);
-                } else {
-                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 31);
+        children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: TableCalendar<Event>(
+              firstDay: DateTime.utc(2022),
+              lastDay: DateTime.utc(2023),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              rangeStartDay: _rangeStart,
+              rangeEndDay: _rangeEnd,
+              calendarFormat: _calendarFormat,
+              rangeSelectionMode: _rangeSelectionMode,
+              eventLoader: _getEventsForDay,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              // Customize UI using CalendarStyle
+              calendarStyle: const CalendarStyle(
+                outsideDaysVisible: false,
+              ),
+              onDaySelected: _onDaySelected,
+              onRangeSelected: _onRangeSelected,
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
                 }
-              } else if (format == CalendarFormat.twoWeeks) {
-                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                    _focusedDay.day - _focusedDay.weekday + 1);
-                _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                    _focusedDay.day + (14 - _focusedDay.weekday));
-              } else if (format == CalendarFormat.week) {
-                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                    _focusedDay.day - _focusedDay.weekday + 1);
-                _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                    _focusedDay.day + (7 - _focusedDay.weekday));
-              }
-              _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
+                if (format == CalendarFormat.month) {
+                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month, 1);
+                  if (_focusedDay.month == 2) {
+                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
+                  } else if (_focusedDay.month == 4 ||
+                      _focusedDay.month == 6 ||
+                      _focusedDay.month == 9 ||
+                      _focusedDay.month == 11) {
+                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 30);
+                  } else {
+                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 31);
+                  }
+                } else if (format == CalendarFormat.twoWeeks) {
+                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+                      _focusedDay.day - _focusedDay.weekday + 1);
+                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+                      _focusedDay.day + (14 - _focusedDay.weekday));
+                } else if (format == CalendarFormat.week) {
+                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+                      _focusedDay.day - _focusedDay.weekday + 1);
+                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+                      _focusedDay.day + (7 - _focusedDay.weekday));
+                }
+                _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+            ),
           ),
-          if (_selectedEventsList.length != 0)
-            SingleChildScrollView(
-              child: EventListDisplay(
+          Expanded(
+            flex: 4,
+            child: EventListDisplay(
                 events: _selectedEventsList,
               ),
-            )
-          else
-            eventListEmpty(context)
-        ],
+          ),
+        ]
+
+      ),
+      bottomNavigationBar: NavBarDisplay(
+        events: widget.events,
+        selectedIndex: 1,
+
       ),
     );
   }
