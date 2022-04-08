@@ -13,7 +13,7 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarState extends State<CalendarView> {
-  late final EventList _selectedEventsList;
+  late EventList _selectedEventsList;
 
   // Default to month view
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -25,7 +25,6 @@ class _CalendarState extends State<CalendarView> {
 
   late final ValueNotifier<List<Event>> _selectedEvents;
   // The events that are currently selected, as an EventList for EventListDisplay
-  
 
   @override
   void initState() {
@@ -101,17 +100,22 @@ class _CalendarState extends State<CalendarView> {
       appBar: AppBar(
         title: const Text('Calendar'),
         leading: Builder(
-            builder: (context) => IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ExecutiveHomePage(
-                              title: 'Home',
-                              storage: FileStorage(),
-                              events: ExecutiveHomePage.masterList,),),);
-                },
-                icon: const Icon(Icons.arrow_back),),),
+          builder: (context) => IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExecutiveHomePage(
+                    title: 'Home',
+                    storage: FileStorage(),
+                    events: ExecutiveHomePage.masterList,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -138,16 +142,43 @@ class _CalendarState extends State<CalendarView> {
                   _calendarFormat = format;
                 });
               }
+              if (format == CalendarFormat.month) {
+                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month, 1);
+                if (_focusedDay.month == 2) {
+                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
+                } else if (_focusedDay.month == 4 ||
+                    _focusedDay.month == 6 ||
+                    _focusedDay.month == 9 ||
+                    _focusedDay.month == 11) {
+                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 30);
+                } else {
+                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 31);
+                }
+              } else if (format == CalendarFormat.twoWeeks) {
+                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+                    _focusedDay.day - _focusedDay.weekday + 1);
+                _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+                    _focusedDay.day + (14 - _focusedDay.weekday));
+              } else if (format == CalendarFormat.week) {
+                _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+                    _focusedDay.day - _focusedDay.weekday + 1);
+                _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+                    _focusedDay.day + (7 - _focusedDay.weekday));
+              }
+              _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
             },
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
           ),
-           if (_selectedEventsList.length != 0) SingleChildScrollView(
-            child:EventListDisplay(
-              events: _selectedEventsList,
-            ),
-          ) else eventListEmpty(context)
+          if (_selectedEventsList.length != 0)
+            SingleChildScrollView(
+              child: EventListDisplay(
+                events: _selectedEventsList,
+              ),
+            )
+          else
+            eventListEmpty(context)
         ],
       ),
     );
