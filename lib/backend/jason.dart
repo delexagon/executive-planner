@@ -187,3 +187,22 @@ extension JasonEventList on EventList {
     return EventList(list: JasonListEvent.fromJason(strings[0]), allTags: JasonTagList.fromJason(strings[1]));
   }
 }
+
+extension JasonSetEvent on Set<Event> {
+  String toJason() {
+    final str = StringBuffer();
+    for(final Event obj in this) {
+      str.write('{${obj.toJason()}}');
+    }
+    return str.toString();
+  }
+
+  static List<Event> fromJason(String jason) {
+    final List<Event> list = <Event>[];
+    final List<String> strings = getBrackets(jason);
+    for(final String str in strings) {
+      list.add(JasonEvent.fromJason(str));
+    }
+    return list;
+  }
+}

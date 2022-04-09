@@ -28,7 +28,7 @@ class Event {
     if (date != null && DateTime.now().isAfter(date!)) {
       addTag('Overdue');
       priority = Priority.critical;
-      saveMaster();
+      saveMaster(this);
     }
   }
 
@@ -38,7 +38,7 @@ class Event {
     } else {
       date = recur!.getNextRecurrence(date!);
     }
-    saveMaster();
+    saveMaster(this);
   }
 
   /// List of possible priorities for events; should have the same order and
@@ -61,7 +61,7 @@ class Event {
   String _name = 'Unnamed Event';
   set name(String name) {
     _name = name;
-    saveMaster();
+    saveMaster(this);
   }
   String get name {
     return _name;
@@ -71,7 +71,7 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
-    saveMaster();
+    saveMaster(this);
   }
   DateTime? get date {
     return _date;
@@ -82,7 +82,7 @@ class Event {
   String _description = 'No description';
   set description(String description) {
     _name = name;
-    saveMaster();
+    saveMaster(this);
   }
   String get description {
     return _description;
@@ -92,7 +92,7 @@ class Event {
   Priority _priority = Priority.none;
   set priority(Priority priority) {
     _priority = priority;
-    saveMaster();
+    saveMaster(this);
   }
   Priority get priority {
     return _priority;
@@ -125,13 +125,13 @@ class Event {
   /// Add a tag to the event
   bool addTag(String tag) {
     final bool ret = tags.addTag(tag);
-    saveMaster();
+    saveMaster(this);
     return ret;
   }
 
   bool addEventTag(EventTag tag) {
     final bool ret = tags.addEventTag(tag);
-    saveMaster();
+    saveMaster(this);
     return ret;
   }
 
@@ -143,7 +143,7 @@ class Event {
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
   bool removeTag(String tag) {
     final bool ret = tags.removeTag(tag);
-    saveMaster();
+    saveMaster(this);
     return ret;
   }
 

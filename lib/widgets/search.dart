@@ -13,7 +13,7 @@ class AdvancedSearch extends StatefulWidget {
     if(events != null) {
       this.events = events;
     } else {
-      this.events = masterList;
+      this.events = masterList.toEventList();
     }
   }
 

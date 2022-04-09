@@ -7,7 +7,6 @@ import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// TODO: We may want to change this to an InheritedWidget?
 /// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends StatefulWidget {
   const EventChangeForm(

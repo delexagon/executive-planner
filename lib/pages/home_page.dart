@@ -42,18 +42,14 @@ class ExecutiveHomePage extends StatefulWidget {
   void addEvent(Event e) {
     masterList.add(e);
     saveMaster();
-    if (events != masterList) {
-      events.add(e);
-    }
+    events.add(e);
   }
 
   /// Removes event from both current and masterList.
   void removeEvent(Event e) {
     masterList.remove(e);
     saveMaster();
-    if (events != masterList) {
-      events.remove(e);
-    }
+    events.remove(e);
   }
 
   @override
@@ -99,12 +95,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
       Function removeOverlayEntry = () {};
-      EventList events;
-      if (widget.isRoot) {
-        events = masterList;
-      } else {
-        events = widget.events;
-      }
       overlayEntry = OverlayEntry(
         builder: (context) {
           return Padding(
@@ -115,7 +105,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
-                    events: widget.isRoot ? masterList : widget.events,
+                    events: widget.isRoot ? masterList.toEventList() : widget.events,
                     onSubmit: (EventList e) {
                       _goToSearchPage(context, e);
                       removeOverlayEntry();

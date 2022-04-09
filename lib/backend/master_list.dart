@@ -3,7 +3,7 @@ import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/backend/jason.dart';
 
 /// Holds ALL EVENTS in the program.
-final EventList masterList = EventList();
+final Set<Event> masterList = <Event>{};
 
 /// Initializes the masterList to whatever is stored locally.
 void initMaster() {
@@ -11,11 +11,23 @@ void initMaster() {
     if (jason != null) {
       final EventList events =
         JasonEventList.fromJason(jason);
-        masterList.union(events);
+      masterList.addAll(events.list);
     }
   });
 }
 
-void saveMaster() {
-  write('events', masterList.toJason());
+void saveMaster([Event? e]) {
+  if(masterList.contains(e)) {
+    write('events', masterList.toJason());
+  }
+}
+
+extension Master on Set<Event> {
+  EventList toEventList() {
+    final EventList events = EventList();
+    for(final Event e in this) {
+      events.add(e);
+    }
+    return events;
+  }
 }
