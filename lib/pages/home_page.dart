@@ -1,6 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/file_io.dart';
-import 'package:executive_planner/backend/jason.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
@@ -17,7 +16,6 @@ class ExecutiveHomePage extends StatefulWidget {
   const ExecutiveHomePage({
     Key? key,
     required this.title,
-    required this.storage,
     required this.events,
     this.isRoot = true,
   }) : super(key: key);
@@ -34,42 +32,25 @@ class ExecutiveHomePage extends StatefulWidget {
   /// The title text, placed in the center of the appbar.
   final String title;
 
-  /// This remains an object instead of static functions in case we ever need to
-  /// change how our data is stored.
-  final FileStorage storage;
-
-  /// Holds ALL EVENTS in the program.
-  static final EventList masterList = EventList();
-
   /// Holds the events considered by this particular HomePage.
   /// Necessary to consider and selectively show searches.
   final EventList events;
 
   final bool isRoot;
 
-  /// Initializes the HomePage masterList to whatever is stored in files.
-  static void initMaster() {
-    final FileStorage storage = FileStorage();
-    storage.readFile().then((jason) {
-      if (jason != null) {
-        final EventList events =
-            JasonEventList.fromJason(jason);
-        ExecutiveHomePage.masterList.union(events);
-      }
-    });
-  }
-
   /// Adds event to both current and masterList.
-  void addMEvent(Event e) {
+  void addEvent(Event e) {
     masterList.add(e);
+    saveMaster();
     if (events != masterList) {
       events.add(e);
     }
   }
 
   /// Removes event from both current and masterList.
-  void removeMEvent(Event e) {
+  void removeEvent(Event e) {
     masterList.remove(e);
+    saveMaster();
     if (events != masterList) {
       events.remove(e);
     }
@@ -101,7 +82,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       MaterialPageRoute(
         builder: (context) => ExecutiveHomePage(
           title: 'Search results',
-          storage: widget.storage,
           events: events,
         ),
       ),
@@ -121,7 +101,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       Function removeOverlayEntry = () {};
       EventList events;
       if (widget.isRoot) {
-        events = ExecutiveHomePage.masterList;
+        events = masterList;
       } else {
         events = widget.events;
       }
@@ -161,7 +141,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   /// Writes events to file whenever they are modified.
   void _update() {
-    widget.storage.write(ExecutiveHomePage.masterList.toJason());
     setState(() {});
   }
 
@@ -184,9 +163,9 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     changeList ??= false;
     if (changeList) {
       if (isNew) {
-        widget.addMEvent(event);
+        widget.addEvent(event);
       } else {
-        widget.removeMEvent(event);
+        widget.removeEvent(event);
       }
     }
     _update();
@@ -294,7 +273,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             _changeEventList(context, event: e);
           },
           onDrag: (Event e) {
-            e.addTag('Completed');
+            e.complete();
           },
           searchFunc: searchFunc,
         ),

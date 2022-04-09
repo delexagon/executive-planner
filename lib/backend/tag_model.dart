@@ -2,6 +2,7 @@
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
 
+// TODO: Make it so that tags cannot be modified via external classes
 class EventTag {
   EventTag({
     required this.id,

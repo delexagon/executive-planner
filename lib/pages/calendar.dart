@@ -104,16 +104,7 @@ class _CalendarState extends State<CalendarView> {
         leading: Builder(
           builder: (context) => IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ExecutiveHomePage(
-                    title: 'Home',
-                    storage: FileStorage(),
-                    events: ExecutiveHomePage.masterList,
-                  ),
-                ),
-              );
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.arrow_back),
           ),

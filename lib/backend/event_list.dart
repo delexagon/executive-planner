@@ -2,7 +2,10 @@
 import 'dart:convert';
 
 import 'package:executive_planner/backend/misc.dart';
+import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
+import 'package:executive_planner/backend/master_list.dart';
+
 import 'package:intl/intl.dart';
 
 /// An enum for possible priorities. If you modify this, please also modify the
@@ -14,7 +17,7 @@ class Event {
 
   Event({
     this.name = 'Unnamed Event', this.date, this.description = 'No description',
-    this.priority = Priority.none, TagList? tags,}) {
+    this.priority = Priority.none, TagList? tags, this.recur,}) {
     if(tags != null) {
       this.tags = tags;
     }
@@ -24,7 +27,17 @@ class Event {
     if (date != null && DateTime.now().isAfter(date!)) {
       addTag('Overdue');
       priority = Priority.critical;
+      saveMaster();
     }
+  }
+
+  void complete() {
+    if(recur == null || date == null) {
+      addTag('Completed');
+    } else {
+      date = recur!.getNextRecurrence(date!);
+    }
+    saveMaster();
   }
 
   /// List of possible priorities for events; should have the same order and
@@ -62,7 +75,7 @@ class Event {
   /// make sure you are aware of this when modifying functions in Event!
   TagList tags = TagList(tags: []);
 
-  
+  Recurrence? recur;
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
@@ -81,11 +94,15 @@ class Event {
 
   /// Add a tag to the event
   bool addTag(String tag) {
-    return tags.addTag(tag);
+    final bool ret = tags.addTag(tag);
+    saveMaster();
+    return ret;
   }
 
   bool addEventTag(EventTag tag) {
-    return tags.addEventTag(tag);
+    final bool ret = tags.addEventTag(tag);
+    saveMaster();
+    return ret;
   }
 
   /// Returns if a particular tag is stored in this event
@@ -95,7 +112,9 @@ class Event {
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
   bool removeTag(String tag) {
-    return tags.removeTag(tag);
+    final bool ret = tags.removeTag(tag);
+    saveMaster();
+    return ret;
   }
 
   String tagsString() {
