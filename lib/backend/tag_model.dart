@@ -18,7 +18,11 @@ class TagList {
   TagList({
     required this.tags,
   });
-  final List<EventTag> tags;
+  TagList.copy(TagList other) {
+    tags.addAll(other.tags);
+  }
+
+  List<EventTag> tags = <EventTag>[];
 
   List<EventTag> asList() {
     return tags;
@@ -94,7 +98,4 @@ class TagList {
   int get length => tags.length;
   bool get isNotEmpty => tags.isNotEmpty;
   bool contains(EventTag tag) => tags.contains(tag);
-
-
-
 }

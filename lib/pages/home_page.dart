@@ -128,28 +128,16 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Changes pages to EventChangeForm, allowing editing of events.
   /// If event is uninitialized, this will give an screen for adding a new event.
   /// Otherwise, it will edit a current event.
-  Future _changeEventList(BuildContext context, {Event? event}) async {
-    final bool isNew = event == null;
-    event ??= Event();
-    bool? changeList = await Navigator.push(
+  Future<Event?> _changeEventList(BuildContext context, {Event? event}) async {
+    return Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventChangeForm(
-          event: event!,
+          event: event,
           events: widget.events,
-          isNew: isNew,
         ),
       ),
     );
-    changeList ??= false;
-    if (changeList) {
-      if (isNew) {
-        widget.addEvent(event);
-      } else {
-        widget.removeEvent(event);
-      }
-    }
-    _update();
   }
 
   Widget? drawer() {
@@ -230,7 +218,16 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       body: EventListDisplay(
         events: widget.events,
         onLongPress: (Event e) {
-          _changeEventList(context, event: e);
+          _changeEventList(context, event: e).then((Event? copy) {
+            if(copy == null) {
+              widget.removeEvent(e);
+            } else if (e == copy) {
+            } else {
+              e.setTo(copy);
+              widget.events.sort();
+            }
+            setState(() {});
+          });
         },
         onDrag: (Event e) {
           e.complete();
@@ -239,7 +236,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _changeEventList(context);
+          _changeEventList(context).then((Event? e) {
+            if(e != null) {
+              widget.addEvent(e);
+              setState(() {});
+            }
+          });
         },
         tooltip: 'Add Event',
         child: const Icon(Icons.add),

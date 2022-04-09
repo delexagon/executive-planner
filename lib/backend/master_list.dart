@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/backend/jason.dart';
@@ -9,15 +11,13 @@ final Set<Event> masterList = <Event>{};
 void initMaster() {
   readString('events').then((jason) {
     if (jason != null) {
-      final EventList events =
-        JasonEventList.fromJason(jason);
-      masterList.addAll(events.list);
+      masterList.addAll(JasonSetEvent.fromJason(jason));
     }
   });
 }
 
 void saveMaster([Event? e]) {
-  if(masterList.contains(e)) {
+  if(e == null || masterList.contains(e)) {
     write('events', masterList.toJason());
   }
 }

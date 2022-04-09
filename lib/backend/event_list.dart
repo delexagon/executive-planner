@@ -24,6 +24,23 @@ class Event {
     }
   }
 
+  Event.copy(Event other) {
+    _name = other._name;
+    _date = other._date;
+    _description = other._description;
+    _priority = other._priority;
+    tags = TagList.copy(other.tags);
+  }
+
+  void setTo(Event other) {
+    _name = other._name;
+    _date = other._date;
+    _description = other._description;
+    _priority = other._priority;
+    tags = TagList.copy(other.tags);
+    saveMaster(this);
+  }
+
   void update() {
     if (date != null && DateTime.now().isAfter(date!)) {
       addTag('Overdue');
@@ -81,7 +98,7 @@ class Event {
   /// A description of the event.
   String _description = 'No description';
   set description(String description) {
-    _name = name;
+    _description = description;
     saveMaster(this);
   }
   String get description {
@@ -112,7 +129,7 @@ class Event {
   /// it is not displayed.
   String dateString() {
     if (date == null) {
-      return 'No date';
+      return 'Reminder';
     } else {
       if (date!.hour == 0 && date!.minute == 0) {
         return dateFormat.format(date!.toLocal());

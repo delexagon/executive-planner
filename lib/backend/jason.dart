@@ -197,8 +197,8 @@ extension JasonSetEvent on Set<Event> {
     return str.toString();
   }
 
-  static List<Event> fromJason(String jason) {
-    final List<Event> list = <Event>[];
+  static Set<Event> fromJason(String jason) {
+    final Set<Event> list = <Event>{};
     final List<String> strings = getBrackets(jason);
     for(final String str in strings) {
       list.add(JasonEvent.fromJason(str));

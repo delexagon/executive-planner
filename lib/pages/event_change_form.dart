@@ -9,23 +9,31 @@ import 'package:flutter/services.dart';
 
 /// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends StatefulWidget {
-  const EventChangeForm(
-      {required this.event,
-      required this.isNew,
-      required this.events,
-      Key? key,})
-      : super(key: key);
+  EventChangeForm({
+    required Event? event,
+    required this.events,
+    Key? key,})
+    : super(key: key) {
+    isNew = event == null;
+    old = event;
+    if(event == null) {
+      this.event = Event();
+    } else {
+      this.event = Event.copy(event);
+    }
+  }
 
   /// The event this form is considering. This must be provided so the resulting
   /// event can be handled by the caller of the form.
-  final Event event;
+  late final Event event;
+  late final Event? old;
 
   /// EventList held for the search display when adding subevents.
   final EventList events;
 
   /// Makes this form change between adding a new event or changing an existing
   /// event.
-  final bool isNew;
+  late final bool isNew;
 
   /// [event]:
   /// The event this form is considering. This must be provided so the resulting
@@ -172,39 +180,6 @@ class _EventChangeFormState extends State<EventChangeForm> {
           hintText: widget.event.name,
         ),
       ),
-    );
-  }
-
-  /// A button which allows the user to add/remove an event.
-  Widget changeEventButton() {
-    Widget changeText;
-    if (widget.isNew) {
-      changeText = const Text('Add event', style: TextStyle(fontSize: 30));
-    } else {
-      changeText = const Text('Remove event', style: TextStyle(fontSize: 30));
-    }
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.pop(context, true);
-      },
-      style: ElevatedButton.styleFrom(
-        primary: _confirmButtonColor,
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-      ),
-      child: changeText,
-    );
-  }
-
-  Widget cancelButton() {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.pop(context, false);
-      },
-      style: ElevatedButton.styleFrom(
-        primary: _backButtonColor,
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-      ),
-      child: const Text('Cancel', style: TextStyle(fontSize: 30)),
     );
   }
 
@@ -481,11 +456,53 @@ class _EventChangeFormState extends State<EventChangeForm> {
     }
   }
 
-  Widget padded(double vert, double hor, Widget other) {
+  Widget padded(double vert, double hor, Widget? other) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: vert, horizontal: hor),
       child: other,
     );
+  }
+
+  Widget makeButton(String text, MaterialColor color, Function onPressed) {
+    return ElevatedButton(
+      onPressed: () {
+        onPressed();
+      },
+      style: ElevatedButton.styleFrom(
+        primary: color,
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      ),
+      child: Text(text, style: const TextStyle(fontSize: 30)),
+    );
+  }
+
+  Widget bottomButtons() {
+    Widget leftButton;
+    Widget? rightButton;
+    if (widget.isNew) {
+      leftButton = makeButton('Add Event', _confirmButtonColor, () {
+        Navigator.pop(context, widget.event);
+      });
+    } else {
+      leftButton = makeButton('Change Event', _confirmButtonColor, () {
+        Navigator.pop(context, widget.event);
+      });
+      rightButton = makeButton('Remove Event', _backButtonColor, () {
+        Navigator.pop(context, null);
+      });
+    }
+    return SizedBox(
+      height: 70,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: padded(10,10,leftButton),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: padded(10,10,rightButton),
+    ),],),);
   }
 
   // TODO: Let the user collapse features which are used less often.
@@ -493,9 +510,15 @@ class _EventChangeFormState extends State<EventChangeForm> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
           title: const Text('Change an event'),
+          leading: Builder(
+            builder: (context) => IconButton(
+              onPressed: () {
+                Navigator.pop(context, widget.old);
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+          ),
         ),
         body: SingleChildScrollView(
             child: Padding(
@@ -522,18 +545,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
             ],
           ),
         ),),
-        bottomSheet: SizedBox(
-          height: 70,
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: padded(10,10,changeEventButton()),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: padded(10,10,cancelButton()),
-        ),],),),
+        bottomSheet: bottomButtons(),
     );
   }
 }
