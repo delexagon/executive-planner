@@ -117,7 +117,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: checkboxes
-      )
+      ),
     );
   }
 

@@ -1,42 +1,35 @@
 
 class Break {
-  Break(this.year, this.month, this.day, this.hour, this.minute);
+  Break({int year = 0, int month = 0, int day = 0, int hour = 0, int minute = 0}) {
+    times = [year, month, day, hour, minute];
+  }
 
-  int year = 0;
-  int month = 0;
-  int day = 0;
-  int hour = 0;
-  int minute = 0;
+  static final List<String> timeStrs = ['Year', 'Month', 'Day', 'Hour', 'Minute'];
+  List<int> times = [0, 0, 0, 0, 0];
 }
 
 class Recurrence {
-  Recurrence(this.spacing);
+  Recurrence({Break? spacing}) {
+    if(spacing != null) {
+      this.spacing = spacing;
+    }
+  }
 
-  Break spacing;
+  Break spacing = Break();
 
   DateTime getNextRecurrence(DateTime now) {
     return DateTime(
-      now.year+spacing.year, now.month+spacing.month, now.day+spacing.day,
-      now.hour+spacing.hour, now.minute+spacing.minute,);
+      now.year+spacing.times[0], now.month+spacing.times[1], now.day+spacing.times[2],
+      now.hour+spacing.times[3], now.minute+spacing.times[4],);
   }
 
   @override
   String toString() {
     final StringBuffer str = StringBuffer('Event recurs every ');
-    if(spacing.year > 0) {
-      str.write('${spacing.year} years, ');
-    }
-    if(spacing.month > 0) {
-      str.write('${spacing.month} months, ');
-    }
-    if(spacing.day > 0) {
-      str.write('${spacing.day} days, ');
-    }
-    if(spacing.hour > 0) {
-      str.write('${spacing.hour} hours, ');
-    }
-    if(spacing.minute > 0) {
-      str.write('${spacing.minute} minutes, ');
+    for(int i = 0; i < spacing.times.length; i++) {
+      if(spacing.times[i] > 0) {
+        str.write('${spacing.times[i]} ${Break.timeStrs[i].toLowerCase()}s, ');
+      }
     }
 
     return '${str.toString().substring(0,str.length-2)}.';

@@ -1,9 +1,11 @@
 // ignore_for_file: unnecessary_string_interpolations, avoid_redundant_argument_values, avoid_dynamic_calls
 
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // TODO: We may want to change this to an InheritedWidget?
 /// Allows a user to modify an existing event or add a new event.
@@ -188,7 +190,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       },
       style: ElevatedButton.styleFrom(
         primary: _confirmButtonColor,
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       ),
       child: changeText,
     );
@@ -201,9 +203,63 @@ class _EventChangeFormState extends State<EventChangeForm> {
       },
       style: ElevatedButton.styleFrom(
         primary: _backButtonColor,
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
       ),
       child: const Text('Cancel', style: TextStyle(fontSize: 30)),
+    );
+  }
+
+  Widget recurText() {
+    if(widget.event.recur == null) {
+      return TextButton(
+        onPressed: () {
+          widget.event.recur = Recurrence();
+          setState(() {});
+        },
+        child: const Text('Make recurring event'),
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextButton(
+            onPressed: () {
+              widget.event.recur = null;
+              setState(() {});
+            },
+            child: const Text('Stop event from recurring'),
+          ),
+          _recurChanger(),
+        ],
+      );
+    }
+  }
+
+  Widget _recurChanger() {
+    final List<Widget> typeboxes = <Widget>[];
+    for(int i = 0; i < Break.timeStrs.length; i++) {
+      typeboxes.add(padded(1,1,
+        SizedBox(
+          width: 75,
+          child: TextField(
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly],
+            onChanged: (String descStr) {
+              if(widget.event.recur != null && descStr != '') {
+                widget.event.recur!.spacing.times[i] = int.parse(descStr);
+              }
+            },
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: i == 4 ? 'Min' : '${Break.timeStrs[i]}',
+      ),),),),);
+    }
+    return SizedBox(
+      height: 35,
+      child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: typeboxes,
+      ),
     );
   }
 
@@ -424,6 +480,13 @@ class _EventChangeFormState extends State<EventChangeForm> {
     }
   }
 
+  Widget padded(double vert, double hor, Widget other) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: vert, horizontal: hor),
+      child: other,
+    );
+  }
+
   // TODO: Let the user collapse features which are used less often.
   @override
   Widget build(BuildContext context) {
@@ -450,22 +513,26 @@ class _EventChangeFormState extends State<EventChangeForm> {
               timePicker(),
               paddedText('Change priority:'),
               priorityDropdown(),
+              paddedText('Change recurrence:'),
+              recurText(),
               paddedText('Change sub-events:'),
               subEventPicker(),
+              const Padding(padding: EdgeInsets.symmetric(vertical: 40)),
             ],
           ),
         ),),
-        bottomSheet: // Add and cancel buttons are shown persistently in the bottom sheet
-            Container(
-          margin: const EdgeInsets.only(
-              bottom: 25,), // Pushes the bottom sheet up a little
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+        bottomSheet: SizedBox(
+          height: 70,
+          child: Stack(
             children: [
-              cancelButton(),
-              changeEventButton(),
-            ],
-          ),
-        ),);
+              Align(
+                alignment: Alignment.centerLeft,
+                child: padded(10,10,changeEventButton()),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: padded(10,10,cancelButton()),
+        ),],),),
+    );
   }
 }
