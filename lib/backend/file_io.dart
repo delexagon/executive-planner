@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FileStorage {
-
   // TODO: Make sure SharedPreferences is not temporary and can store large strings.
   /// Gets SharedPreferences folder, a bank of strings.
   Future<SharedPreferences> get _prefs async {
@@ -12,12 +11,12 @@ class FileStorage {
   }
 
   /// Reads 'events' string from SharedPreferences and decodes it into a JSON map.
-  Future<Map<String, dynamic>?> readFile() async {
+  Future readFile() async {
     final prefs = await _prefs;
 
     // Read the file
     final contents = prefs.getString('events');
-    if(contents != null) {
+    if (contents != null) {
       return jsonDecode(contents);
     }
     // If no preference, return null
@@ -25,9 +24,9 @@ class FileStorage {
   }
 
   /// Writes a JSON map into the 'events' string in SharedPreferences.
-  void write(Map<String, dynamic> json) async {
+  Future write(Map<String, dynamic> json) async {
     final prefs = await _prefs;
-    String jstr = jsonEncode(json);
+    final String jstr = jsonEncode(json);
 
     // Write the file
     prefs.setString('events', jstr);
