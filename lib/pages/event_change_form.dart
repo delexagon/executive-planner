@@ -214,6 +214,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
       return TextButton(
         onPressed: () {
           widget.event.recur = Recurrence();
+          widget.event.addTag('Recurring');
           setState(() {});
         },
         child: const Text('Make recurring event'),
@@ -225,6 +226,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
           TextButton(
             onPressed: () {
               widget.event.recur = null;
+              widget.event.removeTag('Recurring');
               setState(() {});
             },
             child: const Text('Stop event from recurring'),
@@ -251,7 +253,7 @@ class _EventChangeFormState extends State<EventChangeForm> {
             },
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              hintText: i == 4 ? 'Min' : '${Break.timeStrs[i]}',
+              hintText: i == Break.timeStrs.length-1 ? 'Min' : '${Break.timeStrs[i]}',
       ),),),),);
     }
     return SizedBox(

@@ -1,11 +1,17 @@
 
 class Break {
-  Break({int year = 0, int month = 0, int day = 0, int hour = 0, int minute = 0}) {
-    times = [year, month, day, hour, minute];
+  Break({int year = 0, int month = 0, int week = 0, int day = 0, int hour = 0, int minute = 0}) {
+    times = [year, month, week, day, hour, minute];
   }
 
-  static final List<String> timeStrs = ['Year', 'Month', 'Day', 'Hour', 'Minute'];
-  List<int> times = [0, 0, 0, 0, 0];
+  static final List<String> timeStrs = ['Year', 'Month', 'Week', 'Day', 'Hour', 'Minute'];
+  List<int> times = [0, 0, 0, 0, 0, 0];
+
+  DateTime add(DateTime date) {
+    return DateTime(
+      date.year+times[0], date.month+times[1], date.day+times[2]*7+times[3],
+      date.hour+times[4], date.minute+times[5],);
+  }
 }
 
 class Recurrence {
@@ -18,9 +24,7 @@ class Recurrence {
   Break spacing = Break();
 
   DateTime getNextRecurrence(DateTime now) {
-    return DateTime(
-      now.year+spacing.times[0], now.month+spacing.times[1], now.day+spacing.times[2],
-      now.hour+spacing.times[3], now.minute+spacing.times[4],);
+    return spacing.add(now);
   }
 
   @override

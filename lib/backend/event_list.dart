@@ -13,8 +13,12 @@ enum Priority { none, low, medium, high, critical }
 class Event {
 
   Event({
-    this.name = 'Unnamed Event', this.date, this.description = 'No description',
-    this.priority = Priority.none, TagList? tags, this.recur,}) {
+    String name = 'Unnamed Event', DateTime? date, String description = 'No description',
+    Priority priority = Priority.none, TagList? tags, this.recur,}) {
+    _name = name;
+    _date = date;
+    _description = description;
+    _priority = priority;
     if(tags != null) {
       this.tags = tags;
     }
@@ -54,16 +58,45 @@ class Event {
   static final DateFormat timeFormat = DateFormat('hh:mm a');
 
   /// The name of the event. Default is Unnamed Event.
-  String name;
+  String _name = 'Unnamed Event';
+  set name(String name) {
+    _name = name;
+    saveMaster();
+  }
+  String get name {
+    return _name;
+  }
 
   /// The date of the event IN UTC. Use .toLocal to transform it to local time.
-  DateTime? date;
+  DateTime? _date;
+  set date(DateTime? date) {
+    _date = date;
+    saveMaster();
+  }
+  DateTime? get date {
+    return _date;
+  }
+
 
   /// A description of the event.
-  String description;
+  String _description = 'No description';
+  set description(String description) {
+    _name = name;
+    saveMaster();
+  }
+  String get description {
+    return _description;
+  }
 
   /// The priority of the event (low, medium, high, or critical).
-  Priority priority;
+  Priority _priority = Priority.none;
+  set priority(Priority priority) {
+    _priority = priority;
+    saveMaster();
+  }
+  Priority get priority {
+    return _priority;
+  }
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
 

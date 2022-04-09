@@ -79,9 +79,12 @@ class _EventTileState extends State<EventTile> {
     } else {
       titleColor = const TextStyle(color: Colors.black);
     }
-    String subtitleString;
+    String subtitleString = '';
     if(!descMode) {
-      subtitleString = widget.event.dateString();
+      subtitleString += widget.event.dateString();
+      if(widget.event.recur != null) {
+        subtitleString += '\n${widget.event.recur!.toString()}';
+      }
       if(widget.event.tags.isNotEmpty) {
         subtitleString += '\nTags: ${widget.event.tagsString()}';
       }
@@ -89,7 +92,6 @@ class _EventTileState extends State<EventTile> {
       subtitleString = widget.event.description;
     }
     tile = GestureDetector(
-
       onDoubleTap: () {
         if (widget.onDrag != null) {
           widget.onDrag!(widget.event);
