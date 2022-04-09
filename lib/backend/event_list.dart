@@ -229,13 +229,23 @@ class EventList {
 
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
+  EventList intersection(EventList e) {
+    for(Event event in _list) {
+      if(!e.contains(event)) {
+        _list.remove(event);
+      }
+    }
+    return this;
+  }
+
+  /// Removes all events in e from the current list, and returns it.
+  /// This modifies the list you use it on!
   EventList removeAll(EventList e) {
     for(Event event in _list) {
       if(e.contains(event)) {
         _list.remove(event);
       }
     }
-    sort();
     return EventList();
   }
 
@@ -246,11 +256,19 @@ class EventList {
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
-  EventList searchName(String searchStr) {
+  EventList searchName(String searchStr, [bool appears = true]) {
     EventList part = EventList();
-    for (int i = 0; i < _list.length; i++) {
-      if (_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
-        part.add(_list[i]);
+    if(appears) {
+      for (int i = 0; i < _list.length; i++) {
+        if (_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+          part.add(_list[i]);
+        }
+      }
+    } else {
+      for (int i = 0; i < _list.length; i++) {
+        if (!_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+          part.add(_list[i]);
+        }
       }
     }
     return part;

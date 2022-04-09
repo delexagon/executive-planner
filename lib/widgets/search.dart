@@ -43,11 +43,10 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Events the user has specially selected; only modified by user
   EventList selectedEvents = EventList();
 
-  // TODO: Make this used in searching
   /// Search types which are enabled.
-  /// In order: name, tag, priority, location, date
+  /// In order: name, tag, priority, date
   /// If modified, please also update the typeCheckboxes() function.
-  List<bool> searchTypesEnabled = [true, false, false, false, false];
+  List<bool> searchTypesEnabled = [false, false, false, false];
 
   /// Initializes search to include all events in list.
   @override
@@ -56,10 +55,25 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     currentEvents.union(widget.events);
   }
 
-  // TODO: Add other methods of searching
+  // TODO: Make date and
   /// Recalculates search based on the new search terms.
   void redoSearch(String searchStr) {
-    currentEvents = widget.events.searchName(searchStr);
+    List<String> searchStrs = searchStr.split(RegExp(r", +"));
+    currentEvents = EventList();
+    for(String s in searchStrs) {
+      bool exclusive = s[0] == '+';
+      bool excludes = s[0] == '-';
+      if(exclusive || excludes) {
+        s = s.substring(1);
+      }
+      for(int i = 0; i < searchTypesEnabled.length; i++) {
+        if(searchTypesEnabled[i]) {
+          if(exclusive) {
+            currentEvents.intersection
+          }
+        }
+      }
+    }
     for(int i = 0; i < selectedEvents.length; i++) {
       if(!currentEvents.contains(selectedEvents[i])) {
         currentEvents.add(selectedEvents[i]);
@@ -86,27 +100,34 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     );
   }
 
-  // TODO: Make this take up way less UI space
+  // TODO: Make sure this can be scrolled on phones
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {
-    List<String> searchTypes = ["Name", "Tags", "Priority", "Location", "Date"];
+    List<String> searchTypes = ["Name", "Tags", "Priority", "Date"];
     List<Widget> checkboxes = <Widget>[];
     for(int i = 0; i < searchTypesEnabled.length && i < searchTypes.length; i++) {
       checkboxes.add(
-        CheckboxListTile(
-          title: Text(searchTypes[i]),
-          value: searchTypesEnabled[i],
-          onChanged: (bool? value) {
-            searchTypesEnabled[i] = !searchTypesEnabled[i];
-            setState(() { });
-          },
+        SizedBox(
+          width: 130,
+          child: CheckboxListTile(
+            title: Text(searchTypes[i]),
+            value: searchTypesEnabled[i],
+            onChanged: (bool? value) {
+              searchTypesEnabled[i] = !searchTypesEnabled[i];
+              setState(() { });
+            },
+          )
         )
       );
+      checkboxes.add(const VerticalDivider(thickness: 2));
     }
-    return ListView(
+    return SizedBox(
+      height: 40,
+      child: ListView(
         scrollDirection: Axis.horizontal,
         children: checkboxes
+      )
     );
   }
 
@@ -177,6 +198,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         searchButton(),
         const Divider(),
         searchField(),
+        const Divider(),
+        typeCheckboxes(),
         const Divider(),
         listView(),
       ],
