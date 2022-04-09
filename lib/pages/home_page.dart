@@ -162,7 +162,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     _update();
   }
 
-
   Widget? drawer() {
     if(widget.isRoot) {
       return Drawer(
@@ -245,6 +244,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         },
         onDrag: (Event e) {
           e.complete();
+          widget.events.remove(e);
         },
       ),
       floatingActionButton: FloatingActionButton(
