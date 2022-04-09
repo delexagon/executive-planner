@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_string_interpolations, avoid_redundant_argument_values, avoid_dynamic_calls
 
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/tag_model.dart';
 import 'package:executive_planner/widgets/search.dart';
-import 'package:executive_planner/widgets/tag_model.dart';
 import 'package:flutter/material.dart';
 
 // TODO: We may want to change this to an InheritedWidget?

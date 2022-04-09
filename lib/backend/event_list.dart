@@ -1,32 +1,24 @@
 
-import 'package:executive_planner/backend/misc.dart';
-import 'package:executive_planner/widgets/tag_model.dart';
-import 'package:intl/intl.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
 
-/// This allows the `User` class to access private members in
-/// the generated file. The value for this is *.g.dart, where
-/// the star denotes the source file name.
-part 'event_list.g.dart';
+import 'package:executive_planner/backend/misc.dart';
+import 'package:executive_planner/backend/tag_model.dart';
+import 'package:intl/intl.dart';
 
 /// An enum for possible priorities. If you modify this, please also modify the
 /// priorities list in Event.
 enum Priority { none, low, medium, high, critical }
 
 // TODO: Add subevents and tags.
-@JsonSerializable()
 class Event {
 
-
-  Event(
-      {this.name = 'Unnamed Event',
-      this.description = 'No description',
-      this.priority = Priority.none,});
-
-  /// Automatically generated JSON function, in event_list.g.dart.
-  /// Run build_runner to regenerate.
-  /// Make sure that this does not break if you add new data to Event!
-  factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+  Event({
+    this.name = 'Unnamed Event', this.date, this.description = 'No description',
+    this.priority = Priority.none, TagList? tags,}) {
+    if(tags != null) {
+      this.tags = tags;
+    }
+  }
 
   void update() {
     if (date != null && DateTime.now().isAfter(date!)) {
@@ -50,8 +42,6 @@ class Event {
 
   /// Format for displaying times.
   static final DateFormat timeFormat = DateFormat('hh:mm a');
-
-  @JsonKey(required: true)
 
   /// The name of the event. Default is Unnamed Event.
   String name;
@@ -183,38 +173,21 @@ class Event {
     return 0;
   }
 
-  
-
-  /// Automatically generated JSON function, in event_list.g.dart.
-  /// Run build_runner to regenerate.
-  /// Make sure that this does not break if you add new data to Event!
-  Map<String, dynamic> toJson() => _$EventToJson(this);
 }
 
 // TODO: Add the 54 methods that would allow this to actually extend List.
 class EventList {
 
-  EventList();
-
-  /// Manually created JSON function. Events are assumed to have names of event-1,
-  /// event-2, etc.
-  factory EventList.fromJson(Map<String, dynamic> json) {
-    $checkKeys(
-      json,
-    );
-
-    final EventList list = EventList();
-    int i = 0;
-    while (json['event-$i'] != null) {
-      list.toJson();
-      list.add(Event.fromJson(json));
-      i++;
+  EventList({List<Event>? list, TagList? allTags}) {
+    if(list != null) {
+      this.list = list;
     }
-    return list;
+    if(allTags != null) {
+      this.allTags = allTags;
+    }
   }
 
-
-  final _list = <Event>[];
+  List<Event> list = <Event>[];
   Comparator<Event> sortFunc = Event.dateCompare;
   TagList allTags = TagList(tags: []);
 
@@ -226,21 +199,21 @@ class EventList {
     return allTags;
   }
 
-  
+
 
   /// Add an event to the list.
   void add(Event e) {
-    _list.add(e);
+    list.add(e);
     sort();
   }
 
   /// Remove an event from the list.
   void remove(Event e) {
-    _list.remove(e);
+    list.remove(e);
   }
 
   bool contains(Event e) {
-    for (final Event event in _list) {
+    for (final Event event in list) {
       if (e == event) {
         return true;
       }
@@ -250,23 +223,23 @@ class EventList {
 
   /// The length of the list.
   int get length {
-    return _list.length;
+    return list.length;
   }
 
   Event operator [](int index) {
-    return _list[index];
+    return list[index];
   }
 
   /// Returns stored events as List<Event>
   List<Event> asList() {
-    return _list;
+    return list;
   }
 
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
   EventList union(EventList e) {
     for (int i = 0; i < e.length; i++) {
-      _list.add(e[i]);
+      list.add(e[i]);
     }
     sort();
     return this;
@@ -275,9 +248,9 @@ class EventList {
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
   EventList removeAll(EventList e) {
-    for (final Event event in _list) {
+    for (final Event event in list) {
       if (e.contains(event)) {
-        _list.remove(event);
+        list.remove(event);
       }
     }
     sort();
@@ -287,15 +260,15 @@ class EventList {
   /// Sorts list by event comparator. Various sorts can be found in the Event
   /// class. Should be called automatically when the list is modified.
   void sort() {
-    _list.sort(sortFunc);
+    list.sort(sortFunc);
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
   EventList searchName(String searchStr) {
     final EventList part = EventList();
-    for (int i = 0; i < _list.length; i++) {
-      if (_list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
-        part.add(_list[i]);
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+        part.add(list[i]);
       }
     }
     return part;
@@ -306,15 +279,15 @@ class EventList {
     final EventList part = EventList();
 
     if (date.hour == 0 && date.minute == 0) {
-      for (int i = 0; i < _list.length; i++) {
-        if (date.isSameDate(_list[i].date)) {
-          part.add(_list[i]);
+      for (int i = 0; i < list.length; i++) {
+        if (date.isSameDate(list[i].date)) {
+          part.add(list[i]);
         }
       }
     } else {
-      for (int i = 0; i < _list.length; i++) {
-        if (date.isSameMoment(_list[i].date)) {
-          part.add(_list[i]);
+      for (int i = 0; i < list.length; i++) {
+        if (date.isSameMoment(list[i].date)) {
+          part.add(list[i]);
         }
       }
     }
@@ -323,17 +296,17 @@ class EventList {
 
   EventList searchRange(DateTime startDate, DateTime endDate) {
     final EventList part = EventList();
-    for (int i = 0; i < _list.length; i++) {
-      if (startDate.isBefore(_list[i].date!) &&
-          endDate.isAfter(_list[i].date!)) {
-        part.add(_list[i]);
+    for (int i = 0; i < list.length; i++) {
+      if (startDate.isBefore(list[i].date!) &&
+          endDate.isAfter(list[i].date!)) {
+        part.add(list[i]);
       }
     }
     return part;
   }
 
   void update() {
-    for (final Event event in _list) {
+    for (final Event event in list) {
       event.update();
     }
   }
@@ -344,15 +317,15 @@ class EventList {
     final String searchStr = s.toTitleCase();
     final EventList part = EventList();
     if (appears) {
-      for (int i = 0; i < _list.length; i++) {
-        if (_list[i].hasTag(searchStr.toTitleCase())) {
-          part.add(_list[i]);
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].hasTag(searchStr.toTitleCase())) {
+          part.add(list[i]);
         }
       }
     } else {
-      for (int i = 0; i < _list.length; i++) {
-        if (!_list[i].hasTag(searchStr.toTitleCase())) {
-          part.add(_list[i]);
+      for (int i = 0; i < list.length; i++) {
+        if (!list[i].hasTag(searchStr.toTitleCase())) {
+          part.add(list[i]);
         }
       }
     }
@@ -362,20 +335,9 @@ class EventList {
   // Returns a list of ALL tags associated with events.
   TagList getAllTags() {
     final TagList tags = TagList(tags: []);
-    for (final Event event in _list) {
+    for (final Event event in list) {
       tags.mergeTagLists(event.getTags());
     }
     return tags;
-  }
-
-  
-
-  /// Manually created JSON function. Events are given names of event-1, event-2, etc.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
-    for (int i = 0; i < _list.length; i++) {
-      json['event-$i'] = _list[i].toJson();
-    }
-    return json;
   }
 }

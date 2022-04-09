@@ -11,22 +11,21 @@ class FileStorage {
   }
 
   /// Reads 'events' string from SharedPreferences and decodes it into a JSON map.
-  Future readFile() async {
+  Future<String?> readFile() async {
     final prefs = await _prefs;
 
     // Read the file
     final contents = prefs.getString('events');
     if (contents != null) {
-      return jsonDecode(contents);
+      return contents;
     }
     // If no preference, return null
     return null;
   }
 
   /// Writes a JSON map into the 'events' string in SharedPreferences.
-  Future write(Map<String, dynamic> json) async {
+  Future write(String jstr) async {
     final prefs = await _prefs;
-    final String jstr = jsonEncode(json);
 
     // Write the file
     prefs.setString('events', jstr);

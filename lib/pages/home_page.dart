@@ -1,9 +1,10 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
+import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
-import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
+import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 
@@ -49,10 +50,10 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Initializes the HomePage masterList to whatever is stored in files.
   static void initMaster() {
     final FileStorage storage = FileStorage();
-    storage.readFile().then((json) {
-      if (json != null) {
+    storage.readFile().then((jason) {
+      if (jason != null) {
         final EventList events =
-            EventList.fromJson(json as Map<String, dynamic>);
+            JasonEventList.fromJason(jason);
         ExecutiveHomePage.masterList.union(events);
       }
     });
@@ -160,7 +161,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   /// Writes events to file whenever they are modified.
   void _update() {
-    widget.storage.write(ExecutiveHomePage.masterList.toJson());
+    widget.storage.write(ExecutiveHomePage.masterList.toJason());
     setState(() {});
   }
 
