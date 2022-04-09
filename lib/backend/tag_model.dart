@@ -1,5 +1,5 @@
 
-
+import 'package:json_annotation/json_annotation.dart';
 
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
@@ -15,6 +15,7 @@ class EventTag {
 }
 
 // Stores a collection of EventTag objects
+@JsonSerializable()
 class TagList {
   TagList({
     required this.tags,
@@ -95,4 +96,7 @@ class TagList {
   int get length => tags.length;
   bool get isNotEmpty => tags.isNotEmpty;
   bool contains(EventTag tag) => tags.contains(tag);
+
+
+
 }

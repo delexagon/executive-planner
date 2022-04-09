@@ -72,7 +72,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
     }
     return SingleChildScrollView(child: Column(
       children: _buildPanel(),
-    ));
+    ),);
   }
 }
 

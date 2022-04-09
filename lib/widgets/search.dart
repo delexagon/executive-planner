@@ -59,22 +59,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   // TODO: Make date and
   /// Recalculates search based on the new search terms.
   void redoSearch(String searchStr) {
-    List<String> searchStrs = searchStr.split(RegExp(r", +"));
-    currentEvents = EventList();
-    for(String s in searchStrs) {
-      bool exclusive = s[0] == '+';
-      bool excludes = s[0] == '-';
-      if(exclusive || excludes) {
-        s = s.substring(1);
-      }
-      for(int i = 0; i < searchTypesEnabled.length; i++) {
-        if(searchTypesEnabled[i]) {
-          if(exclusive) {
-            currentEvents.intersection
-          }
-        }
-      }
-    }
+    currentEvents = widget.events.searchName(searchStr);
     for(int i = 0; i < selectedEvents.length; i++) {
       if(!currentEvents.contains(selectedEvents[i])) {
         currentEvents.add(selectedEvents[i]);

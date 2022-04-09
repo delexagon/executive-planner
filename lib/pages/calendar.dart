@@ -1,10 +1,10 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/pages/home_page.dart';
+import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 
 
 class CalendarView extends StatefulWidget {
@@ -147,7 +147,7 @@ class _CalendarState extends State<CalendarView> {
                   });
                 }
                 if (format == CalendarFormat.month) {
-                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month, 1);
+                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month);
                   if (_focusedDay.month == 2) {
                     _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
                   } else if (_focusedDay.month == 4 ||
@@ -160,14 +160,14 @@ class _CalendarState extends State<CalendarView> {
                   }
                 } else if (format == CalendarFormat.twoWeeks) {
                   _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day - _focusedDay.weekday + 1);
+                      _focusedDay.day - _focusedDay.weekday + 1,);
                   _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day + (14 - _focusedDay.weekday));
+                      _focusedDay.day + (14 - _focusedDay.weekday),);
                 } else if (format == CalendarFormat.week) {
                   _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day - _focusedDay.weekday + 1);
+                      _focusedDay.day - _focusedDay.weekday + 1,);
                   _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day + (7 - _focusedDay.weekday));
+                      _focusedDay.day + (7 - _focusedDay.weekday),);
                 }
                 _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
               },
@@ -184,7 +184,7 @@ class _CalendarState extends State<CalendarView> {
           ),
         ]
 
-      ),
+      ,),
       bottomNavigationBar: NavBarDisplay(
         events: widget.events,
         selectedIndex: 1,
