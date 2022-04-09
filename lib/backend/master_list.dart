@@ -10,8 +10,8 @@ void initMaster() {
   readString('events').then((jason) {
     if (jason != null) {
       final EventList events =
-      JasonEventList.fromJason(jason);
-      masterList.union(events);
+        JasonEventList.fromJason(jason);
+        masterList.union(events);
     }
   });
 }

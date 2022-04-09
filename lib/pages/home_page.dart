@@ -17,7 +17,7 @@ class ExecutiveHomePage extends StatefulWidget {
     Key? key,
     required this.title,
     required this.events,
-    this.isRoot = true,
+    this.isRoot = false,
   }) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -115,23 +115,14 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
-                    events: events,
+                    events: widget.isRoot ? masterList : widget.events,
                     onSubmit: (EventList e) {
                       _goToSearchPage(context, e);
-                      // ignore: avoid_dynamic_calls
                       removeOverlayEntry();
                     },
                     onExit: () {
-                      // ignore: avoid_dynamic_calls
                       removeOverlayEntry();
-                    },
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      );
+      },),),),),);},);
       removeOverlayEntry = () {
         overlayEntry.remove();
       };
@@ -172,32 +163,9 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
 
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    Function(EventList events)? searchFunc;
-    if (widget.isRoot) {
-      searchFunc = (EventList events) {
-        events.removeAll(events.searchTags('Completed'));
-      };
-    }
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          _searchIcon(),
-        ],
-        centerTitle: true,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      // Hamburger :)
-      drawer: Drawer(
+  Widget? drawer() {
+    if(widget.isRoot) {
+      return Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -210,9 +178,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                 child: Text(
                   'Executive Planner',
                   style: Theme.of(context).textTheme.headline5,
-                ),
-              ),
-            ),
+                ),),),
             OutlinedButton(
               style: OutlinedButton.styleFrom(fixedSize: const Size(10, 50)),
               onPressed: () {
@@ -221,10 +187,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   MaterialPageRoute(
                     builder: (context) => CalendarView(
                       events: widget.events,
-                    ),
-                  ),
-                );
-              },
+                    ),),);},
               child: const Text('Calendar'),
             ),
             const Divider(),
@@ -237,9 +200,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   widget.events.sortFunc = value!;
                   widget.events.sort();
                   setState(() {});
-                });
-              },
-            ),
+                });},),
             RadioListTile<Comparator<Event>>(
               title: const Text('Sort by date'),
               value: Event.dateCompare,
@@ -249,9 +210,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   widget.events.sortFunc = value!;
                   widget.events.sort();
                   setState(() {});
-                });
-              },
-            ),
+                });},),
             RadioListTile<Comparator<Event>>(
               title: const Text('Sort by priority'),
               value: Event.priorityCompare,
@@ -261,22 +220,33 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   widget.events.sortFunc = value!;
                   widget.events.sort();
                   setState(() {});
-                });
-              },
-            ),
-          ],
-        ),
+      });},),],),);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          _searchIcon(),
+        ],
+        centerTitle: true,
+        title: Text(widget.title),
       ),
+      // Hamburger :)
+      drawer: drawer(),
       body: EventListDisplay(
-          events: widget.events,
-          onLongPress: (Event e) {
-            _changeEventList(context, event: e);
-          },
-          onDrag: (Event e) {
-            e.complete();
-          },
-          searchFunc: searchFunc,
-        ),
+        events: widget.events,
+        onLongPress: (Event e) {
+          _changeEventList(context, event: e);
+        },
+        onDrag: (Event e) {
+          e.complete();
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _changeEventList(context);
@@ -287,8 +257,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       bottomNavigationBar: NavBarDisplay(
         events: widget.events,
         selectedIndex: 0,
-
-      ),
-    );
+    ),);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,18 @@ import 'package:flutter/material.dart';
 // TODO: Make search use more than just name
 /// The search widget is an overlay allowing to search for and select a list of events.
 class AdvancedSearch extends StatefulWidget {
-  const AdvancedSearch({
-    Key? key, required this.events, this.selectedOnly = false, this.onSubmit, this.onExit,
-  }) : super(key: key);
+  AdvancedSearch({
+    Key? key, this.selectedOnly = false, this.onSubmit, EventList? events, this.onExit,
+  }) : super(key: key) {
+    if(events != null) {
+      this.events = events;
+    } else {
+      this.events = masterList;
+    }
+  }
 
   /// Stores the events that are being searched from.
-  final EventList events;
+  late final EventList events;
   /// A function which is called when the X button is pressed.
   final Function? onExit;
   /// A function called with the EventList
@@ -128,10 +135,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
             } else {
               selectedEvents.add(e);
             }
-          },
-        ),
-      ),
-    );
+    },),),);
   }
 
   /// A row containing buttons which complete and exit the search.
@@ -146,10 +150,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
               iconSize: 30,
               onPressed: () {
                 widget.onExit!();
-                
-              },
-            ),
-          ),
+          },),),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -165,12 +166,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
                   }
                 },
                 child: const Text('OK', style: TextStyle(fontSize: 20)),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    ),),),],),);
   }
 
   @override
@@ -180,8 +176,6 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         searchButton(),
         const Divider(),
         searchField(),
-        const Divider(),
-        typeCheckboxes(),
         const Divider(),
         listView(),
       ],

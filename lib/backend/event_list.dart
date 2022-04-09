@@ -1,11 +1,8 @@
 
-import 'dart:convert';
-
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
-import 'package:executive_planner/backend/master_list.dart';
-
 import 'package:intl/intl.dart';
 
 /// An enum for possible priorities. If you modify this, please also modify the
@@ -349,8 +346,7 @@ class EventList {
   }
 
   /// Return an EventList containing the events that have a specific tag.
-  // ignore: avoid_positional_boolean_parameters
-  EventList searchTags(String s, [bool appears = true]) {
+  EventList searchTags(String s, {bool appears = true}) {
     final String searchStr = s.toTitleCase();
     final EventList part = EventList();
     if (appears) {

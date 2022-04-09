@@ -18,14 +18,12 @@ class EventListDisplay extends StatefulWidget {
     this.onLongPress,
     this.setToColor,
     this.onDrag,
-    this.searchFunc,
   }) : super(key: key);
 
   final EventList events;
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
-  final Function(EventList events)? searchFunc;
 
   /// Events in this list, if present, are colored light blue.
   final EventList? setToColor;
@@ -36,8 +34,6 @@ class EventListDisplay extends StatefulWidget {
 
 class _EventListDisplayState extends State<EventListDisplay> {
   List<Widget> _buildPanel() {
-    // ignore: prefer_null_aware_method_calls
-    if (widget.searchFunc != null) widget.searchFunc!(widget.events);
     final List<Widget> tiles = <Widget>[];
     if (widget.events.length != 0) {
       for (int i = 0; i < widget.events.length; i++) {

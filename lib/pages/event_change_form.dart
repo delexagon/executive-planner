@@ -400,28 +400,23 @@ class _EventChangeFormState extends State<EventChangeForm> {
       // Flutter doesn't allow you to reference overlayEntry before it is created,
       // even though the buttons in search need to reference it.
       Function removeOverlayEntry = () {};
-
-      
       overlayEntry = OverlayEntry(builder: (context) {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
             child: Card(
                 child: Center(
                     child: DecoratedBox(
-              decoration: BoxDecoration(color: Theme.of(context).canvasColor),
-              child: AdvancedSearch(
-                events: widget.events,
-                selectedOnly: true,
-                onSubmit: (EventList e) {
-                  widget.event.subevents = e;
-                  removeOverlayEntry();
-                },
-                onExit: () {
-                  removeOverlayEntry();
-                },
-              ),
-            ),),),);
-      },);
+                      decoration: BoxDecoration(color: Theme.of(context).canvasColor),
+                      child: AdvancedSearch(
+                        selectedOnly: true,
+                        events: widget.events,
+                        onSubmit: (EventList e) {
+                          widget.event.subevents = e;
+                          removeOverlayEntry();
+                        },
+                        onExit: () {
+                          removeOverlayEntry();
+      },),),),),);},);
       removeOverlayEntry = () {
         overlayEntry.remove();
       };
