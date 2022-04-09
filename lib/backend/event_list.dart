@@ -25,19 +25,20 @@ class Event {
   }
 
   Event.copy(Event other) {
-    _name = other._name;
-    _date = other._date;
-    _description = other._description;
-    _priority = other._priority;
-    tags = TagList.copy(other.tags);
+    copy(other);
   }
 
-  void setTo(Event other) {
+  void copy(Event other) {
     _name = other._name;
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
     tags = TagList.copy(other.tags);
+    if(other.recur != null) {
+      recur = Recurrence.copy(other.recur!);
+    } else {
+      recur = null;
+    }
     saveMaster(this);
   }
 

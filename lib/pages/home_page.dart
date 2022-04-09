@@ -223,7 +223,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               widget.removeEvent(e);
             } else if (e == copy) {
             } else {
-              e.setTo(copy);
+              e.copy(copy);
               widget.events.sort();
             }
             setState(() {});

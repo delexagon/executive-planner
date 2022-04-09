@@ -1,4 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 
 // Feel free to try implementing all the json yourself, if you want.
@@ -149,12 +150,12 @@ extension JasonPriority on Priority {
 
 extension JasonEvent on Event {
   String toJason() {
-    return '{${name.toJason()}}{${date.toJason()}}{${description.toJason()}}{${priority.toJason()}}{${tags.toJason()}}';
+    return '{${name.toJason()}}{${date.toJason()}}{${description.toJason()}}{${priority.toJason()}}{${tags.toJason()}}{${recur.toJason()}}';
   }
 
   static Event fromJason(String jason) {
     final List<String> strings = getBrackets(jason);
-    return Event(name: JasonString.fromJason(strings[0]), date: JasonDateTime.fromJason(strings[1]), description: JasonString.fromJason(strings[2]), priority: JasonPriority.fromJason(strings[3]), tags: JasonTagList.fromJason(strings[4]));
+    return Event(name: JasonString.fromJason(strings[0]), date: JasonDateTime.fromJason(strings[1]), description: JasonString.fromJason(strings[2]), priority: JasonPriority.fromJason(strings[3]), tags: JasonTagList.fromJason(strings[4]), recur: JasonRecurrence.fromJason(strings[5]));
   }
 }
 
@@ -204,5 +205,53 @@ extension JasonSetEvent on Set<Event> {
       list.add(JasonEvent.fromJason(str));
     }
     return list;
+  }
+}
+
+extension JasonListInt on List<int> {
+  String toJason() {
+    final str = StringBuffer();
+    for(final int obj in this) {
+      str.write('{${obj.toJason()}}');
+    }
+    return str.toString();
+  }
+
+  static List<int> fromJason(String jason) {
+    final List<int> list = <int>[];
+    final List<String> strings = getBrackets(jason);
+    for(final String str in strings) {
+      list.add(JasonInt.fromJason(str));
+    }
+    return list;
+  }
+}
+
+extension JasonBreak on Break {
+  String toJason() {
+    return '{${times.toJason()}}';
+  }
+
+  static Break fromJason(String jason) {
+    final List<String> strings = getBrackets(jason);
+    return Break.fromList(JasonListInt.fromJason(strings[0]));
+  }
+}
+
+extension JasonRecurrence on Recurrence? {
+  String toJason() {
+    if(this == null) {
+      return 'null';
+    } else {
+      return '{${this!.spacing.toJason()}}';
+    }
+  }
+
+  static Recurrence? fromJason(String jason) {
+    if(jason == 'null') {
+      return null;
+    }
+    final List<String> strings = getBrackets(jason);
+    return Recurrence(spacing: JasonBreak.fromJason(strings[0]));
   }
 }

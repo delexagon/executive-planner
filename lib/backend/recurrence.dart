@@ -3,6 +3,12 @@ class Break {
   Break({int year = 0, int month = 0, int week = 0, int day = 0, int hour = 0, int minute = 0}) {
     times = [year, month, week, day, hour, minute];
   }
+  Break.fromList(this.times);
+  Break.copy(Break other) {
+    for(int i = 0; i < other.times.length; i++) {
+      times[i] = other.times[i];
+    }
+  }
 
   static final List<String> timeStrs = ['Year', 'Month', 'Week', 'Day', 'Hour', 'Minute'];
   List<int> times = [0, 0, 0, 0, 0, 0];
@@ -19,6 +25,9 @@ class Recurrence {
     if(spacing != null) {
       this.spacing = spacing;
     }
+  }
+  Recurrence.copy(Recurrence other) {
+    spacing = Break.copy(other.spacing);
   }
 
   Break spacing = Break();
