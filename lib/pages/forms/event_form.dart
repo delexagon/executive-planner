@@ -158,7 +158,6 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
       return TextButton(
         onPressed: () {
           widget.event.recur = Recurrence();
-          widget.event.addTag('Recurring');
           setState(() {});
         },
         child: const Text('Make recurring event'),
@@ -170,7 +169,6 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
           TextButton(
             onPressed: () {
               widget.event.recur = null;
-              widget.event.removeTag('Recurring');
               setState(() {});
             },
             child: const Text('Stop event from recurring'),

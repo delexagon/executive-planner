@@ -13,11 +13,12 @@ class Event {
 
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, this.recur,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur,}) {
     _name = name;
     _date = date;
     _description = description;
     _priority = priority;
+    _recur = recur;
     if(tags != null) {
       this.tags = tags;
     }
@@ -36,12 +37,12 @@ class Event {
     }
   }
 
-  void onAdd(EventTag tag) {
-    masterList.addTag(tag.title, this);
+  void onAdd(String tag) {
+    masterList.addTag(tag, this);
   }
 
-  void onRemove(EventTag tag) {
-    masterList.removeTag(tag.title, this);
+  void onRemove(String tag) {
+    masterList.removeTag(tag, this);
   }
 
   void copy(Event other) {
@@ -49,7 +50,7 @@ class Event {
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
-    for(final EventTag tag in tags.asSet()) {
+    for(final String tag in tags.asSet()) {
       onRemove(tag);
     }
     tags = TagList();
@@ -76,13 +77,16 @@ class Event {
       _priority = other._priority;
     }
     if(other.changes[4]) {
+      print("HI");
       if(other.recur == null) {
+        print("LOW");
         recur = null;
       } else {
+        print("NO");
         recur = Recurrence.copy(other.recur!);
       }
     }
-    tags.removeAllTags(other.tags, onRemove: onRemove);
+    tags.removeAllTags(other.tagsRemove, onRemove: onRemove);
     tags.mergeTagLists(other.tags, onAdd: onAdd);
     masterList.saveMaster(this);
   }
@@ -97,7 +101,7 @@ class Event {
 
   void complete() {
     if(recur == null || date == null) {
-      addTag('Completed');
+      addTag('Completed', special: true);
     } else {
       date = recur!.getNextRecurrence(date!);
     }
@@ -167,7 +171,22 @@ class Event {
   /// make sure you are aware of this when modifying functions in Event!
   TagList tags = TagList(tags: {});
 
-  Recurrence? recur;
+  Recurrence? _recur;
+  set recur(Recurrence? recurrence) {
+    print("Alright");
+    if(recurrence != null) {
+      print(recurrence.spacing.times[0]);
+      addTag('Recurring', special: true);
+    } else {
+      print("allwrong");
+      removeTag('Recurring', special: true);
+    }
+    _recur = recurrence;
+    masterList.saveMaster(this);
+  }
+  Recurrence? get recur {
+    return _recur;
+  }
 
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
@@ -185,14 +204,11 @@ class Event {
   }
 
   /// Add a tag to the event
-  bool addTag(String tag) {
+  bool addTag(String tag, {bool special = false}) {
+    if(!special && (tag == 'Recurring' || tag == 'Completed')) {
+      return false;
+    }
     final bool ret = tags.addTag(tag, onAdd: onAdd);
-    masterList.saveMaster(this);
-    return ret;
-  }
-
-  bool addEventTag(EventTag tag) {
-    final bool ret = tags.addEventTag(tag, onAdd: onAdd);
     masterList.saveMaster(this);
     return ret;
   }
@@ -203,7 +219,10 @@ class Event {
   }
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
-  bool removeTag(String tag) {
+  bool removeTag(String tag, {bool special = false}) {
+    if(!special && (tag == 'Recurring' || tag == 'Completed')) {
+      return false;
+    }
     final bool ret = tags.removeTag(tag, onRemove: onRemove);
     masterList.saveMaster(this);
     return ret;

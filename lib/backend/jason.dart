@@ -82,30 +82,20 @@ extension JasonString on String {
   }
 }
 
-extension JasonEventTag on EventTag {
-  String toJason() {
-    return title;
-  }
-
-  static EventTag fromJason(String jason) {
-    return EventTag(title: jason);
-  }
-}
-
-extension JasonSetEventTag on Set<EventTag> {
+extension JasonSetString on Set<String> {
   String toJason() {
     final str = StringBuffer();
-    for(final EventTag obj in this) {
+    for(final String obj in this) {
       str.write('{${obj.toJason()}}');
     }
     return str.toString();
   }
 
-  static Set<EventTag> fromJason(String jason) {
-    final Set<EventTag> list = <EventTag>{};
+  static Set<String> fromJason(String jason) {
+    final Set<String> list = <String>{};
     final List<String> strings = getBrackets(jason);
     for(final String str in strings) {
-      list.add(JasonEventTag.fromJason(str));
+      list.add(JasonString.fromJason(str));
     }
     return list;
   }
@@ -117,7 +107,7 @@ extension JasonTagList on TagList {
   }
 
   static TagList fromJason(String jason) {
-    return TagList(tags: JasonSetEventTag.fromJason(jason));
+    return TagList(tags: JasonSetString.fromJason(jason));
   }
 }
 

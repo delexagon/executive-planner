@@ -3,30 +3,17 @@ import 'package:executive_planner/backend/master_list.dart';
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
 
-// TODO: Make it so that tags cannot be modified via external classes
-class EventTag {
-  EventTag({required this.title});
-  @override
-  bool operator ==(Object other) {
-    return other is EventTag && other.title == title;
-  }
-
-  final String title;
-
-  @override
-  int get hashCode => title.hashCode;
-}
 
 /// Stores a collection of EventTag objects
 /// This class should only add existing EventTags, not construct new ones.
 class TagList {
-  TagList({Set<EventTag>? tags}) {
+  TagList({Set<String>? tags}) {
     if(tags != null) {
       this.tags = tags;
     }
   }
-  TagList.copy(TagList other, {Function(EventTag t)? onAdd}) {
-    for(final EventTag tag in other.tags) {
+  TagList.copy(TagList other, {Function(String t)? onAdd}) {
+    for(final String tag in other.tags) {
       tags.add(tag);
       if(onAdd != null) {
         onAdd(tag);
@@ -34,27 +21,27 @@ class TagList {
     }
   }
 
-  Set<EventTag> tags = <EventTag>{};
+  Set<String> tags = <String>{};
 
-  List<EventTag> asList() {
+  List<String> asList() {
     return tags.toList();
   }
 
-  Set<EventTag> asSet() {
+  Set<String> asSet() {
     return tags;
   }
 
   String asString() {
-    return tags.map((tag) => tag.title).join(', ');
+    return tags.join(', ');
   }
 
   List<String> asStringList() {
-    return tags.map((tag) => tag.title).toList();
+    return tags.toList();
   }
 
   // Adds a new tag to the tag list
-  bool addTag(String title, {Function(EventTag t)? onAdd}) {
-    final EventTag tag = EventTag(title: title);
+  bool addTag(String title, {Function(String t)? onAdd}) {
+    final String tag = title;
     final bool added = tags.add(tag);
     if(added && onAdd != null) {
       onAdd(tag);
@@ -62,81 +49,48 @@ class TagList {
     return added;
   }
 
-  // Adds a new tag to the tag list
-  bool addEventTag(EventTag tag, {Function(EventTag t)? onAdd}) {
-    final bool added = tags.add(tag);
-    if(added && onAdd != null) {
-      onAdd(tag);
-    }
-    return added;
-  }
-
-  void mergeTagLists(TagList tags, {Function(EventTag t)? onAdd}) {
-    for(final EventTag tag in tags.tags) {
-      final bool added = this.tags.add(tag);
-      if(added && onAdd != null) {
+  void mergeTagLists(TagList other, {Function(String t)? onAdd}) {
+    for(final String tag in other.tags) {
+      if(!tags.contains(tag) && onAdd != null) {
         onAdd(tag);
       }
     }
+    tags.addAll(other.tags);
   }
 
-  void removeAllTags(TagList tags, {Function(EventTag t)? onRemove}) {
-    for(final EventTag tag in tags.tags) {
-      final bool removed = this.tags.remove(tag);
-      if(removed && onRemove != null) {
+  void removeAllTags(TagList other, {Function(String t)? onRemove}) {
+    for(final String tag in other.tags) {
+      if(tags.contains(tag) && onRemove != null) {
         onRemove(tag);
       }
     }
+    tags.removeAll(other.tags);
   }
 
   bool hasTag(String title) {
-    return tags.any((tag) => tag.title == title);
+    return tags.contains(title);
   }
 
-  bool hasEventTag(EventTag tag) {
-    return tags.contains(tag);
-  }
-
-  EventTag? getTag(String title) {
-    for(EventTag t in tags) {
-      if(t.title == title) {
-        return t;
-      }
-    }
-    return null;
-  }
-
-  void clear({Function(EventTag t)? onRemove}) {
-    for(final EventTag tag in tags) {
-      tags.remove(tag);
+  void clear({Function(String t)? onRemove}) {
+    for(final String tag in tags) {
       if(onRemove != null) {
         onRemove(tag);
       }
     }
+    tags.clear();
   }
 
   // Removes a tag from the tag list
-  bool removeTag(String title, {Function(EventTag t)? onRemove}) {
-    final EventTag? tag = getTag(title);
-    if(tag != null) {
+  bool removeTag(String tag, {Function(String t)? onRemove}) {
+    if(tags.contains(tag)) {
       if(onRemove != null) {
         onRemove(tag);
       }
-      return tags.remove(tag);
-    } else {
-      return false;
     }
-  }
-
-  bool removeEventTag(EventTag tag,  {Function(EventTag t)? onRemove}) {
-    final bool removed = tags.remove(tag);
-    if(removed && onRemove != null) {
-      onRemove(tag);
-    }
-    return removed;
+    return tags.remove(tag);
   }
 
   int get length => tags.length;
   bool get isNotEmpty => tags.isNotEmpty;
-  bool contains(EventTag tag) => tags.contains(tag);
+  bool contains(String tag) => tags.contains(tag);
 }

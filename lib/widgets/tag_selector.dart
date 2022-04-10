@@ -1,11 +1,7 @@
 
-import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/recurrence.dart';
-import 'package:executive_planner/backend/tag_model.dart';
 import 'package:executive_planner/backend/master_list.dart';
-import 'package:executive_planner/widgets/search.dart';
+import 'package:executive_planner/backend/tag_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Allows a user to modify an existing event or add a new event.
 class TagSelector extends StatefulWidget {
@@ -77,9 +73,9 @@ class _TagSelectorState extends State<TagSelector> {
       Wrap(
         children: _filterSearchResultList()
             .where((tagModel) =>
-            masterList.hasTag(tagModel) && !widget.tags.contains(EventTag(title: tagModel)),)
+            masterList.hasTag(tagModel) && !widget.tags.contains(tagModel),)
             .map((tagModel) => tagChip(
-          tagModel: EventTag(title: tagModel),
+          tagModel: tagModel,
           onTap: () => {
             setState(() {
               widget.onAdd(tagModel);
@@ -115,7 +111,7 @@ class _TagSelectorState extends State<TagSelector> {
 
   // Defines how each tag will appear in the tag widget
   Widget tagChip({
-    required EventTag tagModel,
+    required String tagModel,
     required VoidCallback onTap,
     String? action,
     Color? color,
@@ -140,7 +136,7 @@ class _TagSelectorState extends State<TagSelector> {
                 borderRadius: BorderRadius.circular(100.0),
               ),
               child: Text(
-                tagModel.title,
+                tagModel,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15.0,
@@ -175,7 +171,7 @@ class _TagSelectorState extends State<TagSelector> {
               .map((tagModel) => tagChip(
             tagModel: tagModel,
             onTap: () => setState(() {
-              widget.tags.removeEventTag(tagModel);
+              widget.tags.removeTag(tagModel);
             },),
             action: 'Remove',
             color: Colors.deepOrangeAccent,
