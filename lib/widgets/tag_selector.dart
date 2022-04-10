@@ -2,6 +2,7 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,15 +11,13 @@ import 'package:flutter/services.dart';
 class TagSelector extends StatefulWidget {
   const TagSelector({
     required this.tags,
-    required this.onSubmit,
-    required this.events,
+    required this.onAdd,
+    required this.onRemove,
     Key? key,}) : super(key: key);
 
   final TagList tags;
-  final Function(String t) onSubmit;
-
-  /// EventList held for the search display when adding subevents.
-  final EventList events;
+  final Function(String t) onAdd;
+  final Function(String t) onRemove;
 
   @override
   _TagSelectorState createState() => _TagSelectorState();
@@ -39,8 +38,7 @@ class _TagSelectorState extends State<TagSelector> {
       controller: _searchTextEditingController,
       textInputAction: TextInputAction.search,
       onSubmitted: (String tag) {
-        widget.tags.addTag(tag);
-        widget.onSubmit(tag);
+        widget.onAdd(tag);
         setState(() {});
         _searchTextEditingController.clear();
       },
@@ -75,18 +73,16 @@ class _TagSelectorState extends State<TagSelector> {
   // TODO: Find a way for the master tag list to persist through reloads. Can maybe link to EventList in some way?
   Widget _buildSuggestionWidget() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      if (_searchText.isNotEmpty)
-        const Text('Suggestions'),
+      const Text('Suggestions'),
       Wrap(
         children: _filterSearchResultList()
-            .asList()
             .where((tagModel) =>
-            widget.events.getTagMasterList().contains(tagModel),)
+            masterList.hasTag(tagModel) && !widget.tags.contains(EventTag(title: tagModel)),)
             .map((tagModel) => tagChip(
-          tagModel: tagModel,
+          tagModel: EventTag(title: tagModel),
           onTap: () => {
             setState(() {
-              widget.tags.addEventTag(tagModel);
+              widget.onAdd(tagModel);
               _searchTextEditingController.clearComposing();
             })
           },
@@ -105,14 +101,16 @@ class _TagSelectorState extends State<TagSelector> {
       padding: const EdgeInsets.all(8.0),
       child: _filterSearchResultList().isNotEmpty
           ? _buildSuggestionWidget()
-          : const Text('No Labels added'),
+          : const Text('No results'),
     );
   }
 
   // Queries the master tag list based on the text being typed in.
-  TagList _filterSearchResultList() {
-    if (_searchText.isEmpty) return widget.tags;
-    return widget.events.getTagMasterList().queryTags(_searchText);
+  Iterable<String> _filterSearchResultList() {
+    if (_searchText.isEmpty) {
+      return masterList.tags();
+    }
+    return masterList.queryTags(_searchText);
   }
 
   // Defines how each tag will appear in the tag widget

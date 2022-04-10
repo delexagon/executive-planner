@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+class Tuple<T1, T2> {
+  Tuple(this.first, this.second);
+  T1 first;
+  T2 second;
+}
+
 DateFormat userDateFormat = DateFormat('M/d/yy');
 
 Widget padded(double vert, double hor, Widget? other) {

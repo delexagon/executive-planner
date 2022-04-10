@@ -1,4 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 
 class CalendarView extends StatefulWidget {
-  const CalendarView({required this.events, Key? key}) : super(key: key);
+  CalendarView({required this.events, Key? key}) : super(key: key) {
+    masterList.manageEventList(events);
+  }
   final EventList events;
   @override
   _CalendarState createState() => _CalendarState();
@@ -102,6 +105,7 @@ class _CalendarState extends State<CalendarView> {
         leading: Builder(
           builder: (context) => IconButton(
             onPressed: () {
+              masterList.removeManagedEventList(widget.events);
               Navigator.pop(context);
             },
             icon: const Icon(Icons.arrow_back),

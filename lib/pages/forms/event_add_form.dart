@@ -57,7 +57,7 @@ class _EventAddFormState extends EventFormState {
               paddedText('Event description:'),
               descriptionField(),
               paddedText('Select tags:'),
-              TagSelector(tags: widget.event.tags, events: widget.events, onSubmit: (String t) {widget.events.addTagToMasterList(t);}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}),
               paddedText('Change date:'),
               datePicker(),
               timePicker(),

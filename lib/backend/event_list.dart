@@ -24,23 +24,42 @@ class Event {
   }
 
   Event.copy(Event other) {
-    copy(other);
+    _name = other._name;
+    _date = other._date;
+    _description = other._description;
+    _priority = other._priority;
+    tags.mergeTagLists(other.tags, onAdd: onAdd);
+    if(other.recur != null) {
+      recur = Recurrence.copy(other.recur!);
+    } else {
+      recur = null;
+    }
   }
 
-  bool removed = false;
+  void onAdd(EventTag tag) {
+    masterList.addTag(tag.title, this);
+  }
+
+  void onRemove(EventTag tag) {
+    masterList.removeTag(tag.title, this);
+  }
 
   void copy(Event other) {
     _name = other._name;
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
-    tags = TagList.copy(other.tags);
+    for(final EventTag tag in tags.asSet()) {
+      onRemove(tag);
+    }
+    tags = TagList();
+    tags.mergeTagLists(other.tags, onAdd: onAdd);
     if(other.recur != null) {
       recur = Recurrence.copy(other.recur!);
     } else {
       recur = null;
     }
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
 
   void integrate(MassEditor other) {
@@ -63,16 +82,16 @@ class Event {
         recur = Recurrence.copy(other.recur!);
       }
     }
-    tags.mergeTagLists(other.tags);
-    tags.removeAllTags(other.tags);
-    saveMaster(this);
+    tags.removeAllTags(other.tags, onRemove: onRemove);
+    tags.mergeTagLists(other.tags, onAdd: onAdd);
+    masterList.saveMaster(this);
   }
 
   void update() {
     if (date != null && DateTime.now().isAfter(date!)) {
       addTag('Overdue');
       priority = Priority.critical;
-      saveMaster(this);
+      masterList.saveMaster(this);
     }
   }
 
@@ -82,7 +101,7 @@ class Event {
     } else {
       date = recur!.getNextRecurrence(date!);
     }
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
 
   /// List of possible priorities for events; should have the same order and
@@ -105,7 +124,7 @@ class Event {
   String _name = 'Unnamed Event';
   set name(String name) {
     _name = name;
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
   String get name {
     return _name;
@@ -115,7 +134,7 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
   DateTime? get date {
     return _date;
@@ -125,7 +144,7 @@ class Event {
   String _description = 'No description';
   set description(String description) {
     _description = description;
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
   String get description {
     return _description;
@@ -135,7 +154,7 @@ class Event {
   Priority _priority = Priority.none;
   set priority(Priority priority) {
     _priority = priority;
-    saveMaster(this);
+    masterList.saveMaster(this);
   }
   Priority get priority {
     return _priority;
@@ -146,7 +165,7 @@ class Event {
   /// A list of tags of this event.
   /// Tags will be automatically formatted with toTitleCase when added to this list;
   /// make sure you are aware of this when modifying functions in Event!
-  TagList tags = TagList(tags: []);
+  TagList tags = TagList(tags: {});
 
   Recurrence? recur;
 
@@ -167,14 +186,14 @@ class Event {
 
   /// Add a tag to the event
   bool addTag(String tag) {
-    final bool ret = tags.addTag(tag);
-    saveMaster(this);
+    final bool ret = tags.addTag(tag, onAdd: onAdd);
+    masterList.saveMaster(this);
     return ret;
   }
 
   bool addEventTag(EventTag tag) {
-    final bool ret = tags.addEventTag(tag);
-    saveMaster(this);
+    final bool ret = tags.addEventTag(tag, onAdd: onAdd);
+    masterList.saveMaster(this);
     return ret;
   }
 
@@ -185,8 +204,8 @@ class Event {
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
   bool removeTag(String tag) {
-    final bool ret = tags.removeTag(tag);
-    saveMaster(this);
+    final bool ret = tags.removeTag(tag, onRemove: onRemove);
+    masterList.saveMaster(this);
     return ret;
   }
 
@@ -282,29 +301,20 @@ class MassEditor extends Event {
   TagList tagsRemove;
 }
 
-
 class EventList {
 
-  EventList({List<Event>? list, TagList? allTags}) {
+  EventList({List<Event>? list, this.managed = false}) {
     if(list != null) {
       this.list = list;
     }
-    if(allTags != null) {
-      this.allTags = allTags;
+    if(managed) {
+      masterList.manageEventList(this);
     }
   }
 
   List<Event> list = <Event>[];
   Comparator<Event> sortFunc = Event.dateCompare;
-  TagList allTags = TagList(tags: []);
-
-  void addTagToMasterList(String tag) {
-    allTags.addTag(tag);
-  }
-
-  TagList getTagMasterList() {
-    return allTags;
-  }
+  bool managed;
 
   /// Add an event to the list.
   void add(Event e) {
@@ -392,10 +402,6 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   void sort() {
     list.sort(sortFunc);
-  }
-
-  void checkRemoved() {
-    removeAll(this, (Event e) {return e.removed;});
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
@@ -510,14 +516,5 @@ class EventList {
       }
     }
     return part;
-  }
-
-  // Returns a list of ALL tags associated with events.
-  TagList getAllTags() {
-    final TagList tags = TagList(tags: []);
-    for (final Event event in list) {
-      tags.mergeTagLists(event.getTags());
-    }
-    return tags;
   }
 }

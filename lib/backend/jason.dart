@@ -1,6 +1,9 @@
+import 'dart:collection';
+
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
+import 'package:executive_planner/backend/misc.dart';
 
 // Feel free to try implementing all the json yourself, if you want.
 // I'm not going to.
@@ -81,16 +84,15 @@ extension JasonString on String {
 
 extension JasonEventTag on EventTag {
   String toJason() {
-    return '{$id}{$title}';
+    return title;
   }
 
   static EventTag fromJason(String jason) {
-    final List<String> strings = getBrackets(jason);
-    return EventTag(id: JasonString.fromJason(strings[0]), title: JasonString.fromJason(strings[1]));
+    return EventTag(title: jason);
   }
 }
 
-extension JasonListEventTag on List<EventTag> {
+extension JasonSetEventTag on Set<EventTag> {
   String toJason() {
     final str = StringBuffer();
     for(final EventTag obj in this) {
@@ -99,8 +101,8 @@ extension JasonListEventTag on List<EventTag> {
     return str.toString();
   }
 
-  static List<EventTag> fromJason(String jason) {
-    final List<EventTag> list = <EventTag>[];
+  static Set<EventTag> fromJason(String jason) {
+    final Set<EventTag> list = <EventTag>{};
     final List<String> strings = getBrackets(jason);
     for(final String str in strings) {
       list.add(JasonEventTag.fromJason(str));
@@ -115,7 +117,7 @@ extension JasonTagList on TagList {
   }
 
   static TagList fromJason(String jason) {
-    return TagList(tags: JasonListEventTag.fromJason(jason));
+    return TagList(tags: JasonSetEventTag.fromJason(jason));
   }
 }
 
@@ -179,12 +181,11 @@ extension JasonListEvent on List<Event> {
 
 extension JasonEventList on EventList {
   String toJason() {
-    return '{${list.toJason()}}{${allTags.toJason()}}';
+    return list.toJason();
   }
 
   static EventList fromJason(String jason) {
-    final List<String> strings = getBrackets(jason);
-    return EventList(list: JasonListEvent.fromJason(strings[0]), allTags: JasonTagList.fromJason(strings[1]));
+    return EventList(list: JasonListEvent.fromJason(jason));
   }
 }
 
@@ -223,6 +224,25 @@ extension JasonListInt on List<int> {
       list.add(JasonInt.fromJason(str));
     }
     return list;
+  }
+}
+
+extension JasonHashMapStringInt on HashMap<String, int> {
+  String toJason() {
+    final str = StringBuffer();
+    for(final String key in keys) {
+      str.write('{${key.toJason()}}{${this[key]!.toJason()}}');
+    }
+    return str.toString();
+  }
+
+  static HashMap<String, int> fromJason(String jason) {
+    final HashMap<String, int> set = HashMap<String, int>();
+    final List<String> strings = getBrackets(jason);
+    for(int i = 0; i < strings.length; i+=2) {
+      set[JasonString.fromJason(strings[i])] = JasonInt.fromJason(strings[i+1]);
+    }
+    return set;
   }
 }
 

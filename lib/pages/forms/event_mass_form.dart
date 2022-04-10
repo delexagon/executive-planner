@@ -17,7 +17,7 @@ class EventMassForm extends EventForm {
 }
 
 class _EventMassFormState extends EventFormState {
-  TagList tags = TagList(tags: []);
+  TagList tags = TagList(tags: {});
 
   // TODO: Add an "are you sure" overlay
   @override
@@ -94,9 +94,9 @@ class _EventMassFormState extends EventFormState {
               paddedText('Event description:'),
               descriptionField(),
               paddedText('Select tags to add:'),
-              TagSelector(tags: widget.event.tags, events: widget.events, onSubmit: (String t) {widget.events.addTagToMasterList(t);}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}),
               paddedText('Select tags to remove:'),
-              TagSelector(tags: tags, events: widget.events, onSubmit: (String t) {}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {tags.addTag(t);}, onRemove: (String t) {tags.removeTag(t);}),
               paddedText('Change date:'),
               datePicker(),
               timePicker(),

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 ///
 /// Generates an [ExecutivePlanner] [StatelessWidget] which holds everything else.
 void main() {
-  initMaster();
+  masterList.initMaster();
   runApp(const ExecutivePlanner());
 }
 

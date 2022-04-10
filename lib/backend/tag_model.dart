@@ -1,32 +1,49 @@
 
+import 'package:executive_planner/backend/master_list.dart';
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
 
 // TODO: Make it so that tags cannot be modified via external classes
 class EventTag {
-  EventTag({
-    required this.id,
-    required this.title,
-  });
+  EventTag({required this.title});
+  @override
+  bool operator ==(Object other) {
+    return other is EventTag && other.title == title;
+  }
 
-  String id;
-  String title;
+  final String title;
+
+  @override
+  int get hashCode => title.hashCode;
 }
 
-// Stores a collection of EventTag objects
+/// Stores a collection of EventTag objects
+/// This class should only add existing EventTags, not construct new ones.
 class TagList {
-  TagList({
-    required this.tags,
-  });
-  TagList.copy(TagList other) {
-    tags.addAll(other.tags);
+  TagList({Set<EventTag>? tags}) {
+    if(tags != null) {
+      this.tags = tags;
+    }
+  }
+  TagList.copy(TagList other, {Function(EventTag t)? onAdd}) {
+    for(final EventTag tag in other.tags) {
+      tags.add(tag);
+      if(onAdd != null) {
+        onAdd(tag);
+      }
+    }
   }
 
-  List<EventTag> tags = <EventTag>[];
+  Set<EventTag> tags = <EventTag>{};
 
   List<EventTag> asList() {
+    return tags.toList();
+  }
+
+  Set<EventTag> asSet() {
     return tags;
   }
+
   String asString() {
     return tags.map((tag) => tag.title).join(', ');
   }
@@ -36,34 +53,39 @@ class TagList {
   }
 
   // Adds a new tag to the tag list
-  bool addTag(String title) {
-    if (tags.any((tag) => tag.title == title)) {
-      return false;
+  bool addTag(String title, {Function(EventTag t)? onAdd}) {
+    final EventTag tag = EventTag(title: title);
+    final bool added = tags.add(tag);
+    if(added && onAdd != null) {
+      onAdd(tag);
     }
-    tags.add(EventTag(
-      id: title,
-      title: title,
-    ),);
-    return true;
+    return added;
   }
 
-  bool addEventTag(EventTag tag) {
-    if (tags.any((tag) => tag.id == tag.id)) {
-      return false;
+  // Adds a new tag to the tag list
+  bool addEventTag(EventTag tag, {Function(EventTag t)? onAdd}) {
+    final bool added = tags.add(tag);
+    if(added && onAdd != null) {
+      onAdd(tag);
     }
-    tags.add(tag);
-    return true;
+    return added;
   }
 
-  void mergeTagLists(TagList tags) {
-    for (final EventTag tag in tags.tags) {
-      addEventTag(tag);
+  void mergeTagLists(TagList tags, {Function(EventTag t)? onAdd}) {
+    for(final EventTag tag in tags.tags) {
+      final bool added = this.tags.add(tag);
+      if(added && onAdd != null) {
+        onAdd(tag);
+      }
     }
   }
 
-  void removeAllTags(TagList tags) {
-    for (final EventTag tag in tags.tags) {
-      removeEventTag(tag);
+  void removeAllTags(TagList tags, {Function(EventTag t)? onRemove}) {
+    for(final EventTag tag in tags.tags) {
+      final bool removed = this.tags.remove(tag);
+      if(removed && onRemove != null) {
+        onRemove(tag);
+      }
     }
   }
 
@@ -72,33 +94,46 @@ class TagList {
   }
 
   bool hasEventTag(EventTag tag) {
-    return tags.any((tag) => tag.id == tag.id);
+    return tags.contains(tag);
+  }
+
+  EventTag? getTag(String title) {
+    for(EventTag t in tags) {
+      if(t.title == title) {
+        return t;
+      }
+    }
+    return null;
+  }
+
+  void clear({Function(EventTag t)? onRemove}) {
+    for(final EventTag tag in tags) {
+      tags.remove(tag);
+      if(onRemove != null) {
+        onRemove(tag);
+      }
+    }
   }
 
   // Removes a tag from the tag list
-  bool removeTag(String title) {
-    if (tags.any((tag) => tag.title == title)) {
-      tags.removeWhere((tag) => tag.id == title);
-      return true;
+  bool removeTag(String title, {Function(EventTag t)? onRemove}) {
+    final EventTag? tag = getTag(title);
+    if(tag != null) {
+      if(onRemove != null) {
+        onRemove(tag);
+      }
+      return tags.remove(tag);
+    } else {
+      return false;
     }
-    return false;
   }
 
-  bool removeEventTag(EventTag tag) {
-    if (tags.any((tag) => tag.id == tag.id)) {
-      tags.remove(tag);
-      return true;
+  bool removeEventTag(EventTag tag,  {Function(EventTag t)? onRemove}) {
+    final bool removed = tags.remove(tag);
+    if(removed && onRemove != null) {
+      onRemove(tag);
     }
-    return false;
-  }
-
-  // Returns a list of Tags matching a partial string query
-  TagList queryTags(String str) {
-    return TagList(
-      tags: tags
-          .where((tag) => tag.title.toLowerCase().contains(str.toLowerCase()))
-          .toList(),
-    );
+    return removed;
   }
 
   int get length => tags.length;
