@@ -1,4 +1,4 @@
-import 'package:executive_planner/backend/events/event_list.dart';
+import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:executive_planner/pages/forms/event_form.dart';
