@@ -29,7 +29,6 @@ class ExecutivePlanner extends StatelessWidget {
         '/': (context) => ExecutiveHomePage(
               title: 'Planner',
               events: EventList().union(masterList.toEventList()).searchTags('Completed', appears: false),
-              isRoot: true,
             ),
       },
       

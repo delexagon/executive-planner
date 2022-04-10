@@ -272,6 +272,10 @@ class EventList {
     sort();
   }
 
+  void clear() {
+    list.clear();
+  }
+
   /// Remove an event from the list.
   void remove(Event e) {
     list.remove(e);

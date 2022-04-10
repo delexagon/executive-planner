@@ -1,4 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/event_change_form.dart';
@@ -6,6 +7,7 @@ import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
@@ -17,7 +19,7 @@ class ExecutiveHomePage extends StatefulWidget {
     Key? key,
     required this.title,
     required this.events,
-    this.isRoot = false,
+    this.isRoot,
   }) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -36,7 +38,7 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Necessary to consider and selectively show searches.
   final EventList events;
 
-  final bool isRoot;
+  final ExecutiveHomePage? isRoot;
 
   /// Adds event to both current and masterList.
   void addEvent(Event e) {
@@ -79,6 +81,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         builder: (context) => ExecutiveHomePage(
           title: 'Search results',
           events: events,
+          isRoot: widget.isRoot ?? widget,
         ),
       ),
     );
@@ -105,7 +108,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
-                    events: widget.isRoot ? masterList.toEventList() : widget.events,
+                    events: widget.isRoot == null ? masterList.toEventList() : widget.events,
                     onSubmit: (EventList e) {
                       _goToSearchPage(context, e);
                       removeOverlayEntry();
@@ -140,67 +143,125 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     );
   }
 
-  Widget? drawer() {
-    if(widget.isRoot) {
-      return Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SizedBox(
-              height: 70,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColorLight,
-                ),
-                child: Text(
-                  'Executive Planner',
-                  style: Theme.of(context).textTheme.headline5,
-                ),),),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(fixedSize: const Size(10, 50)),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CalendarView(
-                      events: widget.events,
-                    ),),);},
-              child: const Text('Calendar'),
-            ),
-            const Divider(),
-            RadioListTile<Comparator<Event>>(
-              title: const Text('Sort by name'),
-              value: Event.nameCompare,
-              groupValue: widget.events.sortFunc,
-              onChanged: (Comparator<Event>? value) {
-                setState(() {
-                  widget.events.sortFunc = value!;
-                  widget.events.sort();
-                  setState(() {});
-                });},),
-            RadioListTile<Comparator<Event>>(
-              title: const Text('Sort by date'),
-              value: Event.dateCompare,
-              groupValue: widget.events.sortFunc,
-              onChanged: (Comparator<Event>? value) {
-                setState(() {
-                  widget.events.sortFunc = value!;
-                  widget.events.sort();
-                  setState(() {});
-                });},),
-            RadioListTile<Comparator<Event>>(
-              title: const Text('Sort by priority'),
-              value: Event.priorityCompare,
-              groupValue: widget.events.sortFunc,
-              onChanged: (Comparator<Event>? value) {
-                setState(() {
-                  widget.events.sortFunc = value!;
-                  widget.events.sort();
-                  setState(() {});
-      });},),],),);
-    } else {
-      return null;
+  Widget drawer() {
+    DateTime? pressStart;
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          SizedBox(
+            height: 70,
+            child: DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+              ),
+              child: Text(
+                'Executive Planner',
+                style: Theme.of(context).textTheme.headline5,
+              ),),),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(fixedSize: const Size(10, 50)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CalendarView(
+                    events: widget.events,
+                  ),),);},
+            child: const Text('Calendar'),
+          ),
+          const Divider(),
+          RadioListTile<Comparator<Event>>(
+            title: const Text('Sort by name'),
+            value: Event.nameCompare,
+            groupValue: widget.events.sortFunc,
+            onChanged: (Comparator<Event>? value) {
+              setState(() {
+                widget.events.sortFunc = value!;
+                widget.events.sort();
+                setState(() {});
+              });},),
+          RadioListTile<Comparator<Event>>(
+            title: const Text('Sort by date'),
+            value: Event.dateCompare,
+            groupValue: widget.events.sortFunc,
+            onChanged: (Comparator<Event>? value) {
+              setState(() {
+                widget.events.sortFunc = value!;
+                widget.events.sort();
+                setState(() {});
+              });},),
+          RadioListTile<Comparator<Event>>(
+            title: const Text('Sort by priority'),
+            value: Event.priorityCompare,
+            groupValue: widget.events.sortFunc,
+            onChanged: (Comparator<Event>? value) {
+              setState(() {
+                widget.events.sortFunc = value!;
+                widget.events.sort();
+                setState(() {});
+              });},),
+          const Divider(),
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
+              setState(() {});
+            },
+            child: const Text('Export to clipboard'),
+          ),
+          GestureDetector(
+            onTapDown: (TapDownDetails? details) {pressStart = DateTime.now();},
+            onTapUp: (TapUpDetails? details) {
+              if(pressStart != null
+                  && DateTime.now().isAfter(pressStart!.add(const Duration(seconds: 3)))
+                  && DateTime.now().isBefore(pressStart!.add(const Duration(seconds: 10)))
+              ) {
+                Clipboard.getData('text/plain').then((ClipboardData? value) {
+                  if(value != null && value.text != null && value.text != '') {
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
+                    loadMaster(value.text!);
+                    final ExecutiveHomePage root = widget.isRoot ?? widget;
+                    root.events.clear();
+                    root.events.union(masterList.toEventList()).searchTags('Completed', appears: false);
+                  }
+                });
+                setState(() {});
+              }
+            },
+            // TODO: Make it apparent that this button works already
+            child: const TextButton(onPressed: null, child: Text('Import from clipboard'),),
+          ),
+    ],),);
+  }
+
+  /// Our wonderful "Title"
+  Widget definitelyATitle() {
+    final List<Widget> widgets = <Widget>[];
+    if(widget.isRoot != null) {
+      widgets.add(
+        IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
+      );
     }
+    widgets.add(Text(widget.title));
+    widgets.add(
+      IconButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CalendarView(
+                events: widget.events,
+              ),),);},
+        icon: const Icon(Icons.calendar_today),
+    ),);
+    return Row(
+      children: widgets,
+    );
   }
 
   @override
@@ -210,8 +271,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         actions: [
           _searchIcon(),
         ],
-        centerTitle: true,
-        title: Text(widget.title),
+        centerTitle: false,
+        title: definitelyATitle(),
       ),
       // Hamburger :)
       drawer: drawer(),

@@ -111,12 +111,11 @@ extension JasonListEventTag on List<EventTag> {
 
 extension JasonTagList on TagList {
   String toJason() {
-    return '{${tags.toJason()}}';
+    return tags.toJason();
   }
 
   static TagList fromJason(String jason) {
-    final List<String> strings = getBrackets(jason);
-    return TagList(tags: JasonListEventTag.fromJason(strings[0]));
+    return TagList(tags: JasonListEventTag.fromJason(jason));
   }
 }
 
@@ -229,12 +228,11 @@ extension JasonListInt on List<int> {
 
 extension JasonBreak on Break {
   String toJason() {
-    return '{${times.toJason()}}';
+    return times.toJason();
   }
 
   static Break fromJason(String jason) {
-    final List<String> strings = getBrackets(jason);
-    return Break.fromList(JasonListInt.fromJason(strings[0]));
+    return Break.fromList(JasonListInt.fromJason(jason));
   }
 }
 
