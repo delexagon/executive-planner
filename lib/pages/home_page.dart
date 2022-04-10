@@ -1,6 +1,7 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/forms/event_form.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
@@ -8,8 +9,6 @@ import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'forms/event_form.dart';
 
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
@@ -51,16 +50,26 @@ class ExecutiveHomePage extends StatefulWidget {
 
   /// Removes event from both current and masterList.
   void removeEvent(Event e) {
+    e.removed = true;
     masterList.remove(e);
     saveMaster();
     events.remove(e);
+  }
+
+  /// Removes event from both current and masterList.
+  void clearEvents() {
+    for(int i = 0; i < events.length; i++) {
+      events[i].removed = true;
+      masterList.remove(events[i]);
+    }
+    events.clear();
+    saveMaster();
   }
 
   @override
   State<ExecutiveHomePage> createState() => _ExecutiveHomePageState();
 }
 
-// TODO: EventCreationForm should not arbitrarily access widget
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   _ExecutiveHomePageState();
 
@@ -87,6 +96,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         ),
       ),
     );
+    events.checkRemoved();
     _update();
   }
 
@@ -130,15 +140,34 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     setState(() {});
   }
 
-  /// Changes pages to EventChangeForm, allowing editing of events.
-  /// If event is uninitialized, this will give an screen for adding a new event.
-  /// Otherwise, it will edit a current event.
-  Future<Event?> _changeEventList(BuildContext context, {Event? event}) async {
+  Future<Event?> _changeEventForm(BuildContext context, {required Event event}) async {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventForm(
+        builder: (context) => EventChangeForm(
           event: event,
+          events: widget.events,
+        ),
+      ),
+    );
+  }
+
+  Future<Event?> _addEventForm(BuildContext context) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddForm(
+          events: widget.events,
+        ),
+      ),
+    );
+  }
+
+  Future<MassEditor?> _massEventForm(BuildContext context) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventMassForm(
           events: widget.events,
         ),
       ),
@@ -282,7 +311,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       body: EventListDisplay(
         events: widget.events,
         onLongPress: (Event e) {
-          _changeEventList(context, event: e).then((Event? copy) {
+          _changeEventForm(context, event: e).then((Event? copy) {
             if(copy == null) {
               widget.removeEvent(e);
             } else if (e == copy) {
@@ -298,17 +327,47 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           widget.events.remove(e);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _changeEventList(context).then((Event? e) {
-            if(e != null) {
-              widget.addEvent(e);
-              setState(() {});
-            }
-          });
-        },
-        tooltip: 'Add Event',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          padded(3,3,
+            FloatingActionButton(
+              heroTag: 'btnSingle',
+              onPressed: () {
+                _addEventForm(context).then((Event? e) {
+                  if(e != null) {
+                    widget.addEvent(e);
+                    setState(() {});
+                  }
+                });
+              },
+              tooltip: 'Add Event',
+              child: const Icon(Icons.add),
+            ),
+          ),
+          padded(3,3,
+            FloatingActionButton(
+              heroTag: 'btnMass',
+              onPressed: () {
+                _massEventForm(context).then((MassEditor? e) {
+                  if(e != null) {
+                    if(e.markForDeletion) {
+                      widget.clearEvents();
+                    } else {
+                      for(int i = 0; i < widget.events.length; i++) {
+                        widget.events[i].integrate(e);
+                      }
+                    }
+                    saveMaster();
+                    setState(() {});
+                  }
+                });
+              },
+              tooltip: 'Mass edit',
+              child: const Icon(Icons.all_inclusive),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: NavBarDisplay(
         events: widget.events,

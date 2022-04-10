@@ -28,6 +28,8 @@ class Event {
     copy(other);
   }
 
+  bool removed = false;
+
   void copy(Event other) {
     _name = other._name;
     _date = other._date;
@@ -39,6 +41,31 @@ class Event {
     } else {
       recur = null;
     }
+    saveMaster(this);
+  }
+
+  void integrate(MassEditor other) {
+    if(other.changes[0]) {
+      _name = other._name;
+    }
+    if(other.changes[1]) {
+      _description = other._description;
+    }
+    if(other.changes[2]) {
+      _date = other._date;
+    }
+    if(other.changes[3]) {
+      _priority = other._priority;
+    }
+    if(other.changes[4]) {
+      if(other.recur == null) {
+        recur = null;
+      } else {
+        recur = Recurrence.copy(other.recur!);
+      }
+    }
+    tags.mergeTagLists(other.tags);
+    tags.removeAllTags(other.tags);
     saveMaster(this);
   }
 
@@ -94,7 +121,6 @@ class Event {
   DateTime? get date {
     return _date;
   }
-
 
   /// A description of the event.
   String _description = 'No description';
@@ -276,6 +302,16 @@ class EventList {
     list.clear();
   }
 
+  EventList noDate() {
+    final EventList part = EventList();
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].date == null) {
+        part.add(list[i]);
+      }
+    }
+    return part;
+  }
+
   /// Remove an event from the list.
   void remove(Event e) {
     list.remove(e);
@@ -327,10 +363,12 @@ class EventList {
 
   /// Removes all events in e from the current list, and returns it.
   /// This modifies the list you use it on!
-  EventList removeAll(EventList e) {
-    for (final Event event in list) {
-      if (e.contains(event)) {
-        list.remove(event);
+  EventList removeAll(EventList e, bool Function(Event e) removeIf) {
+    for(int i = 0; i < e.length;) {
+      if(removeIf(list[i])) {
+        list.remove(list[i]);
+      } else {
+        i++;
       }
     }
     return EventList();
@@ -340,6 +378,10 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   void sort() {
     list.sort(sortFunc);
+  }
+
+  void checkRemoved() {
+    removeAll(this, (Event e) {return e.removed;});
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
@@ -464,4 +506,19 @@ class EventList {
     }
     return tags;
   }
+}
+
+class MassEditor extends Event {
+  MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
+    _name = e._name;
+    _date = e._date;
+    _description = e._description;
+    _priority = e._priority;
+    tags = e.tags;
+  }
+
+  bool markForDeletion;
+  List<bool> changes;
+
+  TagList tagsRemove;
 }

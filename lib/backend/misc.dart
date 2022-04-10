@@ -1,6 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 DateFormat userDateFormat = DateFormat('M/d/yy');
+
+Widget padded(double vert, double hor, Widget? other) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: vert, horizontal: hor),
+    child: other,
+  );
+}
 
 extension TitleCase on String {
   String toTitleCase() {

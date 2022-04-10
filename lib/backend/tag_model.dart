@@ -61,6 +61,12 @@ class TagList {
     }
   }
 
+  void removeAllTags(TagList tags) {
+    for (final EventTag tag in tags.tags) {
+      removeEventTag(tag);
+    }
+  }
+
   bool hasTag(String title) {
     return tags.any((tag) => tag.title == title);
   }

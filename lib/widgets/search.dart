@@ -71,6 +71,9 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   }
 
   EventList? searchDateByString(String str) {
+    if(str.toLowerCase().trim() == 'reminder') {
+      return widget.events.noDate();
+    }
     DateTime start;
     DateTime end;
     final List<String> strs = str.split('-');
