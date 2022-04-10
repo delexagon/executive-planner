@@ -266,8 +266,6 @@ class EventList {
     return allTags;
   }
 
-
-
   /// Add an event to the list.
   void add(Event e) {
     list.add(e);
@@ -359,6 +357,44 @@ class EventList {
     return part;
   }
 
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchDescription(String searchStr, {bool appears = true}) {
+    final EventList part = EventList();
+    if(appears) {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].description.toLowerCase().contains(searchStr.toLowerCase())) {
+          part.add(list[i]);
+        }
+      }
+    } else {
+      for (int i = 0; i < list.length; i++) {
+        if (!list[i].description.toLowerCase().contains(searchStr.toLowerCase())) {
+          part.add(list[i]);
+        }
+      }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchPriority(Priority priority, {bool appears = true}) {
+    final EventList part = EventList();
+    if(appears) {
+      for(int i = 0; i < list.length; i++) {
+        if(list[i].priority == priority) {
+          part.add(list[i]);
+        }
+      }
+    } else {
+      for(int i = 0; i < list.length; i++) {
+        if(!(list[i].priority == priority)) {
+          part.add(list[i]);
+        }
+      }
+    }
+    return part;
+  }
+
   /// Return an EventList containing events on a specific date or time
   EventList searchDate(DateTime date) {
     final EventList part = EventList();
@@ -382,7 +418,7 @@ class EventList {
   EventList searchRange(DateTime startDate, DateTime endDate) {
     final EventList part = EventList();
     for (int i = 0; i < list.length; i++) {
-      if (startDate.isBefore(list[i].date!) &&
+      if (list[i].date != null && startDate.isBefore(list[i].date!) &&
           endDate.isAfter(list[i].date!)) {
         part.add(list[i]);
       }

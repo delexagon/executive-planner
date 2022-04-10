@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+
+DateFormat userDateFormat = DateFormat('M/d/yy');
 
 extension TitleCase on String {
   String toTitleCase() {

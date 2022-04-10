@@ -14,7 +14,7 @@ class EventTile extends StatefulWidget {
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
-  final EventList? setToColor;
+  final Set<Event>? setToColor;
 
   @override
   _EventTileState createState() => _EventTileState();

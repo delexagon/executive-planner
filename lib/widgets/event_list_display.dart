@@ -26,7 +26,7 @@ class EventListDisplay extends StatefulWidget {
   final Function(Event e)? onDrag;
 
   /// Events in this list, if present, are colored light blue.
-  final EventList? setToColor;
+  final Set<Event>? setToColor;
 
   @override
   _EventListDisplayState createState() => _EventListDisplayState();
@@ -63,8 +63,6 @@ class _EventListDisplayState extends State<EventListDisplay> {
   Widget build(BuildContext context) {
     if (widget.events.length == 0) {
       return eventListEmpty(context);
-    } else {
-      
     }
     return SingleChildScrollView(child: Column(
       children: _buildPanel(),

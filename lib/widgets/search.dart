@@ -1,5 +1,6 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
@@ -47,31 +48,106 @@ class AdvancedSearch extends StatefulWidget {
 
 class _AdvancedSearchState extends State<AdvancedSearch> {
   /// All currently shown events in the search; modified as the user changes search terms
-  EventList currentEvents = EventList();
+  Set<Event> currentEvents = <Event>{};
   /// Events the user has specially selected; only modified by user
-  EventList selectedEvents = EventList();
+  Set<Event> selectedEvents = <Event>{};
+
+  String searchStr = '';
+
+  EventList? searchNameByString(String str) {
+    final EventList events = widget.events.searchName(str);
+    if(events.length > 0) {
+      return events;
+    }
+    return null;
+  }
+
+  EventList? searchTagByString(String str) {
+    final EventList events = widget.events.searchTags(str);
+    if(events.length > 0) {
+      return events;
+    }
+    return null;
+  }
+
+  EventList? searchDateByString(String str) {
+    DateTime start;
+    DateTime end;
+    final List<String> strs = str.split('-');
+    try {
+      start = userDateFormat.parse(strs[0].trim());
+    } catch(e) {
+      return null;
+    }
+    try {
+      end = userDateFormat.parse(strs[1].trim());
+    } catch(e) {
+      return widget.events.searchDate(start);
+    }
+    return widget.events.searchRange(start, end);
+  }
+
+  EventList? searchPriorityByString(String str) {
+    final int index = Event.priorities.indexOf(str.toTitleCase());
+    if(index > -1) {
+      return widget.events.searchPriority(Priority.values[index]);
+    }
+    return null;
+  }
+
+  EventList? searchByString(int i, String str) {
+    if(str == '') {
+      return null;
+    }
+    if(i == 0) {
+      return searchNameByString(str);
+    } else if(i == 1) {
+      return searchTagByString(str);
+    } else if(i == 2) {
+      return searchPriorityByString(str);
+    } else if(i == 3) {
+      return searchDateByString(str);
+    }
+    return null;
+  }
 
   /// Search types which are enabled.
   /// In order: name, tag, priority, date
   /// If modified, please also update the typeCheckboxes() function.
-  List<bool> searchTypesEnabled = [false, false, false, false];
+  List<bool?> searchTypesEnabled = [false, false, false, false,];
 
-  /// Initializes search to include all events in list.
-  @override
-  void initState() {
-    super.initState();
-    currentEvents.union(widget.events);
-  }
-
-  // TODO: Make date and
+  // TODO: Make this function have less time complexity?
   /// Recalculates search based on the new search terms.
-  void redoSearch(String searchStr) {
-    currentEvents = widget.events.searchName(searchStr);
-    for(int i = 0; i < selectedEvents.length; i++) {
-      if(!currentEvents.contains(selectedEvents[i])) {
-        currentEvents.add(selectedEvents[i]);
+  void redoSearch() {
+    currentEvents = <Event>{};
+    final List<String> strs = searchStr.split(',');
+    for(int index = 0; index < strs.length; index++) {
+      strs[index] = strs[index].trim();
+      for(int i = 0; i < searchTypesEnabled.length; i++) {
+        if(searchTypesEnabled[i] == true) {
+          final EventList? toAdd = searchByString(i, strs[index]);
+          if(toAdd != null) {
+            for(int qq = 0; qq < toAdd.length; qq++) {
+              currentEvents.add(toAdd[qq]);
+            }
+          }
+        }
       }
     }
+    for(int index = 0; index < strs.length; index++) {
+      strs[index] = strs[index].trim();
+      for(int i = 0; i < searchTypesEnabled.length; i++) {
+        if(searchTypesEnabled[i] == null) {
+          final EventList? toRemove = searchByString(i, strs[index]);
+          if(toRemove != null) {
+            for(int qq = 0; qq < toRemove.length; qq++) {
+              currentEvents.remove(toRemove[qq]);
+            }
+          }
+        }
+      }
+    }
+    currentEvents = currentEvents.union(selectedEvents);
   }
 
   /// The text field that the user enters their search into; search results are
@@ -82,7 +158,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
       child: TextField(
         maxLines: 3,
         onChanged: (String searchStr) {
-          redoSearch(searchStr);
+          this.searchStr = searchStr;
+          redoSearch();
           setState(() {});
         },
         decoration: const InputDecoration(
@@ -97,28 +174,30 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {
-    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Location', 'Date'];
+    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date'];
     final List<Widget> checkboxes = <Widget>[];
     for(int i = 0; i < searchTypesEnabled.length && i < searchTypes.length; i++) {
       checkboxes.add(
-        CheckboxListTile(
-          title: Text(searchTypes[i]),
-          value: searchTypesEnabled[i],
-          onChanged: (bool? value) {
-            searchTypesEnabled[i] = !searchTypesEnabled[i];
-            setState(() { });
-          },
-        ),
-      );
-      checkboxes.add(const VerticalDivider(thickness: 2));
+        Flexible(
+          child: CheckboxListTile(
+            tristate: true,
+            title: Text(searchTypes[i]),
+            value: searchTypesEnabled[i],
+            onChanged: (bool? value) {
+              searchTypesEnabled[i] = value;
+              redoSearch();
+              setState(() {});
+      },),),);
+      checkboxes.add(const VerticalDivider(width: 20));
     }
-    return SizedBox(
-      height: 40,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: checkboxes
-      ),
-    );
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child:SizedBox(
+        width: 600,
+        height: 40,
+        child: Row(
+          children: checkboxes,
+    ),),);
   }
 
   /// This displays all currently searched events.
@@ -127,7 +206,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return Expanded(
       child: SingleChildScrollView(
         child: EventListDisplay(
-          events: currentEvents,
+          events: EventList(list: currentEvents.toList()),
           setToColor: selectedEvents,
           onTap: (Event e) {
             if(selectedEvents.contains(e)) {
@@ -141,32 +220,46 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// A row containing buttons which complete and exit the search.
   Widget searchButton() {
     return Center(
-      child: Stack(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: TextButton(
+              onPressed: () {
+                if(widget.onSubmit != null && selectedEvents.isNotEmpty) {
+                  widget.onSubmit!(EventList(list: selectedEvents.toList()));
+                }
+              },
+              child: const Text('OK', style: TextStyle(fontSize: 20)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: TextButton(
+              onPressed: () {
+                selectedEvents = selectedEvents.union(currentEvents);
+                setState(() {});
+              },
+              child: const Text('Select All', style: TextStyle(fontSize: 20)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: TextButton(
+              onPressed: () {
+                selectedEvents.removeAll(currentEvents);
+                setState(() {});
+              },
+              child: const Text('Remove All', style: TextStyle(fontSize: 20)),
+            ),
+          ),
+          IconButton(
               icon: const Icon(Icons.close),
               iconSize: 30,
               onPressed: () {
                 widget.onExit!();
-          },),),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              child: TextButton(
-                onPressed: () {
-                  if(widget.onSubmit != null) {
-                    if(!widget.selectedOnly) {
-                      widget.onSubmit!(currentEvents);
-                    } else {
-                      widget.onSubmit!(selectedEvents);
-                    }
-                  }
-                },
-                child: const Text('OK', style: TextStyle(fontSize: 20)),
-    ),),),],),);
+    },),],),);
   }
 
   @override
@@ -177,6 +270,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         const Divider(),
         searchField(),
         const Divider(),
+        typeCheckboxes(),
         listView(),
       ],
     );
