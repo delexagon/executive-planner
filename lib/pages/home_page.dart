@@ -1,9 +1,11 @@
-import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/calendar.dart';
-import 'package:executive_planner/pages/forms/event_form.dart';
+import 'package:executive_planner/pages/forms/event_add_form.dart';
+import 'package:executive_planner/pages/forms/event_change_form.dart';
+import 'package:executive_planner/pages/forms/event_mass_form.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';

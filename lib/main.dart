@@ -1,4 +1,4 @@
-import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/pages/home_page.dart';
 import 'package:flutter/material.dart';

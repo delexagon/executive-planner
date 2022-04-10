@@ -193,7 +193,7 @@ class Event {
   String tagsString() {
     return tags.asString();
   }
-  
+
   TagList getTags() {
     return tags;
   }
@@ -266,6 +266,22 @@ class Event {
   }
 
 }
+
+class MassEditor extends Event {
+  MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
+    _name = e._name;
+    _date = e._date;
+    _description = e._description;
+    _priority = e._priority;
+    tags = e.tags;
+  }
+
+  bool markForDeletion;
+  List<bool> changes;
+
+  TagList tagsRemove;
+}
+
 
 class EventList {
 
@@ -504,19 +520,4 @@ class EventList {
     }
     return tags;
   }
-}
-
-class MassEditor extends Event {
-  MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
-    _name = e._name;
-    _date = e._date;
-    _description = e._description;
-    _priority = e._priority;
-    tags = e.tags;
-  }
-
-  bool markForDeletion;
-  List<bool> changes;
-
-  TagList tagsRemove;
 }
