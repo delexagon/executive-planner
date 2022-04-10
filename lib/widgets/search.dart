@@ -4,8 +4,6 @@ import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
-// TODO: Events modified in search screens are probably left unmodified in the original eventlist
-// TODO: Make search use more than just name
 /// The search widget is an overlay allowing to search for and select a list of events.
 class AdvancedSearch extends StatefulWidget {
   AdvancedSearch({
@@ -173,7 +171,6 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     );
   }
 
-  // TODO: Make sure this can be scrolled on phones
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {

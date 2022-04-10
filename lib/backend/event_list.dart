@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 /// priorities list in Event.
 enum Priority { none, low, medium, high, critical }
 
-// TODO: Add subevents and tags.
 class Event {
 
   Event({
@@ -268,7 +267,6 @@ class Event {
 
 }
 
-// TODO: Add the 54 methods that would allow this to actually extend List.
 class EventList {
 
   EventList({List<Event>? list, TagList? allTags}) {

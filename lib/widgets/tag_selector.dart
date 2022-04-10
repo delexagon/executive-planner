@@ -6,7 +6,6 @@ import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// TODO: Pull this class apart into component subclasses
 /// Allows a user to modify an existing event or add a new event.
 class TagSelector extends StatefulWidget {
   const TagSelector({

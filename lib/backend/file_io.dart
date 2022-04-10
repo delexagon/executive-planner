@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-  // TODO: Make sure SharedPreferences is not temporary and can store large strings.
-  /// Gets SharedPreferences folder, a bank of strings.
+/// Gets SharedPreferences folder, a bank of strings.
 Future<SharedPreferences> get _prefs async {
   final prefs = await SharedPreferences.getInstance();
   return prefs;

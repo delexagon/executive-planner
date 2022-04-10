@@ -262,7 +262,6 @@ abstract class _EventFormState<T extends EventForm> extends State<T> {
 
 }
 
-// TODO: Pull this class apart into component subclasses
 /// Allows a user to modify an existing event or add a new event.
 class EventAddForm extends EventForm {
   EventAddForm({
@@ -290,6 +289,7 @@ class _EventAddFormState extends _EventFormState {
   }
 
   // TODO: Let the user collapse features which are used less often.
+  // TODO: Bring some of this code up to the parent
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -334,7 +334,6 @@ class _EventAddFormState extends _EventFormState {
   }
 }
 
-// TODO: Pull this class apart into component subclasses
 /// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends EventForm {
   EventChangeForm({
@@ -369,7 +368,6 @@ class _EventChangeFormState extends _EventFormState {
     }),),),],),);
   }
 
-  // TODO: Let the user collapse features which are used less often.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -414,7 +412,6 @@ class _EventChangeFormState extends _EventFormState {
   }
 }
 
-// TODO: Pull this class apart into component subclasses
 /// Allows a user to modify an existing event or add a new event.
 class EventMassForm extends EventForm {
   EventMassForm({
@@ -479,7 +476,6 @@ class _EventMassFormState extends _EventFormState {
         ),),);
   }
 
-  // TODO: Let the user collapse features which are used less often.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
