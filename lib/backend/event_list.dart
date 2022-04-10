@@ -11,6 +11,8 @@ enum Priority { none, low, medium, high, critical }
 
 class Event {
 
+  static final List<String> specialTags = ['Completed', 'Recurring'];
+
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
     Priority priority = Priority.none, TagList? tags, Recurrence? recur,}) {
@@ -175,6 +177,7 @@ class Event {
   set recur(Recurrence? recurrence) {
     print("Alright");
     if(recurrence != null) {
+      print("bett");
       print(recurrence.spacing.times[0]);
       addTag('Recurring', special: true);
     } else {
@@ -205,7 +208,7 @@ class Event {
 
   /// Add a tag to the event
   bool addTag(String tag, {bool special = false}) {
-    if(!special && (tag == 'Recurring' || tag == 'Completed')) {
+    if(!special && specialTags.contains(tag)) {
       return false;
     }
     final bool ret = tags.addTag(tag, onAdd: onAdd);

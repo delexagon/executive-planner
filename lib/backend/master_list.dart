@@ -15,7 +15,7 @@ class masterList {
   static final HashMap<EventList, int> _eventListList = HashMap<EventList, int>();
 
   static void addTag(String t, Event e) {
-    if(t == 'Recurring' || t == 'Completed') {
+    if(Event.specialTags.contains(t)) {
       return;
     }
     if(_masterList.contains(e)) {
