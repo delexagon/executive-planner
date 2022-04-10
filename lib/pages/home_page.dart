@@ -213,8 +213,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             onTapDown: (TapDownDetails? details) {pressStart = DateTime.now();},
             onTapUp: (TapUpDetails? details) {
               if(pressStart != null
-                  && DateTime.now().isAfter(pressStart!.add(const Duration(seconds: 3)))
-                  && DateTime.now().isBefore(pressStart!.add(const Duration(seconds: 10)))
+                  && DateTime.now().isAfter(pressStart!.add(const Duration(seconds: 2)))
+                  && DateTime.now().isBefore(pressStart!.add(const Duration(seconds: 5)))
               ) {
                 Clipboard.getData('text/plain').then((ClipboardData? value) {
                   if(value != null && value.text != null && value.text != '') {
@@ -223,9 +223,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                     final ExecutiveHomePage root = widget.isRoot ?? widget;
                     root.events.clear();
                     root.events.union(masterList.toEventList()).searchTags('Completed', appears: false);
+                  } else {
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
                   }
                 });
-                setState(() {});
               }
             },
             // TODO: Make it apparent that this button works already
