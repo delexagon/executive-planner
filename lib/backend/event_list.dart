@@ -37,7 +37,7 @@ class Event {
     date = other._date;
   }
 
-  static final List<String> specialTags = ['Overdue'];
+  static final List<String> specialTags = ['Overdue', 'Completed'];
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -98,9 +98,16 @@ class Event {
   }
 
   void complete() {
+    print('hi');
     if(recur == null || date == null) {
-      removeTag('Overdue', special: true);
-      addTag('Completed', special: true);
+      if(!hasTag('Completed')) {
+        removeTag('Overdue', special: true);
+        addTag('Completed', special: true);
+      } else if(masterList.hasEvent(this)) {
+        print('ho');
+        removeTag('Completed', special: true);
+        masterList.rootWidget.events.add(this);
+      }
     } else {
       date = recur!.getNextRecurrence(date!);
       if(date!.isAfter(DateTime.now())) {
@@ -420,8 +427,9 @@ class EventList {
 
   /// Sorts list by event comparator. Various sorts can be found in the Event
   /// class. Should be called automatically when the list is modified.
-  void sort() {
+  EventList sort() {
     list.sort(sortFunc);
+    return this;
   }
 
   Set<Event> toSet() {

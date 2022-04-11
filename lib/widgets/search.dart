@@ -227,7 +227,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return Expanded(
       child: SingleChildScrollView(
         child: EventListDisplay(
-          events: EventList(list: currentEvents.toList()),
+          events: currentEvents.toEventList().sort(),
           setToColor: selectedEvents,
           onTap: (Event e) {
             if(selectedEvents.contains(e)) {

@@ -30,6 +30,10 @@ class masterList {
     manageEventList(rootWidget.events);
   }
 
+  static bool hasEvent(Event e) {
+    return _masterList.contains(e);
+  }
+
   static void addTag(String t, Event e) {
     if(Event.specialTags.contains(t)) {
       return;
@@ -138,9 +142,13 @@ class masterList {
     }
   }
 
+  static String toJason() {
+    return _masterList.toJason();
+  }
+
   static void saveMaster([Event? e]) {
     if(e == null || _masterList.contains(e)) {
-      write('events', _masterList.toJason());
+      write('events', toJason());
     }
   }
 }

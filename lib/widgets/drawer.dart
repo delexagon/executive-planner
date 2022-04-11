@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ExecutiveDrawer extends StatelessWidget {
-  const ExecutiveDrawer({required this.update, required this.events, Key? key}) : super(key: key);
+  const ExecutiveDrawer({required this.update, required this.events, this.calledFromRoot = false, Key? key,}) : super(key: key);
   final EventList events;
   final Function() update;
+  final bool calledFromRoot;
 
   /// Loads new page when search results are submitted, generating a new
   /// [ExecutiveHomePage].
@@ -28,7 +29,11 @@ class ExecutiveDrawer extends StatelessWidget {
 
 
   void exportData() {
-    Clipboard.setData(ClipboardData(text: Set<Event>.from(events.list).toJason()));
+    if(calledFromRoot) {
+      Clipboard.setData(ClipboardData(text: masterList.toJason()));
+    } else {
+      Clipboard.setData(ClipboardData(text: Set<Event>.from(events.list).toJason()));
+    }
   }
 
   void importData(BuildContext context) {

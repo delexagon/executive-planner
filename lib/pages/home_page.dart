@@ -227,7 +227,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         title: definitelyATitle(),
       ),
       // Hamburger :)
-      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
+      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events, calledFromRoot: widget == masterList.rootWidget),
       body: SingleChildScrollView(
         child: Column(
           children: [
