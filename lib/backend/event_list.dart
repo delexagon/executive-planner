@@ -26,7 +26,6 @@ class Event {
 
   Event.copy(Event other) {
     _name = other._name;
-    _date = other._date;
     _description = other._description;
     _priority = other._priority;
     tags.mergeTagLists(other.tags, onAdd: onAdd);
@@ -35,6 +34,7 @@ class Event {
     } else {
       recur = null;
     }
+    date = other._date;
   }
 
   static final List<String> specialTags = ['Overdue'];
@@ -140,6 +140,9 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
+    if(_date != null && _date!.isAfter(DateTime.now())) {
+      removeTag('Overdue', special: true);
+    }
     masterList.saveMaster(this);
   }
   DateTime? get date {

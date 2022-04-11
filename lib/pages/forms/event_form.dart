@@ -81,6 +81,12 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
   Widget datePicker() {
     return TextButton(
       onPressed: () {
+        int hour = 0;
+        int minute = 0;
+        if(widget.event.date != null) {
+          hour = widget.event.date!.hour;
+          minute = widget.event.date!.minute;
+        }
         showDatePicker(
           context: context,
           firstDate: DateTime(DateTime.now().year - 2),
@@ -89,6 +95,11 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
         ).then((DateTime? date) {
           setState(() {
             widget.event.date = date;
+            if(widget.event.date != null) {
+              widget.event.date = DateTime(date!.year, date.month, date.day, hour, minute);
+            } else {
+              widget.event.date = null;
+            }
           });
         });
       },
