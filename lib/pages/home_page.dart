@@ -346,9 +346,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: NavBarDisplay(
-        events: widget.events,
-        selectedIndex: 0,
-    ),);
+    );
   }
 }
