@@ -26,6 +26,12 @@ Together, we will make working accessible, rewarding, and fun!
 
 ---
 
+## Builds
+
+Linux: 
+A precompiled executable is available at https://drive.google.com/drive/folders/133vc1G6YLBMPvDmW1OHYQ0aQpELW666M.  
+Note that Ubuntu users will manually have to set the XDG_DATA_HOME directory to some folder or other in .bashrc 
+
 ### Design Philosophy
 
 The Executive Planner project makes use of Dart, an object oriented programming language that emphasizes abstract programming through its use of modular widgets. Our objective is to make full use of the widget-based functionality provided by Dart to lean into the principles of encapsulation, polymorphism, and abstraction and simplify the process of building our project according to specification.
@@ -55,7 +61,7 @@ Each functional component of the Executive Planner project is represented as a s
 
 ## Requirements
 
-This project requires the packages:    
+This project requires the Flutter packages:    
 shared_preferences  
 intl
 table_calendar
