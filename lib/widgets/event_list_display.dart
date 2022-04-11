@@ -14,6 +14,7 @@ class EventListDisplay extends StatefulWidget {
   const EventListDisplay({
     required this.events,
     Key? key,
+    required this.showCompleted,
     this.onTap,
     this.onLongPress,
     this.setToColor,
@@ -24,6 +25,7 @@ class EventListDisplay extends StatefulWidget {
   final Function(Event e)? onTap;
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
+  final bool showCompleted;
 
   /// Events in this list, if present, are colored light blue.
   final Set<Event>? setToColor;
@@ -37,12 +39,16 @@ class _EventListDisplayState extends State<EventListDisplay> {
     final List<Widget> tiles = <Widget>[];
     if (widget.events.length != 0) {
       for (int i = 0; i < widget.events.length; i++) {
+        if(!widget.showCompleted && widget.events[i].isComplete) {
+          continue;
+        }
         tiles.add(const Divider());
         tiles.add(
           EventTile(
             event: widget.events[i],
             onTap: widget.onTap,
             onLongPress: widget.onLongPress,
+            showCompleted: widget.showCompleted,
             onDrag: (Event e) {
               if (widget.onDrag != null) {
                 widget.onDrag!(e);

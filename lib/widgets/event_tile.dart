@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class EventTile extends StatefulWidget {
   /// Only [EventListDisplay] should call this function.
   const EventTile({
-    required this.event, Key? key, this.onTap, this.onLongPress, this.setToColor, this.onDrag,
+    required this.event, Key? key, required this.showCompleted, this.onTap, this.onLongPress, this.setToColor, this.onDrag,
   }) : super(key: key);
 
   final Event event;
@@ -17,6 +17,7 @@ class EventTile extends StatefulWidget {
   final Function(Event e)? onLongPress;
   final Function(Event e)? onDrag;
   final Set<Event>? setToColor;
+  final bool showCompleted;
 
   @override
   _EventTileState createState() => _EventTileState();
@@ -70,18 +71,6 @@ class _EventTileState extends State<EventTile> {
       }
     }
     final TextStyle titleColor = TextStyle(color: priorityColors[widget.event.priority.index]);
-    String subtitleString = '';
-    if(!descMode) {
-      subtitleString += widget.event.dateString();
-      if(widget.event.recur != null) {
-        subtitleString += '\n${widget.event.recur!.toString()}';
-      }
-      if(widget.event.tags.isNotEmpty) {
-        subtitleString += '\nTags: ${widget.event.tagsString()}';
-      }
-    } else {
-      subtitleString = widget.event.description;
-    }
     tile = GestureDetector(
       onDoubleTap: () {
         if (widget.onDrag != null) {
@@ -117,7 +106,7 @@ class _EventTileState extends State<EventTile> {
             widget.event.name,
             style: titleColor,
           ),
-          subtitle: Text(subtitleString),
+          subtitle: Text(widget.event.subtitleString(descMode: descMode)),
           trailing: icon,
         ),
       ),
@@ -131,6 +120,7 @@ class _EventTileState extends State<EventTile> {
             child: EventListDisplay(
               events: widget.event.subevents,
               onLongPress: widget.onLongPress,
+              showCompleted: widget.showCompleted,
               onDrag: widget.onDrag,
             ),
           ),

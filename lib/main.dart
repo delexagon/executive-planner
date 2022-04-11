@@ -20,7 +20,6 @@ class ExecutivePlanner extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    masterList.rootWidget.events.union(masterList.toEventList()).searchTags('Completed', appears: false);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Planner',

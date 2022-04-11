@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 class ExecutiveHomePage extends StatefulWidget {
   ExecutiveHomePage({
     Key? key,
+    required this.showCompleted,
     required this.title,
     required this.events,
   }) : super(key: key) {
@@ -31,6 +32,7 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Holds the events considered by this particular HomePage.
   /// Necessary to consider and selectively show searches.
   final EventList events;
+  final bool showCompleted;
 
   /// Adds event to both current and masterList.
   void addEvent(Event e) {
@@ -66,11 +68,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   /// Loads new page when search results are submitted, generating a new
   /// [ExecutiveHomePage].
-  Future _goToSearchPage(BuildContext context, EventList events) async {
+  Future _goToSearchPage(BuildContext context, EventList events, bool showCompleted) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ExecutiveHomePage(
+          showCompleted: showCompleted,
           title: 'Search results',
           events: events,
         ),
@@ -100,8 +103,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
                     events: masterList.rootWidget == widget ? masterList.toEventList() : widget.events,
-                    onSubmit: (EventList e) {
-                      _goToSearchPage(context, e);
+                    onSubmit: (EventList e, bool showCompleted) {
+                      _goToSearchPage(context, e, showCompleted);
                       removeOverlayEntry();
                     },
                     onExit: () {
@@ -152,6 +155,9 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     const double buttonDiameter = 110;
     final List<Widget> widgets = <Widget>[];
     for(int i = 0; i < dailyTasks.length; i++) {
+      if(dailyTasks[i].isComplete) {
+        continue;
+      }
       widgets.add(
         SizedBox(
           width: buttonDiameter,
@@ -227,12 +233,13 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         title: definitelyATitle(),
       ),
       // Hamburger :)
-      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events, calledFromRoot: widget == masterList.rootWidget),
+      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
       body: SingleChildScrollView(
         child: Column(
           children: [
             showDailyTasks(),
             EventListDisplay(
+              showCompleted: widget.showCompleted,
               events: widget.events,
               onLongPress: (Event e) {
                 _changeEventForm(context, event: e).then((Event? copy) {
@@ -248,11 +255,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               },
               onDrag: (Event e) {
                 e.complete();
-                if(e.hasTag('Completed')) {
-                  widget.events.remove(e);
-                } else {
-                  widget.events.sort();
-                }
+                widget.events.sort();
+                setState(() {});
       },)],),),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,

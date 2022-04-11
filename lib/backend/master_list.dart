@@ -17,6 +17,7 @@ class masterList {
   static final ExecutiveHomePage rootWidget = ExecutiveHomePage(
     title: 'Planner',
     events: EventList(),
+    showCompleted: false,
   );
 
   static void update() {
@@ -35,9 +36,6 @@ class masterList {
   }
 
   static void addTag(String t, Event e) {
-    if(Event.specialTags.contains(t)) {
-      return;
-    }
     if(_masterList.contains(e)) {
       if(_masterTagList.containsKey(t)) {
         _masterTagList[t] = _masterTagList[t]! + 1;
@@ -95,9 +93,7 @@ class masterList {
   static void clear() {
     _masterList.clear();
     _masterTagList.clear();
-    for(final EventList e in _eventListList.keys) {
-      e.clear();
-    }
+    clearManaged();
   }
 
   static EventList toEventList() {
@@ -140,6 +136,7 @@ class masterList {
         addTag(tag, e);
       }
     }
+    rootWidget.events.union(_masterList.toEventList());
   }
 
   static String toJason() {

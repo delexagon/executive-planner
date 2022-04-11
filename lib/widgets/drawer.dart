@@ -20,7 +20,8 @@ class ExecutiveDrawer extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ExecutiveHomePage(
           title: 'Completed events',
-          events: events,
+          events: events.searchCompleted(),
+          showCompleted: true,
         ),
       ),
     );
@@ -42,8 +43,6 @@ class ExecutiveDrawer extends StatelessWidget {
         masterList.clearManaged();
         Navigator.popUntil(context, ModalRoute.withName('/'));
         masterList.loadMaster(value.text!);
-        masterList.rootWidget.events.union(masterList.toEventList()).searchTags(
-          'Completed', appears: false,);
       }
     });
     update();
@@ -103,7 +102,7 @@ class ExecutiveDrawer extends StatelessWidget {
           const Divider(),
           TextButton(
             onPressed:
-            () => _showCompleted(context, masterList.toEventList().searchTags('Completed')),
+            () => _showCompleted(context, events),
             child: const Text('Completed events'),
           ),
           const Divider(),

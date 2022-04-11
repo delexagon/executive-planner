@@ -248,7 +248,7 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
                 child: AdvancedSearch(
                   selectedOnly: true,
                   events: widget.events,
-                  onSubmit: (EventList e) {
+                  onSubmit: (EventList e, bool showCompleted) {
                     widget.event.subevents = e;
                     removeOverlayEntry();
                   },
