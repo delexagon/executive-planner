@@ -105,7 +105,7 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
       },
       child: Text(widget.event.dateString()),);
     if(widget.event.date != null) {
-      return Column(children: [dateButton, timePicker()]);
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [dateButton, timePicker()]);
     }
     return dateButton;
   }
