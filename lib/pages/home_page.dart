@@ -29,15 +29,6 @@ class ExecutiveHomePage extends StatefulWidget {
     masterList.manageEventList(events);
   }
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   /// The title text, placed in the center of the appbar.
   final String title;
 
@@ -187,13 +178,14 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   void exportData() {
     Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
-    setState(() {});
   }
 
   void importData() {
     Clipboard.getData('text/plain').then((ClipboardData? value) {
       if (value != null && value.text != null && value.text != '') {
-        masterList.removeManagedEventList(widget.events);
+        if(widget.isRoot != null) {
+          masterList.removeManagedEventList(widget.events);
+        }
         Navigator.popUntil(context, ModalRoute.withName('/'));
         masterList.loadMaster(value.text!);
         final ExecutiveHomePage root = widget.isRoot ?? widget;
@@ -204,6 +196,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });
+    setState(() {});
   }
 
   /// Our wonderful "Title"
