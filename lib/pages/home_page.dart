@@ -35,14 +35,7 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Adds event to both current and masterList.
   void addEvent(Event e) {
     masterList.add(e);
-    masterList.saveMaster();
     events.add(e);
-  }
-
-  /// Removes event from both current and masterList.
-  void removeEvent(Event e) {
-    masterList.remove(e);
-    masterList.saveMaster();
   }
 
   /// Removes event from both current and masterList.
@@ -244,7 +237,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               onLongPress: (Event e) {
                 _changeEventForm(context, event: e).then((Event? copy) {
                   if(copy == null) {
-                    widget.removeEvent(e);
+                    masterList.remove(e);
                   } else if (e == copy) {
                   } else {
                     e.copy(copy);

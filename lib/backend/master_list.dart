@@ -71,6 +71,7 @@ class masterList {
 
   static void add(Event e) {
     _masterList.add(e);
+    saveMaster();
     for(final String tag in e.tags.asStringList()) {
       addTag(tag, e);
     }
@@ -81,6 +82,7 @@ class masterList {
       removeTag(tag, e);
     }
     _masterList.remove(e);
+    saveMaster();
     for(final EventList list in _eventListList.keys) {
       list.remove(e);
     }

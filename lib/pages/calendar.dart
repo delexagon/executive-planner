@@ -5,6 +5,8 @@ import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'forms/event_change_form.dart';
+
 
 class CalendarView extends StatefulWidget {
   CalendarView({required this.events, Key? key}) : super(key: key) {
@@ -43,6 +45,18 @@ class _CalendarState extends State<CalendarView> {
   void dispose() {
     _selectedEvents.dispose();
     super.dispose();
+  }
+
+  Future<Event?> _changeEventForm(BuildContext context, {required Event event}) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventChangeForm(
+          event: event,
+          events: widget.events,
+        ),
+      ),
+    );
   }
 
   EventList _getEventListForDay(DateTime day) {
@@ -199,6 +213,21 @@ class _CalendarState extends State<CalendarView> {
                 child:  SingleChildScrollView (
                   child: EventListDisplay(
                     events: _selectedEventsList,
+                    onLongPress: (Event e) {
+                      _changeEventForm(context, event: e).then((Event? copy) {
+                        if(copy == null) {
+                          masterList.remove(e);
+                        } else if (e == copy) {
+                        } else {
+                          e.copy(copy);
+                          widget.events.sort();
+                        }
+                        if(_selectedDay != null) {
+                          _selectedEventsList = widget.events.searchDate(_selectedDay!);
+                        }
+                        setState(() {});
+                      });
+                    },
       ),),),],);},),
     );
   }
