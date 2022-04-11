@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/jason.dart';
@@ -224,8 +223,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             child: Text('${dailyTasks[i].name} ${dailyTasks[i].timeString()}', style: TextStyle (
               color: Theme.of(context).canvasColor,
             ),),
-          )
-        )
+          ),
+        ),
       );
     }
     return SingleChildScrollView(
