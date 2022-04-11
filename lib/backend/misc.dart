@@ -20,7 +20,10 @@ Widget padded(double vert, double hor, Widget? other) {
 
 extension TitleCase on String {
   String toTitleCase() {
-    return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
+    if(length > 0) {
+      return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
+    }
+    return '';
   }
 }
 

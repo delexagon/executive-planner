@@ -103,9 +103,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   }
 
   EventList? searchByString(int i, String str) {
-    if(str == '') {
-      return null;
-    }
+
     if(i == 0) {
       return searchNameByString(str);
     } else if(i == 1) {
@@ -114,6 +112,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
       return searchPriorityByString(str);
     } else if(i == 3) {
       return searchDateByString(str);
+    } else if(i == 4) {
+      return widget.events.searchRecurrence();
     }
     return null;
   }
@@ -121,15 +121,11 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Search types which are enabled.
   /// In order: name, tag, priority, date
   /// If modified, please also update the typeCheckboxes() function.
-  List<bool?> searchTypesEnabled = [true, true, false, false, false,];
+  List<bool?> searchTypesEnabled = [true, true, false, false, false, true,];
 
   // TODO: Make this function have less time complexity?
   /// Recalculates search based on the new search terms.
   void redoSearch() {
-    if(searchStr == '') {
-      currentEvents = widget.events.toSet();
-      return;
-    }
     currentEvents = <Event>{};
     final bool? addAll = searchTypesEnabled[searchTypesEnabled.length-1];
     final List<String> strs = searchStr.split(',');
@@ -189,7 +185,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {
-    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date'];
+    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date', 'Recurs'];
     final List<Widget> checkboxes = <Widget>[];
     checkboxes.add(
       Flexible(
@@ -218,7 +214,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child:SizedBox(
-        width: 750,
+        width: 900,
         height: 40,
         child: Row(
           children: checkboxes,

@@ -1,5 +1,6 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/pages/forms/event_change_form.dart';
 import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,18 @@ class _CalendarState extends State<CalendarView> {
   void dispose() {
     _selectedEvents.dispose();
     super.dispose();
+  }
+
+  Future<Event?> _changeEventForm(BuildContext context, {required Event event}) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventChangeForm(
+          event: event,
+          events: widget.events,
+        ),
+      ),
+    );
   }
 
   EventList _getEventListForDay(DateTime day) {
@@ -186,20 +199,29 @@ class _CalendarState extends State<CalendarView> {
         title: title(),
       ),
       drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
-      body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
+      body: Column(
             children: [
               SizedBox(
                 height: calendarHeight,
                 child: calendar(),
               ),
-              SizedBox(
-                height: constraints.maxHeight-calendarHeight,
+              Expanded(
                 child:  SingleChildScrollView (
                   child: EventListDisplay(
                     events: _selectedEventsList,
-      ),),),],);},),
-    );
+                    onLongPress: (Event e) {
+                      _changeEventForm(context, event: e).then((Event? copy) {
+                        if(copy == null) {
+                          masterList.remove(e);
+                        } else if (e == copy) {
+                        } else {
+                          e.copy(copy);
+                          widget.events.sort();
+                        }
+                        if(_selectedDay != null) {
+                          _selectedEventsList = widget.events.searchDate(_selectedDay!);
+                        }
+                        setState(() {});
+    });},),),),],),);
   }
 }

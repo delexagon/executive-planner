@@ -26,7 +26,6 @@ class Event {
 
   Event.copy(Event other) {
     _name = other._name;
-    _date = other._date;
     _description = other._description;
     _priority = other._priority;
     tags.mergeTagLists(other.tags, onAdd: onAdd);
@@ -35,9 +34,10 @@ class Event {
     } else {
       recur = null;
     }
+    date = other._date;
   }
 
-  static final List<String> specialTags = ['Recurring', 'Overdue'];
+  static final List<String> specialTags = ['Overdue'];
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -84,8 +84,6 @@ class Event {
       } else {
         recur = null;
       }
-    } else {
-      tags.removeTag('Recurring');
     }
     tags.removeAllTags(other.tagsRemove, onRemove: onRemove);
     tags.mergeTagLists(other.tags, onAdd: onAdd);
@@ -142,6 +140,9 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
+    if(_date != null && _date!.isAfter(DateTime.now())) {
+      removeTag('Overdue', special: true);
+    }
     masterList.saveMaster(this);
   }
   DateTime? get date {
@@ -177,11 +178,6 @@ class Event {
 
   Recurrence? _recur;
   set recur(Recurrence? recurrence) {
-    if(recurrence != null) {
-      addTag('Recurring', special: true);
-    } else {
-      removeTag('Recurring', special: true);
-    }
     _recur = recurrence;
     masterList.saveMaster(this);
   }
@@ -228,7 +224,7 @@ class Event {
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
   bool removeTag(String tag, {bool special = false}) {
-    if(!special && (tag == 'Recurring' || tag == 'Completed')) {
+    if(!special && specialTags.contains(tag)) {
       return false;
     }
     final bool ret = tags.removeTag(tag, onRemove: onRemove);
@@ -314,14 +310,18 @@ class Event {
 }
 
 class MassEditor extends Event {
-  MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
-    super.copy(e);
+  MassEditor() {
+    name = 'Event editor';
+    description = 'Edit all events at once by typing changes and then checking the boxes below. Tags will automatically be added or removed.';
   }
+  MassEditor.copy(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
+    super.copy(e);
+ }
 
-  bool markForDeletion;
-  List<bool> changes;
+  bool markForDeletion = false;
+  List<bool> changes = <bool>[];
 
-  TagList tagsRemove;
+  TagList tagsRemove = TagList();
 }
 
 class EventList {
@@ -480,6 +480,17 @@ class EventList {
         if(!(list[i].priority == priority)) {
           part.add(list[i]);
         }
+      }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchRecurrence() {
+    final EventList part = EventList();
+    for(int i = 0; i < list.length; i++) {
+      if(list[i].recur != null) {
+        part.add(list[i]);
       }
     }
     return part;
