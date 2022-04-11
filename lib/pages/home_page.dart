@@ -215,6 +215,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             ),
             onPressed: () {
               dailyTasks[i].complete();
+              widget.events.sort();
               if(dailyTasks[i].date != null && dailyTasks[i].date!.isAfter(DateTime.now().add(const Duration(days: 1)))) {
                 dailyTasks.remove(dailyTasks[i]);
               }
@@ -303,7 +304,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                 e.complete();
                 if(e.hasTag('Completed')) {
                   widget.events.remove(e);
-      }},)],),),
+                } else {
+                  widget.events.sort();
+                }
+      },)],),),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
