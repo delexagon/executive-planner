@@ -79,7 +79,7 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
   /// Generates a widget which allows the user to set the date of an event.
   /// Currently, setting a date resets the time.
   Widget datePicker() {
-    return TextButton(
+    final Widget dateButton = TextButton(
       onPressed: () {
         int hour = 0;
         int minute = 0;
@@ -104,6 +104,10 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
         });
       },
       child: Text(widget.event.dateString()),);
+    if(widget.event.date != null) {
+      return Column(children: [dateButton, timePicker()]);
+    }
+    return dateButton;
   }
 
   /// Generates a widget which allows the user to set the date of an event.

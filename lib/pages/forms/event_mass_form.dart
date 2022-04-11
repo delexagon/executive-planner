@@ -99,7 +99,6 @@ class _EventMassFormState extends EventFormState {
               TagSelector(tags: tags, onAdd: (String t) {tags.addTag(t);}, onRemove: (String t) {tags.removeTag(t);}),
               paddedText('Change date:'),
               datePicker(),
-              timePicker(),
               paddedText('Change priority:'),
               priorityDropdown(),
               paddedText('Change recurrence:'),
