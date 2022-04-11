@@ -53,8 +53,8 @@ class ExecutiveHomePage extends StatefulWidget {
 
   /// Removes event from both current and masterList.
   void clearEvents() {
-    for(int i = 0; i < events.length; i++) {
-      masterList.remove(events[i]);
+    while(events.length > 0) {
+      masterList.remove(events[0]);
     }
     masterList.saveMaster();
   }
