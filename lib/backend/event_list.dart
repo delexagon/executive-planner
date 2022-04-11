@@ -98,13 +98,11 @@ class Event {
   }
 
   void complete() {
-    print('hi');
     if(recur == null || date == null) {
       if(!hasTag('Completed')) {
         removeTag('Overdue', special: true);
         addTag('Completed', special: true);
       } else if(masterList.hasEvent(this)) {
-        print('ho');
         removeTag('Completed', special: true);
         masterList.rootWidget.events.add(this);
       }
