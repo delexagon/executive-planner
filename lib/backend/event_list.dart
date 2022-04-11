@@ -37,7 +37,7 @@ class Event {
     }
   }
 
-  static final List<String> specialTags = ['Recurring', 'Overdue'];
+  static final List<String> specialTags = ['Overdue'];
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -84,8 +84,6 @@ class Event {
       } else {
         recur = null;
       }
-    } else {
-      tags.removeTag('Recurring');
     }
     tags.removeAllTags(other.tagsRemove, onRemove: onRemove);
     tags.mergeTagLists(other.tags, onAdd: onAdd);
@@ -177,11 +175,6 @@ class Event {
 
   Recurrence? _recur;
   set recur(Recurrence? recurrence) {
-    if(recurrence != null) {
-      addTag('Recurring', special: true);
-    } else {
-      removeTag('Recurring', special: true);
-    }
     _recur = recurrence;
     masterList.saveMaster(this);
   }
@@ -228,7 +221,7 @@ class Event {
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
   bool removeTag(String tag, {bool special = false}) {
-    if(!special && (tag == 'Recurring' || tag == 'Completed')) {
+    if(!special && specialTags.contains(tag)) {
       return false;
     }
     final bool ret = tags.removeTag(tag, onRemove: onRemove);
@@ -480,6 +473,17 @@ class EventList {
         if(!(list[i].priority == priority)) {
           part.add(list[i]);
         }
+      }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchRecurrence() {
+    final EventList part = EventList();
+    for(int i = 0; i < list.length; i++) {
+      if(list[i].recur != null) {
+        part.add(list[i]);
       }
     }
     return part;

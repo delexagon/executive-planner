@@ -200,16 +200,13 @@ class _CalendarState extends State<CalendarView> {
         title: title(),
       ),
       drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
-      body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
+      body: Column(
             children: [
               SizedBox(
                 height: calendarHeight,
                 child: calendar(),
               ),
-              SizedBox(
-                height: constraints.maxHeight-calendarHeight,
+              Expanded(
                 child:  SingleChildScrollView (
                   child: EventListDisplay(
                     events: _selectedEventsList,
@@ -226,9 +223,6 @@ class _CalendarState extends State<CalendarView> {
                           _selectedEventsList = widget.events.searchDate(_selectedDay!);
                         }
                         setState(() {});
-                      });
-                    },
-      ),),),],);},),
-    );
+    });},),),),],),);
   }
 }
