@@ -1,4 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
@@ -68,18 +69,7 @@ class _EventTileState extends State<EventTile> {
         );
       }
     }
-    TextStyle titleColor;
-    if(widget.event.priority == Priority.low) {
-      titleColor = const TextStyle(color: Colors.blue);
-    } else if(widget.event.priority == Priority.medium) {
-      titleColor = const TextStyle(color: Colors.green);
-    } else if(widget.event.priority == Priority.high) {
-      titleColor = const TextStyle(color: Colors.orange);
-    } else if(widget.event.priority == Priority.critical) {
-      titleColor = TextStyle(color: Colors.red.shade900);
-    } else {
-      titleColor = const TextStyle(color: Colors.black);
-    }
+    final TextStyle titleColor = TextStyle(color: priorityColors[widget.event.priority.index]);
     String subtitleString = '';
     if(!descMode) {
       subtitleString += widget.event.dateString();

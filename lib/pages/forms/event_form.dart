@@ -181,6 +181,12 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
   Widget _recurChanger() {
     final List<Widget> typeboxes = <Widget>[];
     for(int i = 0; i < Break.timeStrs.length; i++) {
+      String hintText;
+      if(widget.event.recur!.spacing.times[i] != 0) {
+        hintText = widget.event.recur!.spacing.times[i].toString();
+      } else {
+        hintText = i == Break.timeStrs.length-1 ? 'Min' : Break.timeStrs[i];
+      }
       typeboxes.add(padded(1,1,
         SizedBox(
           width: 75,
@@ -194,8 +200,8 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
             },
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              hintText: i == Break.timeStrs.length-1 ? 'Min' : Break.timeStrs[i],
-            ),),),),);
+              hintText: hintText,
+      ),),),),);
     }
     return SizedBox(
       height: 35,

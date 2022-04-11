@@ -186,6 +186,13 @@ class Event {
     return _recur;
   }
 
+  String timeString() {
+    if(date == null || date!.hour == 0 && date!.minute == 0) {
+      return '';
+    }
+    return timeFormat.format(date!.toLocal());
+  }
+
   /// Generate an English readable date string for this object, in the correct
   /// time zone. If the time is 12:00 AM, it is assumed time was not set and
   /// it is not displayed.
@@ -196,7 +203,7 @@ class Event {
       if (date!.hour == 0 && date!.minute == 0) {
         return dateFormat.format(date!.toLocal());
       } else {
-        return '${dateFormat.format(date!.toLocal())} ${timeFormat.format(date!.toLocal())}';
+        return '${dateFormat.format(date!.toLocal())} ${timeString()}';
       }
     }
   }
@@ -387,6 +394,16 @@ class EventList {
     return this;
   }
 
+  /// This function is not Master safe, do not use on persistent events.
+  void removeAll(EventList other) {
+    if(this == other) {
+      list = <Event>[];
+    }
+    for(final Event e in other.list) {
+      list.remove(e);
+    }
+  }
+
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
   EventList intersection(EventList e) {
@@ -396,19 +413,6 @@ class EventList {
       }
     }
     return this;
-  }
-
-  /// Removes all events in e from the current list, and returns it.
-  /// This modifies the list you use it on!
-  EventList removeAll(EventList e, bool Function(Event e) removeIf) {
-    for(int i = 0; i < e.length;) {
-      if(removeIf(list[i])) {
-        list.remove(list[i]);
-      } else {
-        i++;
-      }
-    }
-    return EventList();
   }
 
   /// Sorts list by event comparator. Various sorts can be found in the Event
@@ -493,6 +497,16 @@ class EventList {
         if (date.isSameMoment(list[i].date)) {
           part.add(list[i]);
         }
+      }
+    }
+    return part;
+  }
+
+  EventList searchBefore(DateTime endDate) {
+    final EventList part = EventList();
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].date != null && endDate.isAfter(list[i].date!)) {
+        part.add(list[i]);
       }
     }
     return part;

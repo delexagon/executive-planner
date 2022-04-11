@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/master_list.dart';
@@ -64,6 +66,7 @@ class ExecutiveHomePage extends StatefulWidget {
 
 class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   _ExecutiveHomePageState();
+  EventList dailyTasks = EventList();
 
   /// Generates a search icon which can be tapped to become a text field.
   Widget _searchIcon() {
@@ -197,6 +200,44 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     setState(() {});
   }
 
+  Widget showDailyTasks() {
+    const double buttonDiameter = 100;
+    final List<Widget> widgets = <Widget>[];
+    for(int i = 0; i < dailyTasks.length; i++) {
+      widgets.add(
+        SizedBox(
+          width: buttonDiameter,
+          height: buttonDiameter,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              primary: priorityColors[dailyTasks[i].priority.index], // <-- Button color
+              onPrimary: Theme.of(context).canvasColor, // <-- Splash color
+            ),
+            onPressed: () {
+              dailyTasks[i].complete();
+              if(dailyTasks[i].date != null && dailyTasks[i].date!.isAfter(DateTime.now().add(const Duration(days: 1)))) {
+                dailyTasks.remove(dailyTasks[i]);
+              }
+              setState(() {});
+            },
+            child: Text('${dailyTasks[i].name} ${dailyTasks[i].timeString()}', style: TextStyle (
+              color: Theme.of(context).canvasColor,
+            ),),
+          )
+        )
+      );
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+        child: padded(5,5,
+          SizedBox(
+              width: buttonDiameter * dailyTasks.length,
+              child: Row(
+                children: widgets,
+      ),),),);
+  }
+
   /// Our wonderful "Title"
   Widget definitelyATitle() {
     final List<Widget> widgets = <Widget>[];
@@ -230,6 +271,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    dailyTasks = widget.events.searchTags('Displayed').searchBefore(DateTime.now().add(const Duration(days:1)));
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -240,25 +282,28 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       ),
       // Hamburger :)
       drawer: ExecutiveDrawer(sortChange: setSort, showCompleted: showCompleted, exportEvents: exportData, importEvents: importData),
-      body: EventListDisplay(
-        events: widget.events,
-        onLongPress: (Event e) {
-          _changeEventForm(context, event: e).then((Event? copy) {
-            if(copy == null) {
-              widget.removeEvent(e);
-            } else if (e == copy) {
-            } else {
-              e.copy(copy);
-              widget.events.sort();
-            }
-            setState(() {});
-          });
-        },
-        onDrag: (Event e) {
-          e.complete();
-          widget.events.remove(e);
-        },
-      ),
+      body: Column(
+        children: [
+          showDailyTasks(),
+          EventListDisplay(
+            events: widget.events,
+            onLongPress: (Event e) {
+              _changeEventForm(context, event: e).then((Event? copy) {
+                if(copy == null) {
+                  widget.removeEvent(e);
+                } else if (e == copy) {
+                } else {
+                  e.copy(copy);
+                  widget.events.sort();
+                }
+                setState(() {});
+              });
+            },
+            onDrag: (Event e) {
+              e.complete();
+              if(e.hasTag('Completed')) {
+                widget.events.remove(e);
+      }},),]),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

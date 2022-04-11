@@ -7,6 +7,8 @@ class Tuple<T1, T2> {
   T2 second;
 }
 
+List<Color> priorityColors = [Colors.black, Colors.blue, Colors.green, Colors.orange, Colors.red.shade900,];
+
 DateFormat userDateFormat = DateFormat('M/d/yy');
 
 Widget padded(double vert, double hor, Widget? other) {
