@@ -229,6 +229,14 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           const Divider(),
           TextButton(
             onPressed: () {
+              _goToSearchPage(context, masterList.toEventList().searchTags('Completed'));
+              setState(() {});
+            },
+            child: const Text('Completed events'),
+          ),
+          const Divider(),
+          TextButton(
+            onPressed: () {
               Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
               setState(() {});
             },

@@ -1,6 +1,5 @@
 
 import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/widgets/search.dart';

@@ -11,7 +11,7 @@ enum Priority { none, low, medium, high, critical }
 
 class Event {
 
-  static final List<String> specialTags = ['Completed', 'Recurring'];
+  static final List<String> specialTags = ['Recurring'];
 
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
