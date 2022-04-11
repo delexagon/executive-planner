@@ -1,18 +1,15 @@
 
 import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/forms/event_change_form.dart';
 import 'package:executive_planner/pages/forms/event_mass_form.dart';
-import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
@@ -24,7 +21,6 @@ class ExecutiveHomePage extends StatefulWidget {
     Key? key,
     required this.title,
     required this.events,
-    this.isRoot,
   }) : super(key: key) {
     masterList.manageEventList(events);
   }
@@ -35,8 +31,6 @@ class ExecutiveHomePage extends StatefulWidget {
   /// Holds the events considered by this particular HomePage.
   /// Necessary to consider and selectively show searches.
   final EventList events;
-
-  final ExecutiveHomePage? isRoot;
 
   /// Adds event to both current and masterList.
   void addEvent(Event e) {
@@ -53,8 +47,8 @@ class ExecutiveHomePage extends StatefulWidget {
 
   /// Removes event from both current and masterList.
   void clearEvents() {
-    for(int i = 0; i < events.length; i++) {
-      masterList.remove(events[i]);
+    while(events.length > 0) {
+      masterList.remove(events[0]);
     }
     masterList.saveMaster();
   }
@@ -86,7 +80,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         builder: (context) => ExecutiveHomePage(
           title: 'Search results',
           events: events,
-          isRoot: widget.isRoot ?? widget,
         ),
       ),
     );
@@ -113,7 +106,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
-                    events: widget.isRoot == null ? masterList.toEventList() : widget.events,
+                    events: masterList.rootWidget == widget ? masterList.toEventList() : widget.events,
                     onSubmit: (EventList e) {
                       _goToSearchPage(context, e);
                       removeOverlayEntry();
@@ -162,52 +155,16 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     );
   }
 
-  void showCompleted() {
-    _goToSearchPage(context, masterList.toEventList().searchTags('Completed'));
-    setState(() {});
-  }
-
-  void setSort(Comparator<Event>? value) {
-    if(value != null) {
-      setState(() {
-        EventList.sortFunc = value;
-        widget.events.sort();
-        setState(() {});
-      });
-    }
-  }
-
-  void exportData() {
-    Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
-  }
-
-  void importData() {
-    Clipboard.getData('text/plain').then((ClipboardData? value) {
-      if (value != null && value.text != null && value.text != '') {
-        if(widget.isRoot != null) {
-          masterList.removeManagedEventList(widget.events);
-        }
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-        masterList.loadMaster(value.text!);
-        final ExecutiveHomePage root = widget.isRoot ?? widget;
-        root.events.union(masterList.toEventList()).searchTags(
-            'Completed', appears: false,);
-      } else {
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-      }
-    });
-    setState(() {});
-  }
-
   Widget showDailyTasks() {
-    const double buttonDiameter = 100;
+    const double buttonDiameter = 110;
     final List<Widget> widgets = <Widget>[];
     for(int i = 0; i < dailyTasks.length; i++) {
       widgets.add(
         SizedBox(
           width: buttonDiameter,
           height: buttonDiameter,
-          child: ElevatedButton(
+          child: padded(3,3,
+          ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               primary: priorityColors[dailyTasks[i].priority.index], // <-- Button color
@@ -215,6 +172,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             ),
             onPressed: () {
               dailyTasks[i].complete();
+              widget.events.sort();
               if(dailyTasks[i].date != null && dailyTasks[i].date!.isAfter(DateTime.now().add(const Duration(days: 1)))) {
                 dailyTasks.remove(dailyTasks[i]);
               }
@@ -222,11 +180,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             },
             child: Text('${dailyTasks[i].name} ${dailyTasks[i].timeString()}', style: TextStyle (
               color: Theme.of(context).canvasColor,
-            ),),
-          ),
-        ),
-      );
-    }
+    ),),),),),);}
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
         child: padded(5,5,
@@ -234,13 +188,13 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               width: buttonDiameter * dailyTasks.length,
               child: Row(
                 children: widgets,
-      ),),),);
+    ),),),);
   }
 
   /// Our wonderful "Title"
   Widget definitelyATitle() {
     final List<Widget> widgets = <Widget>[];
-    if(widget.isRoot != null) {
+    if(widget != masterList.rootWidget) {
       widgets.add(
         IconButton(
           onPressed: () {
@@ -280,7 +234,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         title: definitelyATitle(),
       ),
       // Hamburger :)
-      drawer: ExecutiveDrawer(sortChange: setSort, showCompleted: showCompleted, exportEvents: exportData, importEvents: importData),
+      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -303,7 +257,10 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                 e.complete();
                 if(e.hasTag('Completed')) {
                   widget.events.remove(e);
-      }},)],),),
+                } else {
+                  widget.events.sort();
+                }
+      },)],),),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -342,13 +299,5 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
               },
               tooltip: 'Mass edit',
               child: const Icon(Icons.all_inclusive),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: NavBarDisplay(
-        events: widget.events,
-        selectedIndex: 0,
-    ),);
-  }
+    ),),],),);}
 }

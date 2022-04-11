@@ -1,6 +1,6 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
-import 'package:executive_planner/widgets/bottom_nav_bar.dart';
+import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -11,6 +11,7 @@ class CalendarView extends StatefulWidget {
     masterList.manageEventList(events);
   }
   final EventList events;
+
   @override
   _CalendarState createState() => _CalendarState();
 }
@@ -153,6 +154,23 @@ class _CalendarState extends State<CalendarView> {
     );
   }
 
+
+  Widget title() {
+    final List<Widget> widgets = <Widget>[];
+    widgets.add(const Text('Calendar'));
+    widgets.add(
+      IconButton(
+        onPressed: () {
+          masterList.removeManagedEventList(widget.events);
+          Navigator.pop(context);
+        },
+        icon: const Icon(Icons.list_alt),
+      ),);
+    return Row(
+      children: widgets,
+    );
+  }
+
   // TODO: Stop this trash from throwing errors whenever you change the size of the calendar
   @override
   Widget build(BuildContext context) {
@@ -164,17 +182,10 @@ class _CalendarState extends State<CalendarView> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calendar'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              masterList.removeManagedEventList(widget.events);
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-        ),
+        centerTitle: false,
+        title: title(),
       ),
+      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
@@ -189,10 +200,6 @@ class _CalendarState extends State<CalendarView> {
                   child: EventListDisplay(
                     events: _selectedEventsList,
       ),),),],);},),
-      bottomNavigationBar: NavBarDisplay(
-        events: widget.events,
-        selectedIndex: 1,
-     ),
     );
   }
 }

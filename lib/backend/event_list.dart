@@ -37,7 +37,7 @@ class Event {
     }
   }
 
-  static final List<String> specialTags = ['Recurring'];
+  static final List<String> specialTags = ['Recurring', 'Overdue'];
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -93,18 +93,21 @@ class Event {
   }
 
   void update() {
-    if (date != null && DateTime.now().isAfter(date!)) {
-      addTag('Overdue');
-      priority = Priority.critical;
+    if (date != null && DateTime.now().isAfter(date!) && !tags.contains('Completed')) {
+      addTag('Overdue', special: true);
       masterList.saveMaster(this);
     }
   }
 
   void complete() {
     if(recur == null || date == null) {
+      removeTag('Overdue', special: true);
       addTag('Completed', special: true);
     } else {
       date = recur!.getNextRecurrence(date!);
+      if(date!.isAfter(DateTime.now())) {
+        removeTag('Overdue', special: true);
+      }
     }
     masterList.saveMaster(this);
   }

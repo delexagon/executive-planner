@@ -5,6 +5,8 @@ import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/backend/jason.dart';
 
+import 'package:executive_planner/pages/home_page.dart';
+
 
 // ignore: avoid_classes_with_only_static_members, camel_case_types
 class masterList {
@@ -12,6 +14,21 @@ class masterList {
   static Set<Event> _masterList = <Event>{};
   static final HashMap<String, int> _masterTagList = HashMap<String, int>();
   static final HashMap<EventList, int> _eventListList = HashMap<EventList, int>();
+  static final ExecutiveHomePage rootWidget = ExecutiveHomePage(
+    title: 'Planner',
+    events: EventList(),
+  );
+
+  static void update() {
+    for(final Event e in _masterList) {
+      e.update();
+    }
+  }
+
+  static void clearManaged() {
+    _eventListList.clear();
+    manageEventList(rootWidget.events);
+  }
 
   static void addTag(String t, Event e) {
     if(Event.specialTags.contains(t)) {
@@ -124,9 +141,14 @@ class masterList {
       write('events', _masterList.toJason());
     }
   }
+}
 
+
+// ignore: avoid_classes_with_only_static_members, camel_case_types
+class optionsStorage {
 
 }
+
 extension Master on Set<Event> {
   EventList toEventList() {
     final EventList events = EventList();
