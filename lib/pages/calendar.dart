@@ -1,6 +1,5 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
-import 'package:executive_planner/widgets/bottom_nav_bar.dart';
 import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';

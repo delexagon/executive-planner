@@ -1,10 +1,5 @@
 
-import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/misc.dart';
-import 'package:executive_planner/backend/recurrence.dart';
-import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class OptionsMenu extends StatefulWidget {
   const OptionsMenu({
@@ -30,8 +25,8 @@ class _OptionsMenuState extends State<OptionsMenu> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        
+      body: const SingleChildScrollView(
+
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/pages/calendar.dart';
 import 'package:flutter/material.dart';
 
 class NavBarDisplay extends StatefulWidget {
