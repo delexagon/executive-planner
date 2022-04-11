@@ -93,7 +93,7 @@ class Event {
   }
 
   void update() {
-    if (date != null && DateTime.now().isAfter(date!)) {
+    if (date != null && DateTime.now().isAfter(date!) && !tags.contains('Completed')) {
       addTag('Overdue', special: true);
       masterList.saveMaster(this);
     }
@@ -101,6 +101,7 @@ class Event {
 
   void complete() {
     if(recur == null || date == null) {
+      removeTag('Overdue', special: true);
       addTag('Completed', special: true);
     } else {
       date = recur!.getNextRecurrence(date!);
