@@ -152,10 +152,15 @@ class _CalendarState extends State<CalendarView> {
     );
   }
 
-  // TODO: Make this work with different heights of the calendar (very difficult)
+  // TODO: Stop this trash from throwing errors whenever you change the size of the calendar
   @override
   Widget build(BuildContext context) {
-    const double calendarHeight = 350;
+    double calendarHeight = 350;
+    if(_calendarFormat == CalendarFormat.twoWeeks) {
+      calendarHeight = 200;
+    } else if(_calendarFormat == CalendarFormat.week) {
+      calendarHeight = 140;
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
