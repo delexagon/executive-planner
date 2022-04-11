@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/pages/home_page.dart';
@@ -7,7 +9,9 @@ import 'package:flutter/material.dart';
 ///
 /// Generates an [ExecutivePlanner] [StatelessWidget] which holds everything else.
 void main() {
+  const fiveMin = Duration(minutes: 5);
   masterList.initMaster();
+  Timer.periodic(fiveMin, (Timer t) => masterList.update());
   runApp(const ExecutivePlanner());
 }
 

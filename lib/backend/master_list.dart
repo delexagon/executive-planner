@@ -13,6 +13,12 @@ class masterList {
   static final HashMap<String, int> _masterTagList = HashMap<String, int>();
   static final HashMap<EventList, int> _eventListList = HashMap<EventList, int>();
 
+  static void update() {
+    for(final Event e in _masterList) {
+      e.update();
+    }
+  }
+
   static void addTag(String t, Event e) {
     if(Event.specialTags.contains(t)) {
       return;
