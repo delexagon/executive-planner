@@ -39,7 +39,7 @@ The Controller is a set of classes that encapsulate both the frontend and backen
 Each functional component of the Executive Planner project is represented as a separate class that performs a specific task or several similar tasks. Each component receives data through its constructor, executes a task, and passes relevant data along through the MaterialApp to other components. Components are designed to be largely self-encapsulated and only communicate with other components when absolutely necessary, and when communication is required, data is passed through channels defined in the controller classes to provide maximum control and flexibility.
 
 
-## Installation
+## Installation of source code
 
 1. Clone this repository to a directory of your choice.
 2. Ensure that you have [Flutter v.2.10.0](https://flutter.dev/) or above. You can follow the [official guide](https://docs.flutter.dev/get-started/install) for platform-specific installation steps.
@@ -53,6 +53,21 @@ Each functional component of the Executive Planner project is represented as a s
 
 ### Additional Info
 
-To add package, run `flutter pub add {package name}`
+## Requirements
 
-To reload json functions, run `flutter pub run build_runner`
+This project requires the packages:    
+shared_preferences  
+intl
+table_calendar
+
+To add these packages:  
+`flutter pub get`
+
+## Notable issues  
+Subevents do not currently work
+They'll take a while to implement, sorry
+
+## Immediate future plans  
+Bugfixing
+Options menu
+Leveling system
