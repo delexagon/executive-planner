@@ -18,6 +18,8 @@ class NavBarDisplay extends StatefulWidget {
 
 class _NavBarDisplayState extends State<NavBarDisplay> {
   void _onNavItemTap(int index) {
+    // TODO: Carry over ExecutiveHomePage for calendar view
+    /*
     // If we select Calendar
     if (index == 1) {
       // Move to Calendar view
@@ -30,6 +32,7 @@ class _NavBarDisplayState extends State<NavBarDisplay> {
         ),
       );
     }
+    */
     // If we select Home
     if (index == 0) {
       // Go to Homepage

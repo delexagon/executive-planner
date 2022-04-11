@@ -19,10 +19,10 @@ void main() {
 /// initializes the home page.
 class ExecutivePlanner extends StatelessWidget {
   const ExecutivePlanner({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    masterList.rootWidget.events.union(masterList.toEventList()).searchTags('Completed', appears: false);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Planner',
@@ -30,10 +30,7 @@ class ExecutivePlanner extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
       ),
       routes: {
-        '/': (context) => ExecutiveHomePage(
-              title: 'Planner',
-              events: EventList().union(masterList.toEventList()).searchTags('Completed', appears: false),
-            ),
+        '/': (context) => masterList.rootWidget,
       },
       
     );
