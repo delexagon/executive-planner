@@ -66,6 +66,7 @@ class _CalendarState extends State<CalendarView> {
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(selectedDay, _selectedDay)) {
       setState(() {
+        _selectedEventsList = widget.events.searchDate(selectedDay);
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         _rangeStart = null;

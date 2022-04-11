@@ -4,6 +4,7 @@ import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 /// An enum for possible priorities. If you modify this, please also modify the
 /// priorities list in Event.
@@ -482,21 +483,12 @@ class EventList {
     return part;
   }
 
-  /// Return an EventList containing events on a specific date or time
+  /// Return an EventList containing events on a specific date
   EventList searchDate(DateTime date) {
     final EventList part = EventList();
-
-    if (date.hour == 0 && date.minute == 0) {
-      for (int i = 0; i < list.length; i++) {
-        if (date.isSameDate(list[i].date)) {
-          part.add(list[i]);
-        }
-      }
-    } else {
-      for (int i = 0; i < list.length; i++) {
-        if (date.isSameMoment(list[i].date)) {
-          part.add(list[i]);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (date.isSameDate(list[i].date)) {
+        part.add(list[i]);
       }
     }
     return part;
