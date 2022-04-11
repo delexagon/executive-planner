@@ -335,7 +335,7 @@ class EventList {
   }
 
   List<Event> list = <Event>[];
-  Comparator<Event> sortFunc = Event.dateCompare;
+  static Comparator<Event> sortFunc = Event.dateCompare;
   bool managed;
 
   /// Add an event to the list.

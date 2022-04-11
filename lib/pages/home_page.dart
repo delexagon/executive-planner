@@ -12,6 +12,8 @@ import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../widgets/drawer.dart';
+
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
 ///
@@ -168,105 +170,40 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     );
   }
 
-  Widget drawer() {
-    DateTime? pressStart;
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          SizedBox(
-            height: 70,
-            child: DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-              ),
-              child: Text(
-                'Executive Planner',
-                style: Theme.of(context).textTheme.headline5,
-              ),),),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(fixedSize: const Size(10, 50)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CalendarView(
-                    events: widget.events,
-                  ),),);},
-            child: const Text('Calendar'),
-          ),
-          const Divider(),
-          RadioListTile<Comparator<Event>>(
-            title: const Text('Sort by name'),
-            value: Event.nameCompare,
-            groupValue: widget.events.sortFunc,
-            onChanged: (Comparator<Event>? value) {
-              setState(() {
-                widget.events.sortFunc = value!;
-                widget.events.sort();
-                setState(() {});
-              });},),
-          RadioListTile<Comparator<Event>>(
-            title: const Text('Sort by date'),
-            value: Event.dateCompare,
-            groupValue: widget.events.sortFunc,
-            onChanged: (Comparator<Event>? value) {
-              setState(() {
-                widget.events.sortFunc = value!;
-                widget.events.sort();
-                setState(() {});
-              });},),
-          RadioListTile<Comparator<Event>>(
-            title: const Text('Sort by priority'),
-            value: Event.priorityCompare,
-            groupValue: widget.events.sortFunc,
-            onChanged: (Comparator<Event>? value) {
-              setState(() {
-                widget.events.sortFunc = value!;
-                widget.events.sort();
-                setState(() {});
-              });},),
-          const Divider(),
-          TextButton(
-            onPressed: () {
-              _goToSearchPage(context, masterList.toEventList().searchTags('Completed'));
-              setState(() {});
-            },
-            child: const Text('Completed events'),
-          ),
-          const Divider(),
-          TextButton(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
-              setState(() {});
-            },
-            child: const Text('Export to clipboard'),
-          ),
-          GestureDetector(
-            onTapDown: (TapDownDetails? details) {pressStart = DateTime.now();},
-            onTapUp: (TapUpDetails? details) {
-              if(pressStart != null
-                  && DateTime.now().isAfter(pressStart!.add(const Duration(seconds: 2)))
-                  && DateTime.now().isBefore(pressStart!.add(const Duration(seconds: 5)))
-              ) {
-                Clipboard.getData('text/plain').then((ClipboardData? value) {
-                  if(value != null && value.text != null && value.text != '') {
-                    masterList.removeManagedEventList(widget.events);
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                    masterList.loadMaster(value.text!);
-                    final ExecutiveHomePage root = widget.isRoot ?? widget;
-                    root.events.union(masterList.toEventList()).searchTags('Completed', appears: false);
-                  } else {
-                    masterList.removeManagedEventList(widget.events);
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                  }
-                });
-              }
-            },
-            // TODO: Make it apparent that this button works already
-            child: const TextButton(onPressed: null, child: Text('Import from clipboard'),),
-          ),
-    ],),);
+  void showCompleted() {
+    _goToSearchPage(context, masterList.toEventList().searchTags('Completed'));
+    setState(() {});
+  }
+
+  void setSort(Comparator<Event>? value) {
+    if(value != null) {
+      setState(() {
+        EventList.sortFunc = value;
+        widget.events.sort();
+        setState(() {});
+      });
+    }
+  }
+
+  void exportData() {
+    Clipboard.setData(ClipboardData(text: Set<Event>.from(widget.events.list).toJason()));
+    setState(() {});
+  }
+
+  void importData() {
+    Clipboard.getData('text/plain').then((ClipboardData? value) {
+      if (value != null && value.text != null && value.text != '') {
+        masterList.removeManagedEventList(widget.events);
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+        masterList.loadMaster(value.text!);
+        final ExecutiveHomePage root = widget.isRoot ?? widget;
+        root.events.union(masterList.toEventList()).searchTags(
+            'Completed', appears: false);
+      } else {
+        masterList.removeManagedEventList(widget.events);
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      }
+    });
   }
 
   /// Our wonderful "Title"
@@ -311,7 +248,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         title: definitelyATitle(),
       ),
       // Hamburger :)
-      drawer: drawer(),
+      drawer: ExecutiveDrawer(sortChange: setSort, showCompleted: showCompleted, exportEvents: exportData, importEvents: importData),
       body: EventListDisplay(
         events: widget.events,
         onLongPress: (Event e) {
