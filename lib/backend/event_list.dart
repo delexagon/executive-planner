@@ -11,8 +11,6 @@ enum Priority { none, low, medium, high, critical }
 
 class Event {
 
-  static final List<String> specialTags = ['Recurring'];
-
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
     Priority priority = Priority.none, TagList? tags, Recurrence? recur,}) {
@@ -38,6 +36,8 @@ class Event {
       recur = null;
     }
   }
+
+  static final List<String> specialTags = ['Recurring'];
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -79,14 +79,13 @@ class Event {
       _priority = other._priority;
     }
     if(other.changes[4]) {
-      print("HI");
-      if(other.recur == null) {
-        print("LOW");
-        recur = null;
-      } else {
-        print("NO");
+      if(other.recur != null) {
         recur = Recurrence.copy(other.recur!);
+      } else {
+        recur = null;
       }
+    } else {
+      tags.removeTag('Recurring');
     }
     tags.removeAllTags(other.tagsRemove, onRemove: onRemove);
     tags.mergeTagLists(other.tags, onAdd: onAdd);
@@ -175,13 +174,9 @@ class Event {
 
   Recurrence? _recur;
   set recur(Recurrence? recurrence) {
-    print("Alright");
     if(recurrence != null) {
-      print("bett");
-      print(recurrence.spacing.times[0]);
       addTag('Recurring', special: true);
     } else {
-      print("allwrong");
       removeTag('Recurring', special: true);
     }
     _recur = recurrence;
@@ -310,11 +305,7 @@ class Event {
 
 class MassEditor extends Event {
   MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
-    _name = e._name;
-    _date = e._date;
-    _description = e._description;
-    _priority = e._priority;
-    tags = e.tags;
+    super.copy(e);
   }
 
   bool markForDeletion;
@@ -424,6 +415,10 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   void sort() {
     list.sort(sortFunc);
+  }
+
+  Set<Event> toSet() {
+    return list.toSet();
   }
 
   /// Return an EventList containing the events that have searchStr in their name.

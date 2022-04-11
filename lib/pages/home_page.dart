@@ -7,12 +7,11 @@ import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/forms/event_change_form.dart';
 import 'package:executive_planner/pages/forms/event_mass_form.dart';
 import 'package:executive_planner/widgets/bottom_nav_bar.dart';
+import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:executive_planner/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../widgets/drawer.dart';
 
 // TODO: Automatically hide unwanted events (subevents, trash, completed?)
 /// The starting page of the application.
@@ -190,9 +189,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
         masterList.loadMaster(value.text!);
         final ExecutiveHomePage root = widget.isRoot ?? widget;
         root.events.union(masterList.toEventList()).searchTags(
-            'Completed', appears: false);
+            'Completed', appears: false,);
       } else {
-        masterList.removeManagedEventList(widget.events);
         Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });

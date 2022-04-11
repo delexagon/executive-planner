@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
-import 'package:executive_planner/backend/misc.dart';
 
 // Feel free to try implementing all the json yourself, if you want.
 // I'm not going to.

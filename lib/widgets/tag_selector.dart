@@ -224,4 +224,3 @@ class _TagSelectorState extends State<TagSelector> {
     return tagPicker();
   }
 }
-

@@ -257,4 +257,3 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
   Widget bottomButtons();
 
 }
-

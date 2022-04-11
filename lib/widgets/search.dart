@@ -50,6 +50,12 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Events the user has specially selected; only modified by user
   Set<Event> selectedEvents = <Event>{};
 
+  @override
+  void initState() {
+    super.initState();
+    currentEvents = widget.events.toSet();
+  }
+
   String searchStr = '';
 
   EventList? searchNameByString(String str) {
@@ -120,6 +126,10 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   // TODO: Make this function have less time complexity?
   /// Recalculates search based on the new search terms.
   void redoSearch() {
+    if(searchStr == '') {
+      currentEvents = widget.events.toSet();
+      return;
+    }
     currentEvents = <Event>{};
     final List<String> strs = searchStr.split(',');
     for(int index = 0; index < strs.length; index++) {

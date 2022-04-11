@@ -12,7 +12,6 @@ class ExecutiveDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime? pressStart;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

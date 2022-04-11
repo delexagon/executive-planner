@@ -1,5 +1,4 @@
 
-import 'package:executive_planner/backend/master_list.dart';
 // TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
 // Currently, the only way to get to a tag is through a search or an Event.
 
