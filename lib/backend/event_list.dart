@@ -307,14 +307,18 @@ class Event {
 }
 
 class MassEditor extends Event {
-  MassEditor(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
-    super.copy(e);
+  MassEditor() {
+    name = 'Event editor';
+    description = 'Edit all events at once by typing changes and then checking the boxes below. Tags will automatically be added or removed.';
   }
+  MassEditor.copy(Event e, this.tagsRemove, this.changes, {required this.markForDeletion}) {
+    super.copy(e);
+ }
 
-  bool markForDeletion;
-  List<bool> changes;
+  bool markForDeletion = false;
+  List<bool> changes = <bool>[];
 
-  TagList tagsRemove;
+  TagList tagsRemove = TagList();
 }
 
 class EventList {

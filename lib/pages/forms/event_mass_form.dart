@@ -10,7 +10,7 @@ class EventMassForm extends EventForm {
   EventMassForm({
     required EventList events,
     Key? key,})
-      : super(key: key, old: null, event: Event(), events: events);
+      : super(key: key, old: null, event: MassEditor(), events: events);
 
   @override
   _EventMassFormState createState() => _EventMassFormState();
@@ -30,13 +30,13 @@ class _EventMassFormState extends EventFormState {
             alignment: Alignment.centerLeft,
             child: padded(10,10,
               makeButton('Change Events', confirmButtonColor, () {
-                Navigator.pop(context, MassEditor(widget.event, tags, updateTypesEnabled, markForDeletion: false));
+                Navigator.pop(context, MassEditor.copy(widget.event, tags, updateTypesEnabled, markForDeletion: false));
               }),),),
           Align(
             alignment: Alignment.centerRight,
             child: padded(10,10,
               makeButton('Remove Events', backButtonColor, () {
-                Navigator.pop(context, MassEditor(widget.event, tags, updateTypesEnabled, markForDeletion: true));
+                Navigator.pop(context, MassEditor.copy(widget.event, tags, updateTypesEnabled, markForDeletion: true));
               }),),),],),);
   }
 
