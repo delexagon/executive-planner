@@ -70,7 +70,7 @@ To add these packages:
 `flutter pub get`
 
 ## Notable issues  
-Subevents do not currently work
+Subevents do not currently work  
 They'll take a while to implement, sorry
 
 ## Immediate future plans  
