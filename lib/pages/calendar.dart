@@ -97,8 +97,65 @@ class _CalendarState extends State<CalendarView> {
     }
   }
 
+  Widget calendar() {
+    return TableCalendar<Event>(
+      firstDay: DateTime.utc(2022),
+      lastDay: DateTime.utc(2023),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+      rangeStartDay: _rangeStart,
+      rangeEndDay: _rangeEnd,
+      calendarFormat: _calendarFormat,
+      rangeSelectionMode: _rangeSelectionMode,
+      eventLoader: _getEventsForDay,
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      // Customize UI using CalendarStyle
+      calendarStyle: const CalendarStyle(
+        outsideDaysVisible: false,
+      ),
+      onDaySelected: _onDaySelected,
+      onRangeSelected: _onRangeSelected,
+      onFormatChanged: (format) {
+        if (_calendarFormat != format) {
+          setState(() {
+            _calendarFormat = format;
+          });
+        }
+        if (format == CalendarFormat.month) {
+          _rangeStart = DateTime(_focusedDay.year, _focusedDay.month);
+          if (_focusedDay.month == 2) {
+            _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
+          } else if (_focusedDay.month == 4 ||
+              _focusedDay.month == 6 ||
+              _focusedDay.month == 9 ||
+              _focusedDay.month == 11) {
+            _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 30);
+          } else {
+            _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 31);
+          }
+        } else if (format == CalendarFormat.twoWeeks) {
+          _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+            _focusedDay.day - _focusedDay.weekday + 1,);
+          _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+            _focusedDay.day + (14 - _focusedDay.weekday),);
+        } else if (format == CalendarFormat.week) {
+          _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
+            _focusedDay.day - _focusedDay.weekday + 1,);
+          _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
+            _focusedDay.day + (7 - _focusedDay.weekday),);
+        }
+        _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
+      },
+      onPageChanged: (focusedDay) {
+        _focusedDay = focusedDay;
+      },
+    );
+  }
+
+  // TODO: Make this work with different heights of the calendar (very difficult)
   @override
   Widget build(BuildContext context) {
+    const double calendarHeight = 350;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
@@ -112,77 +169,24 @@ class _CalendarState extends State<CalendarView> {
           ),
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: TableCalendar<Event>(
-              firstDay: DateTime.utc(2022),
-              lastDay: DateTime.utc(2023),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-              rangeStartDay: _rangeStart,
-              rangeEndDay: _rangeEnd,
-              calendarFormat: _calendarFormat,
-              rangeSelectionMode: _rangeSelectionMode,
-              eventLoader: _getEventsForDay,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              // Customize UI using CalendarStyle
-              calendarStyle: const CalendarStyle(
-                outsideDaysVisible: false,
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Column(
+            children: [
+              SizedBox(
+                height: calendarHeight,
+                child: calendar(),
               ),
-              onDaySelected: _onDaySelected,
-              onRangeSelected: _onRangeSelected,
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-                if (format == CalendarFormat.month) {
-                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month);
-                  if (_focusedDay.month == 2) {
-                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 28);
-                  } else if (_focusedDay.month == 4 ||
-                      _focusedDay.month == 6 ||
-                      _focusedDay.month == 9 ||
-                      _focusedDay.month == 11) {
-                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 30);
-                  } else {
-                    _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month, 31);
-                  }
-                } else if (format == CalendarFormat.twoWeeks) {
-                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day - _focusedDay.weekday + 1,);
-                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day + (14 - _focusedDay.weekday),);
-                } else if (format == CalendarFormat.week) {
-                  _rangeStart = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day - _focusedDay.weekday + 1,);
-                  _rangeEnd = DateTime(_focusedDay.year, _focusedDay.month,
-                      _focusedDay.day + (7 - _focusedDay.weekday),);
-                }
-                _onRangeSelected(_rangeStart, _rangeEnd, _focusedDay);
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: EventListDisplay(
-                events: _selectedEventsList,
-              ),
-          ),
-        ]
-
-      ,),
+              SizedBox(
+                height: constraints.maxHeight-calendarHeight,
+                child:  SingleChildScrollView (
+                  child: EventListDisplay(
+                    events: _selectedEventsList,
+      ),),),],);},),
       bottomNavigationBar: NavBarDisplay(
         events: widget.events,
         selectedIndex: 1,
-
-      ),
+     ),
     );
   }
 }

@@ -282,28 +282,29 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       ),
       // Hamburger :)
       drawer: ExecutiveDrawer(sortChange: setSort, showCompleted: showCompleted, exportEvents: exportData, importEvents: importData),
-      body: Column(
-        children: [
-          showDailyTasks(),
-          EventListDisplay(
-            events: widget.events,
-            onLongPress: (Event e) {
-              _changeEventForm(context, event: e).then((Event? copy) {
-                if(copy == null) {
-                  widget.removeEvent(e);
-                } else if (e == copy) {
-                } else {
-                  e.copy(copy);
-                  widget.events.sort();
-                }
-                setState(() {});
-              });
-            },
-            onDrag: (Event e) {
-              e.complete();
-              if(e.hasTag('Completed')) {
-                widget.events.remove(e);
-      }},),]),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            showDailyTasks(),
+            EventListDisplay(
+              events: widget.events,
+              onLongPress: (Event e) {
+                _changeEventForm(context, event: e).then((Event? copy) {
+                  if(copy == null) {
+                    widget.removeEvent(e);
+                  } else if (e == copy) {
+                  } else {
+                    e.copy(copy);
+                    widget.events.sort();
+                  }
+                  setState(() {});
+                });
+              },
+              onDrag: (Event e) {
+                e.complete();
+                if(e.hasTag('Completed')) {
+                  widget.events.remove(e);
+      }},)],),),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
