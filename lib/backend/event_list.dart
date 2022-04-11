@@ -4,7 +4,6 @@ import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 /// An enum for possible priorities. If you modify this, please also modify the
 /// priorities list in Event.
