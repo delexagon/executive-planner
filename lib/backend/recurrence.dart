@@ -45,6 +45,6 @@ class Recurrence {
       }
     }
 
-    return '${str.toString().substring(0,str.length-2)}.';
+    return str.toString().substring(0,str.length-2);
   }
 }
