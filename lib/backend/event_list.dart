@@ -65,6 +65,7 @@ class Event {
   void addSubevent(Event e) {
     subevents.add(e);
     e.superevent = this;
+    masterList.saveMaster();
   }
 
   void onAdd(String tag) {

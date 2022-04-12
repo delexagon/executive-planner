@@ -1,5 +1,4 @@
 import 'package:executive_planner/backend/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/home_page.dart';
@@ -78,7 +77,6 @@ class _EventTileState extends State<EventTile> {
         _addEventForm(context).then((Event? e) {
           if(e!=null) {
             widget.event.addSubevent(e);
-            masterList.saveMaster();
             setState(() {});
           }
         });
