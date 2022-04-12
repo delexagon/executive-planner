@@ -21,7 +21,7 @@ class AdvancedSearch extends StatefulWidget {
   /// A function which is called when the X button is pressed.
   final Function? onExit;
   /// A function called with the EventList
-  final Function(EventList e)? onSubmit;
+  final Function(EventList e, bool showCompleted)? onSubmit;
   /// States whether the search will only return selected items, or whether it
   /// will return all items currently in the search results when it is submitted.
   final bool selectedOnly;
@@ -102,8 +102,14 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return null;
   }
 
-  EventList? searchByString(int i, String str) {
+  EventList? searchCompletedByString(String str) {
+    if(searchTypesEnabled[searchTypesEnabled.length-2] == null || 'completed'.startsWith(str.toLowerCase().trim())) {
+      return widget.events.searchCompleted();
+    }
+    return null;
+  }
 
+  EventList? searchByString(int i, String str) {
     if(i == 0) {
       return searchNameByString(str);
     } else if(i == 1) {
@@ -114,6 +120,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
       return searchDateByString(str);
     } else if(i == 4) {
       return widget.events.searchRecurrence();
+    } else if(i == 5) {
+      return searchCompletedByString(str);
     }
     return null;
   }
@@ -121,7 +129,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Search types which are enabled.
   /// In order: name, tag, priority, date
   /// If modified, please also update the typeCheckboxes() function.
-  List<bool?> searchTypesEnabled = [true, true, false, false, false, true,];
+  List<bool?> searchTypesEnabled = [true, true, false, false, false, false, true,];
 
   // TODO: Make this function have less time complexity?
   /// Recalculates search based on the new search terms.
@@ -185,7 +193,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Generates a list of checkboxes which allow the user to select search types.
   /// Not currently used.
   Widget typeCheckboxes() {
-    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date', 'Recurs'];
+    final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date', 'Recurs', 'Complete'];
     final List<Widget> checkboxes = <Widget>[];
     checkboxes.add(
       Flexible(
@@ -214,7 +222,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child:SizedBox(
-        width: 900,
+        width: 1150,
         height: 40,
         child: Row(
           children: checkboxes,
@@ -227,7 +235,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return Expanded(
       child: SingleChildScrollView(
         child: EventListDisplay(
-          events: EventList(list: currentEvents.toList()),
+          events: currentEvents.toEventList().sort(),
+          showCompleted: searchTypesEnabled[searchTypesEnabled.length-2] == true,
           setToColor: selectedEvents,
           onTap: (Event e) {
             if(selectedEvents.contains(e)) {
@@ -249,7 +258,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
             child: TextButton(
               onPressed: () {
                 if(widget.onSubmit != null && selectedEvents.isNotEmpty) {
-                  widget.onSubmit!(EventList(list: selectedEvents.toList()));
+                  widget.onSubmit!(EventList(list: selectedEvents.toList()), searchTypesEnabled[searchTypesEnabled.length-2] == true);
                 }
               },
               child: const Text('OK', style: TextStyle(fontSize: 20)),

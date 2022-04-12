@@ -13,12 +13,16 @@ class Event {
 
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.superevent,}) {
     _name = name;
     _date = date;
     _description = description;
     _priority = priority;
     _recur = recur;
+    _completed = completed;
+    if(subevents != null) {
+      this.subevents = subevents;
+    }
     if(tags != null) {
       this.tags = tags;
     }
@@ -28,7 +32,9 @@ class Event {
     _name = other._name;
     _description = other._description;
     _priority = other._priority;
+    _completed = other._completed;
     tags.mergeTagLists(other.tags, onAdd: onAdd);
+    subevents = other.subevents;
     if(other.recur != null) {
       recur = Recurrence.copy(other.recur!);
     } else {
@@ -37,7 +43,30 @@ class Event {
     date = other._date;
   }
 
-  static final List<String> specialTags = ['Overdue'];
+  bool _completed = false;
+
+  bool get isComplete {
+    return _completed;
+  }
+
+  void setSubSupers() {
+    for(int i = 0; i < subevents.length; i++) {
+      subevents[i].superevent = this;
+    }
+  }
+
+  void removeThis() {
+    superevent!.subevents.remove(this);
+    masterList.saveMaster();
+  }
+
+  Event? superevent;
+
+  void addSubevent(Event e) {
+    subevents.add(e);
+    e.superevent = this;
+    masterList.saveMaster();
+  }
 
   void onAdd(String tag) {
     masterList.addTag(tag, this);
@@ -47,15 +76,36 @@ class Event {
     masterList.removeTag(tag, this);
   }
 
+  String subtitleString({bool descMode = false}) {
+    final StringBuffer subtitleString = StringBuffer();
+    if(!descMode) {
+      subtitleString.write(dateString());
+      if(recur != null) {
+        subtitleString.write('\n${recur!.toString()}');
+      }
+      if(tags.isNotEmpty) {
+        subtitleString.write('\nTags: ${tagsString()}');
+      }
+    } else {
+      subtitleString.write(description);
+    }
+    if(_completed) {
+      subtitleString.write('\nCompleted');
+    }
+    return subtitleString.toString();
+  }
+
   void copy(Event other) {
     _name = other._name;
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
+    _completed = other._completed;
+    final TagList newTags = TagList();
     for(final String tag in tags.asSet()) {
       onRemove(tag);
     }
-    tags = TagList();
+    tags = newTags;
     tags.mergeTagLists(other.tags, onAdd: onAdd);
     if(other.recur != null) {
       recur = Recurrence.copy(other.recur!);
@@ -91,21 +141,17 @@ class Event {
   }
 
   void update() {
-    if (date != null && DateTime.now().isAfter(date!) && !tags.contains('Completed')) {
-      addTag('Overdue', special: true);
-      masterList.saveMaster(this);
-    }
   }
 
   void complete() {
+    if(superevent != null) {
+      removeThis();
+      return;
+    }
     if(recur == null || date == null) {
-      removeTag('Overdue', special: true);
-      addTag('Completed', special: true);
+      _completed = !_completed;
     } else {
       date = recur!.getNextRecurrence(date!);
-      if(date!.isAfter(DateTime.now())) {
-        removeTag('Overdue', special: true);
-      }
     }
     masterList.saveMaster(this);
   }
@@ -140,9 +186,6 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
-    if(_date != null && _date!.isAfter(DateTime.now())) {
-      removeTag('Overdue', special: true);
-    }
     masterList.saveMaster(this);
   }
   DateTime? get date {
@@ -208,10 +251,7 @@ class Event {
   }
 
   /// Add a tag to the event
-  bool addTag(String tag, {bool special = false}) {
-    if(!special && specialTags.contains(tag)) {
-      return false;
-    }
+  bool addTag(String tag) {
     final bool ret = tags.addTag(tag, onAdd: onAdd);
     masterList.saveMaster(this);
     return ret;
@@ -223,10 +263,7 @@ class Event {
   }
 
   /// Remove a tag from the event, and returns whether the event was correctly removed or not.
-  bool removeTag(String tag, {bool special = false}) {
-    if(!special && specialTags.contains(tag)) {
-      return false;
-    }
+  bool removeTag(String tag) {
     final bool ret = tags.removeTag(tag, onRemove: onRemove);
     masterList.saveMaster(this);
     return ret;
@@ -420,8 +457,9 @@ class EventList {
 
   /// Sorts list by event comparator. Various sorts can be found in the Event
   /// class. Should be called automatically when the list is modified.
-  void sort() {
+  EventList sort() {
     list.sort(sortFunc);
+    return this;
   }
 
   Set<Event> toSet() {
@@ -431,55 +469,42 @@ class EventList {
   /// Return an EventList containing the events that have searchStr in their name.
   EventList searchName(String searchStr, {bool appears = true}) {
     final EventList part = EventList();
-    if(appears) {
-      for (int i = 0; i < list.length; i++) {
-        if (list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
-          part.add(list[i]);
-        }
-      }
-    } else {
-      for (int i = 0; i < list.length; i++) {
-        if (!list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
-          part.add(list[i]);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].name.toLowerCase().contains(searchStr.toLowerCase())) {
+        part.add(list[i]);
       }
     }
     return part;
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
-  EventList searchDescription(String searchStr, {bool appears = true}) {
+  EventList searchCompleted() {
     final EventList part = EventList();
-    if(appears) {
-      for (int i = 0; i < list.length; i++) {
-        if (list[i].description.toLowerCase().contains(searchStr.toLowerCase())) {
-          part.add(list[i]);
-        }
-      }
-    } else {
-      for (int i = 0; i < list.length; i++) {
-        if (!list[i].description.toLowerCase().contains(searchStr.toLowerCase())) {
-          part.add(list[i]);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].isComplete) {
+        part.add(list[i]);
       }
     }
     return part;
   }
 
   /// Return an EventList containing the events that have searchStr in their name.
-  EventList searchPriority(Priority priority, {bool appears = true}) {
+  EventList searchDescription(String searchStr) {
     final EventList part = EventList();
-    if(appears) {
-      for(int i = 0; i < list.length; i++) {
-        if(list[i].priority == priority) {
-          part.add(list[i]);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].description.toLowerCase().contains(searchStr.toLowerCase())) {
+        part.add(list[i]);
       }
-    } else {
-      for(int i = 0; i < list.length; i++) {
-        if(!(list[i].priority == priority)) {
-          part.add(list[i]);
-        }
+    }
+    return part;
+  }
+
+  /// Return an EventList containing the events that have searchStr in their name.
+  EventList searchPriority(Priority priority) {
+    final EventList part = EventList();
+    for(int i = 0; i < list.length; i++) {
+      if(list[i].priority == priority) {
+        part.add(list[i]);
       }
     }
     return part;
@@ -535,20 +560,11 @@ class EventList {
   }
 
   /// Return an EventList containing the events that have a specific tag.
-  EventList searchTags(String s, {bool appears = true}) {
-    final String searchStr = s.toTitleCase();
+  EventList searchTags(String s) {
     final EventList part = EventList();
-    if (appears) {
-      for (int i = 0; i < list.length; i++) {
-        if (list[i].hasTag(searchStr.toTitleCase())) {
-          part.add(list[i]);
-        }
-      }
-    } else {
-      for (int i = 0; i < list.length; i++) {
-        if (!list[i].hasTag(searchStr.toTitleCase())) {
-          part.add(list[i]);
-        }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].hasTag(s)) {
+        part.add(list[i]);
       }
     }
     return part;

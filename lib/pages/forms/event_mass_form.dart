@@ -8,9 +8,8 @@ import 'package:flutter/material.dart';
 /// Allows a user to modify an existing event or add a new event.
 class EventMassForm extends EventForm {
   EventMassForm({
-    required EventList events,
     Key? key,})
-      : super(key: key, old: null, event: MassEditor(), events: events);
+      : super(key: key, old: null, title: 'Change all events', event: MassEditor());
 
   @override
   _EventMassFormState createState() => _EventMassFormState();
@@ -72,17 +71,7 @@ class _EventMassFormState extends EventFormState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit All Events'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.pop(context, null);
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-        ),
-      ),
+      appBar: appBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

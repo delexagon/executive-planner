@@ -8,6 +8,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 
 class CalendarView extends StatefulWidget {
+  // Currently, the calendar will never show completed events.
   CalendarView({required this.events, Key? key}) : super(key: key) {
     masterList.manageEventList(events);
   }
@@ -52,7 +53,6 @@ class _CalendarState extends State<CalendarView> {
       MaterialPageRoute(
         builder: (context) => EventChangeForm(
           event: event,
-          events: widget.events,
         ),
       ),
     );
@@ -209,6 +209,7 @@ class _CalendarState extends State<CalendarView> {
                 child:  SingleChildScrollView (
                   child: EventListDisplay(
                     events: _selectedEventsList,
+                    showCompleted: true,
                     onLongPress: (Event e) {
                       _changeEventForm(context, event: e).then((Event? copy) {
                         if(copy == null) {
