@@ -27,12 +27,16 @@ class _EventChangeFormState extends EventFormState {
             alignment: Alignment.centerLeft,
             child: padded(10,10,
               makeButton('Change Event', confirmButtonColor, () {
+                widget.old!.copy(widget.event);
                 Navigator.pop(context, widget.event);
               }),),),
           Align(
             alignment: Alignment.centerRight,
             child: padded(10,10,
               makeButton('Remove Event', backButtonColor, () {
+                if(widget.old!.superevent != null) {
+                  widget.old!.removeThis();
+                }
                 Navigator.pop(context, widget.old);
               }),),),],),);
   }

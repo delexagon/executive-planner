@@ -154,12 +154,23 @@ extension JasonPriority on Priority {
 
 extension JasonEvent on Event {
   String toJason() {
-    return '{${name.toJason()}}{${date.toJason()}}{${description.toJason()}}{${priority.toJason()}}{${tags.toJason()}}{${recur.toJason()}}{${isComplete.toJason()}}{${subevents.toJason()}}';
+    return '{${name.toJason()}}{${date.toJason()}}{${description
+        .toJason()}}{${priority.toJason()}}{${tags.toJason()}}{${recur
+        .toJason()}}{${isComplete.toJason()}}{${subevents.toJason()}}';
   }
 
   static Event fromJason(String jason) {
     final List<String> strings = getBrackets(jason);
-    return Event(name: JasonString.fromJason(strings[0]), date: JasonDateTime.fromJason(strings[1]), description: JasonString.fromJason(strings[2]), priority: JasonPriority.fromJason(strings[3]), tags: JasonTagList.fromJason(strings[4]), recur: JasonRecurrence.fromJason(strings[5]), completed: JasonBool.fromJason(strings[6]), subevents: JasonEventList.fromJason(strings[7]));
+    final Event event = Event(name: JasonString.fromJason(strings[0]),
+        date: JasonDateTime.fromJason(strings[1]),
+        description: JasonString.fromJason(strings[2]),
+        priority: JasonPriority.fromJason(strings[3]),
+        tags: JasonTagList.fromJason(strings[4]),
+        recur: JasonRecurrence.fromJason(strings[5]),
+        completed: JasonBool.fromJason(strings[6]),
+        subevents: JasonEventList.fromJason(strings[7]),);
+    event.setSubSupers();
+    return event;
   }
 }
 

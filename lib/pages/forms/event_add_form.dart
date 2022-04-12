@@ -53,8 +53,6 @@ class _EventAddFormState extends EventFormState {
               priorityDropdown(),
               paddedText('Change recurrence:'),
               recurText(),
-              paddedText('Change subevents:'),
-              subEventPicker(),
               const Padding(padding: EdgeInsets.symmetric(vertical: 40)),
             ],
           ),

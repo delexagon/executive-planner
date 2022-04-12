@@ -1,5 +1,7 @@
 import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
+import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/home_page.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
@@ -58,38 +60,62 @@ class _EventTileState extends State<EventTile> {
     setState(() {});
   }
 
+  Future<Event?> _addEventForm(BuildContext context) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddForm(),
+      ),
+    );
+  }
+
   // TODO: User should be able to quickly add subevents to all events.
   /// Builds a single tile.
   /// Very long, because there are a number of variations for how tiles should look.
   Widget _buildPanel() {
+    final Widget addButton = TextButton(
+      onPressed: () {
+        _addEventForm(context).then((Event? e) {
+          if(e!=null) {
+            widget.event.addSubevent(e);
+            masterList.saveMaster();
+            setState(() {});
+          }
+        });
+      },
+      child: const Text('Add subevent'),);
+    final Widget goToButton = TextButton(
+      onPressed: () {
+        _showSubevents(context, false);
+        setState(() {});
+      },
+      child: const Text('Go to subevents'),);
     Decoration? decoration;
     Widget? icon;
     Widget? tile;
     if(widget.setToColor != null && widget.setToColor!.contains(widget.event)) {
       decoration = BoxDecoration(color: Colors.lightBlueAccent.withOpacity(0.1));
     }
-    if(widget.event.subevents.length > 0) {
-      if(!isExpanded) {
-        icon = IconButton(
-          icon: const Icon(Icons.arrow_drop_down),
+    if(!isExpanded) {
+      icon = IconButton(
+        icon: const Icon(Icons.arrow_drop_down),
+        onPressed: () {
+          isExpanded = true;
+          setState(() {});
+        },
+      );
+    } else {
+      icon = IconButton(
+          icon: const Icon(Icons.arrow_drop_up),
           onPressed: () {
-            isExpanded = true;
+            isExpanded = false;
             setState(() {});
           },
-        );
-      } else {
-        icon = IconButton(
-            icon: const Icon(Icons.arrow_drop_up),
-            onPressed: () {
-              isExpanded = false;
-              setState(() {});
-            },
-        );
-      }
+      );
     }
     final TextStyle titleColor = TextStyle(color: priorityColors[widget.event.priority.index]);
     tile = GestureDetector(
-      onDoubleTap: () {
+      onSecondaryTap: () {
         if (widget.onDrag != null) {
           widget.onDrag!(widget.event);
           setState(() {});
@@ -132,6 +158,12 @@ class _EventTileState extends State<EventTile> {
       return Column(
         children: [
           tile,
+          Row(
+            children: [
+              addButton,
+              goToButton,
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
             child: EventListDisplay(
@@ -139,13 +171,6 @@ class _EventTileState extends State<EventTile> {
               onLongPress: widget.onLongPress,
               showCompleted: widget.showCompleted,
               onDrag: widget.onDrag,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-            child: ListTile(
-              subtitle: const Text('Go to subevents'),
-              onTap: () {_showSubevents(context, false); setState(() {});},
             ),
           ),
         ],

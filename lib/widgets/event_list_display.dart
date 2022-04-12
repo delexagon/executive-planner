@@ -59,43 +59,14 @@ class _EventListDisplayState extends State<EventListDisplay> {
           ),
         );
       }
-    } else {
-      tiles.add(eventListEmpty(context));
     }
     return tiles;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.events.length == 0) {
-      return eventListEmpty(context);
-    }
     return SingleChildScrollView(child: Column(
       children: _buildPanel(),
     ),);
   }
-}
-
-Widget eventListEmpty(BuildContext context) {
-  // ignore: dead_code
-  return SizedBox(
-    width: double.infinity,
-    height: 500,
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.task,
-            color: Colors.grey,
-            size: 100,
-          ),
-          Text(
-            'No tasks to show!',
-            style: TextStyle(fontSize: 20, color: Colors.grey),
-          )
-        ],
-      ),
-    ),
-  );
 }

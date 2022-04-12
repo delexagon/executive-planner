@@ -13,7 +13,7 @@ class Event {
 
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, this.isSubevent = false, EventList? subevents,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.superevent,}) {
     _name = name;
     _date = date;
     _description = description;
@@ -28,12 +28,13 @@ class Event {
     }
   }
 
-  Event.copy(Event other, {this.isSubevent = false}) {
+  Event.copy(Event other) {
     _name = other._name;
     _description = other._description;
     _priority = other._priority;
     _completed = other._completed;
     tags.mergeTagLists(other.tags, onAdd: onAdd);
+    subevents = other.subevents;
     if(other.recur != null) {
       recur = Recurrence.copy(other.recur!);
     } else {
@@ -46,6 +47,24 @@ class Event {
 
   bool get isComplete {
     return _completed;
+  }
+
+  void setSubSupers() {
+    for(int i = 0; i < subevents.length; i++) {
+      subevents[i].superevent = this;
+    }
+  }
+
+  void removeThis() {
+    superevent!.subevents.remove(this);
+    masterList.saveMaster();
+  }
+
+  Event? superevent;
+
+  void addSubevent(Event e) {
+    subevents.add(e);
+    e.superevent = this;
   }
 
   void onAdd(String tag) {
@@ -124,6 +143,10 @@ class Event {
   }
 
   void complete() {
+    if(superevent != null) {
+      removeThis();
+      return;
+    }
     if(recur == null || date == null) {
       _completed = !_completed;
     } else {
@@ -189,7 +212,6 @@ class Event {
   }
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
-  bool isSubevent;
 
   /// A list of tags of this event.
   /// Tags will be automatically formatted with toTitleCase when added to this list;

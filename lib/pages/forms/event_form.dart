@@ -2,9 +2,6 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
-import 'package:executive_planner/pages/forms/event_add_form.dart';
-import 'package:executive_planner/pages/forms/event_change_form.dart';
-import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -123,74 +120,6 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [dateButton, timePicker()]);
     }
     return dateButton;
-  }
-
-  Future<Event?> changeEventForm(BuildContext context, {required Event event}) async {
-    return Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventChangeForm(event: event),
-      ),
-    );
-  }
-
-
-  Future<Event?> _addEventForm(BuildContext context) async {
-    return Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventAddForm(),
-      ),
-    );
-  }
-
-  /// Generates a widget which allows the user to set the date of an event.
-  /// Currently, setting a date resets the time.
-  Widget subEventPicker() {
-    final Widget button = TextButton(
-      onPressed: () {
-        _addEventForm(context).then((Event? e) {
-          if(e!=null) {
-            e.isSubevent = true;
-            widget.event.subevents.add(e);
-            setState(() {});
-          }
-        });
-      },
-      child: const Text('Add subevent'),);
-    if(widget.event.subevents.length != 0) {
-      return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            button,
-            SizedBox(
-              width: 1000,
-              height: 400,
-              child: SingleChildScrollView(
-                child: EventListDisplay(
-                  showCompleted: false,
-                  events: widget.event.subevents,
-                  onLongPress: (Event e) {
-                    changeEventForm(context, event: e).then((Event? copy) {
-                      if(copy == null) {
-                        return;
-                      } else if (copy == e) {
-                        widget.event.subevents.remove(e);
-                      } else {
-                        e.copy(copy);
-                        widget.event.subevents.sort();
-                      }
-                      setState(() {});
-                    }
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-      );
-    }
-    return button;
   }
 
   /// The text field that the user enters the event description into
