@@ -144,10 +144,6 @@ class Event {
   }
 
   void complete() {
-    if(superevent != null) {
-      removeThis();
-      return;
-    }
     if(recur == null || date == null) {
       _completed = !_completed;
     } else {
@@ -281,6 +277,13 @@ class Event {
   /// those with a defined date. Events with the same name and date may change
   /// order.
   static int dateCompare(Event a, Event b) {
+    if(a.hasTag('Leading') || b.hasTag('Leading')) {
+      if(a.hasTag('Leading') && !b.hasTag('Leading')) {
+        return -1;
+      } else if(!a.hasTag('Leading') && b.hasTag('Leading')) {
+        return 1;
+      }
+    }
     if (a.date != null && b.date != null) {
       final int before = a.date!.compareTo(b.date!);
       if (before != 0) return before;
@@ -302,6 +305,13 @@ class Event {
   /// those with a defined date. Events with the same name and date may change
   /// order.
   static int priorityCompare(Event a, Event b) {
+    if(a.hasTag('Leading') || b.hasTag('Leading')) {
+      if(a.hasTag('Leading') && !b.hasTag('Leading')) {
+        return -1;
+      } else if(!a.hasTag('Leading') && b.hasTag('Leading')) {
+        return 1;
+      }
+    }
     final int priority = b.priority.index - a.priority.index;
     if (priority != 0) {
       return priority;
@@ -323,6 +333,13 @@ class Event {
   /// those with a defined date. Events with the same name and date may change
   /// order.
   static int nameCompare(Event a, Event b) {
+    if(a.hasTag('Leading') || b.hasTag('Leading')) {
+      if(a.hasTag('Leading') && !b.hasTag('Leading')) {
+        return -1;
+      } else if(!a.hasTag('Leading') && b.hasTag('Leading')) {
+        return 1;
+      }
+    }
     final int name = a.name.toLowerCase().compareTo(b.name.toLowerCase());
     if (name != 0) {
       return name;
