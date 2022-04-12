@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 /// Allows a user to modify an existing event or add a new event.
 class EventChangeForm extends EventForm {
   EventChangeForm({
-    required EventList events,
     required Event event,
     Key? key,})
-      : super(key: key, old: event, event: Event.copy(event), events: events);
+      : super(key: key, old: event, event: Event.copy(event), title: 'Change ${event.name}');
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
@@ -34,24 +33,14 @@ class _EventChangeFormState extends EventFormState {
             alignment: Alignment.centerRight,
             child: padded(10,10,
               makeButton('Remove Event', backButtonColor, () {
-                Navigator.pop(context, null);
+                Navigator.pop(context, widget.old);
               }),),),],),);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add an event'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.pop(context, widget.old);
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-        ),
-      ),
+      appBar: appBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

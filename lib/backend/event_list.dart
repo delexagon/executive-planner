@@ -13,19 +13,22 @@ class Event {
 
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, this.isSubevent = false, EventList? subevents,}) {
     _name = name;
     _date = date;
     _description = description;
     _priority = priority;
     _recur = recur;
     _completed = completed;
+    if(subevents != null) {
+      this.subevents = subevents;
+    }
     if(tags != null) {
       this.tags = tags;
     }
   }
 
-  Event.copy(Event other) {
+  Event.copy(Event other, {this.isSubevent = false}) {
     _name = other._name;
     _description = other._description;
     _priority = other._priority;
@@ -186,6 +189,7 @@ class Event {
   }
   // TODO: Add JSON for subevents
   EventList subevents = EventList();
+  bool isSubevent;
 
   /// A list of tags of this event.
   /// Tags will be automatically formatted with toTitleCase when added to this list;
@@ -533,11 +537,10 @@ class EventList {
   }
 
   /// Return an EventList containing the events that have a specific tag.
-  EventList searchTags(String s, {bool appears = true}) {
-    final String searchStr = s.toTitleCase();
+  EventList searchTags(String s) {
     final EventList part = EventList();
     for (int i = 0; i < list.length; i++) {
-      if (list[i].hasTag(searchStr.toTitleCase())) {
+      if (list[i].hasTag(s)) {
         part.add(list[i]);
       }
     }

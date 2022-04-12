@@ -2,22 +2,23 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
-import 'package:executive_planner/widgets/search.dart';
+import 'package:executive_planner/pages/forms/event_add_form.dart';
+import 'package:executive_planner/pages/forms/event_change_form.dart';
+import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 abstract class EventForm extends StatefulWidget {
   const EventForm({
     required this.event,
-    required this.events,
     required this.old,
+    required this.title,
     Key? key,})
       : super(key: key);
 
   final Event event;
   final Event? old;
-  /// EventList held for the search display when adding subevents.
-  final EventList events;
+  final String title;
 
 }
 
@@ -47,6 +48,20 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
         });
       },
       child: const Text('Change time'),);
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: Text(widget.title),
+      leading: Builder(
+        builder: (context) => IconButton(
+          onPressed: () {
+            Navigator.pop(context, null);
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
+      ),
+    );
   }
 
   Widget priorityDropdown() {
@@ -110,15 +125,72 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
     return dateButton;
   }
 
+  Future<Event?> changeEventForm(BuildContext context, {required Event event}) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventChangeForm(event: event),
+      ),
+    );
+  }
+
+
+  Future<Event?> _addEventForm(BuildContext context) async {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddForm(),
+      ),
+    );
+  }
+
   /// Generates a widget which allows the user to set the date of an event.
   /// Currently, setting a date resets the time.
   Widget subEventPicker() {
-    return TextButton(
+    final Widget button = TextButton(
       onPressed: () {
-        _search(context);
+        _addEventForm(context).then((Event? e) {
+          if(e!=null) {
+            e.isSubevent = true;
+            widget.event.subevents.add(e);
+            setState(() {});
+          }
+        });
       },
-      child: const Text('Set subevents'),
-    );
+      child: const Text('Add subevent'),);
+    if(widget.event.subevents.length != 0) {
+      return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            button,
+            SizedBox(
+              width: 1000,
+              height: 400,
+              child: SingleChildScrollView(
+                child: EventListDisplay(
+                  showCompleted: false,
+                  events: widget.event.subevents,
+                  onLongPress: (Event e) {
+                    changeEventForm(context, event: e).then((Event? copy) {
+                      if(copy == null) {
+                        return;
+                      } else if (copy == e) {
+                        widget.event.subevents.remove(e);
+                      } else {
+                        e.copy(copy);
+                        widget.event.subevents.sort();
+                      }
+                      setState(() {});
+                    }
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+      );
+    }
+    return button;
   }
 
   /// The text field that the user enters the event description into
@@ -227,40 +299,6 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
     );
   }
 
-  /// Basically a copy of the _search function in [ExecutiveHomePage], but
-  /// the functionality is different:
-  /// Only selected events are given as the EventList, rather than all in search results.
-  /// Changes subevents list to the subevents found by the search.
-  Future _search(BuildContext context) async {
-    if (Overlay.of(context) != null) {
-      final OverlayState overlayState = Overlay.of(context)!;
-      OverlayEntry overlayEntry;
-      // Flutter doesn't allow you to reference overlayEntry before it is created,
-      // even though the buttons in search need to reference it.
-      Function removeOverlayEntry = () {};
-      overlayEntry = OverlayEntry(builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-          child: Card(
-            child: Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: Theme.of(context).canvasColor),
-                child: AdvancedSearch(
-                  selectedOnly: true,
-                  events: widget.events,
-                  onSubmit: (EventList e, bool showCompleted) {
-                    widget.event.subevents = e;
-                    removeOverlayEntry();
-                  },
-                  onExit: () {
-                    removeOverlayEntry();
-                  },),),),),);},);
-      removeOverlayEntry = () {
-        overlayEntry.remove();
-      };
-      overlayState.insert(overlayEntry);
-    }
-  }
 
   Widget makeButton(String text, MaterialColor color, Function onPressed) {
     return ElevatedButton(

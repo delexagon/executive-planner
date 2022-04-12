@@ -91,6 +91,7 @@ class masterList {
   }
 
   static void clear() {
+    rootWidget.events.clear();
     _masterList.clear();
     _masterTagList.clear();
     clearManaged();

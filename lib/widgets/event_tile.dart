@@ -1,5 +1,6 @@
 import 'package:executive_planner/backend/event_list.dart';
 import 'package:executive_planner/backend/misc.dart';
+import 'package:executive_planner/pages/home_page.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,22 @@ class _EventTileState extends State<EventTile> {
         style: Theme.of(context).textTheme.headline6,
       ),
     );
+  }
+
+  /// Loads new page when search results are submitted, generating a new
+  /// [ExecutiveHomePage].
+  Future _showSubevents(BuildContext context, bool showCompleted) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExecutiveHomePage(
+          showCompleted: true,
+          title: 'Subevents',
+          events: widget.event.subevents,
+        ),
+      ),
+    );
+    setState(() {});
   }
 
   // TODO: User should be able to quickly add subevents to all events.
@@ -122,6 +139,13 @@ class _EventTileState extends State<EventTile> {
               onLongPress: widget.onLongPress,
               showCompleted: widget.showCompleted,
               onDrag: widget.onDrag,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+            child: ListTile(
+              subtitle: const Text('Go to subevents'),
+              onTap: () {_showSubevents(context, false); setState(() {});},
             ),
           ),
         ],

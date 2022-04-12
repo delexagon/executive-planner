@@ -53,7 +53,6 @@ class _CalendarState extends State<CalendarView> {
       MaterialPageRoute(
         builder: (context) => EventChangeForm(
           event: event,
-          events: widget.events,
         ),
       ),
     );

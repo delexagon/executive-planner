@@ -7,9 +7,8 @@ import 'package:flutter/material.dart';
 /// Allows a user to modify an existing event or add a new event.
 class EventAddForm extends EventForm {
   EventAddForm({
-    required EventList events,
     Key? key,})
-      : super(key: key, old: null, event: Event(), events: events);
+      : super(key: key, old: null, title: 'Add new event', event: Event());
 
   @override
   _EventAddFormState createState() => _EventAddFormState();
@@ -35,17 +34,7 @@ class _EventAddFormState extends EventFormState {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add an event'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.pop(context, null);
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-        ),
-      ),
+      appBar: appBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -64,6 +53,8 @@ class _EventAddFormState extends EventFormState {
               priorityDropdown(),
               paddedText('Change recurrence:'),
               recurText(),
+              paddedText('Change subevents:'),
+              subEventPicker(),
               const Padding(padding: EdgeInsets.symmetric(vertical: 40)),
             ],
           ),
