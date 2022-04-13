@@ -3,6 +3,16 @@ class Break {
   Break({int year = 0, int month = 0, int week = 0, int day = 0, int hour = 0, int minute = 0}) {
     times = [year, month, week, day, hour, minute];
   }
+
+  bool isZero() {
+    for(int i in times) {
+      if(i != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Break.fromList(this.times);
   Break.copy(Break other) {
     for(int i = 0; i < other.times.length; i++) {
@@ -38,6 +48,9 @@ class Recurrence {
 
   @override
   String toString() {
+    if(spacing.isZero()) {
+      return 'No recurrence';
+    }
     final StringBuffer str = StringBuffer('Event recurs every ');
     for(int i = 0; i < spacing.times.length; i++) {
       if(spacing.times[i] > 0) {
