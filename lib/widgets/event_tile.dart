@@ -50,7 +50,7 @@ class _EventTileState extends State<EventTile> {
       context,
       MaterialPageRoute(
         builder: (context) => ExecutiveHomePage(
-          showCompleted: true,
+          showCompleted: false,
           title: 'Subevents',
           events: widget.event.subevents,
         ),

@@ -6,10 +6,9 @@ file(TO_CMAKE_PATH "/home/delexagon/Downloads/executive-planner-development/exec
 list(APPEND FLUTTER_TOOL_ENVIRONMENT
   "FLUTTER_ROOT=/home/delexagon/Downloads/flutter"
   "PROJECT_DIR=/home/delexagon/Downloads/executive-planner-development/executive-planner"
-  "DART_DEFINES=Zmx1dHRlci5pbnNwZWN0b3Iuc3RydWN0dXJlZEVycm9ycz10cnVl,RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ=="
   "DART_OBFUSCATION=false"
   "TRACK_WIDGET_CREATION=true"
-  "TREE_SHAKE_ICONS=false"
+  "TREE_SHAKE_ICONS=true"
   "PACKAGE_CONFIG=/home/delexagon/Downloads/executive-planner-development/executive-planner/.dart_tool/package_config.json"
-  "FLUTTER_TARGET=/home/delexagon/Downloads/executive-planner-development/executive-planner/lib/main.dart"
+  "FLUTTER_TARGET=lib/main.dart"
 )
