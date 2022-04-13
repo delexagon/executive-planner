@@ -63,13 +63,13 @@ Each functional component of the Executive Planner project is represented as a s
 
 This project requires the Flutter packages:    
 shared_preferences  
-intl
+intl  
 table_calendar
 
 To add these packages:  
 `flutter pub get`
 
 ## Immediate future plans  
-Bugfixing
-Options menu
-Leveling system
+Bugfixing  
+Options menu  
+Leveling system  
