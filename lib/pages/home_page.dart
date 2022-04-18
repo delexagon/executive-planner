@@ -158,7 +158,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
-              primary: priorityColors[dailyTasks[i].priority.index], // <-- Button color
+              primary: getEventColor(dailyTasks[i],), // <-- Button color
               onPrimary: Theme.of(context).canvasColor, // <-- Splash color
             ),
             onPressed: () {

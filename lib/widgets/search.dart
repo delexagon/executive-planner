@@ -129,26 +129,21 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   /// Search types which are enabled.
   /// In order: name, tag, priority, date
   /// If modified, please also update the typeCheckboxes() function.
-  List<bool?> searchTypesEnabled = [true, true, false, false, false, false, true,];
+  List<bool?> searchTypesEnabled = [true, true, false, false, false, false,];
 
   // TODO: Make this function have less time complexity?
   /// Recalculates search based on the new search terms.
   void redoSearch() {
     currentEvents = <Event>{};
-    final bool? addAll = searchTypesEnabled[searchTypesEnabled.length-1];
     final List<String> strs = searchStr.split(',');
-    if(addAll != null && addAll) {
-      currentEvents = widget.events.toSet();
-    } else {
-      for (int index = 0; index < strs.length; index++) {
-        strs[index] = strs[index].trim();
-        for (int i = 0; i < searchTypesEnabled.length; i++) {
-          if (searchTypesEnabled[i] == true) {
-            final EventList? toAdd = searchByString(i, strs[index]);
-            if (toAdd != null) {
-              for (int qq = 0; qq < toAdd.length; qq++) {
-                currentEvents.add(toAdd[qq]);
-              }
+    for (int index = 0; index < strs.length; index++) {
+      strs[index] = strs[index].trim();
+      for (int i = 0; i < searchTypesEnabled.length; i++) {
+        if (searchTypesEnabled[i] == true) {
+          final EventList? toAdd = searchByString(i, strs[index]);
+          if (toAdd != null) {
+            for (int qq = 0; qq < toAdd.length; qq++) {
+              currentEvents.add(toAdd[qq]);
             }
           }
         }
@@ -195,16 +190,6 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
   Widget typeCheckboxes() {
     final List<String> searchTypes = ['Name', 'Tags', 'Priority', 'Date', 'Recurs', 'Complete'];
     final List<Widget> checkboxes = <Widget>[];
-    checkboxes.add(
-      Flexible(
-        child: CheckboxListTile(
-          title: const Text('Add all'),
-          value: searchTypesEnabled[searchTypesEnabled.length-1],
-          onChanged: (bool? value) {
-            searchTypesEnabled[searchTypesEnabled.length-1] = value;
-            redoSearch();
-            setState(() {});
-    },),),);
     for(int i = 0; i < searchTypes.length; i++) {
       checkboxes.add(
         Flexible(

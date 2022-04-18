@@ -65,6 +65,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    widget.events.update();
     return SingleChildScrollView(child: Column(
       children: _buildPanel(),
     ),);

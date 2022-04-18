@@ -93,8 +93,8 @@ abstract class EventFormState<T extends EventForm> extends State<T> {
   Widget datePicker() {
     final Widget dateButton = TextButton(
       onPressed: () {
-        int hour = 0;
-        int minute = 0;
+        int hour = 23;
+        int minute = 59;
         if(widget.event.date != null) {
           hour = widget.event.date!.hour;
           minute = widget.event.date!.minute;
