@@ -111,11 +111,11 @@ class _EventTileState extends State<EventTile> {
           },
       );
     }
-    final TextStyle titleColor = TextStyle(color: priorityColors[widget.event.priority.index]);
+    final TextStyle titleColor = TextStyle(color: getEventColor(widget.event));
     final int length = widget.event.subevents.length;
     final String title = length == 0 ? widget.event.name : '${widget.event.name} (${widget.event.subevents.length})';
     tile = GestureDetector(
-      onSecondaryTap: () {
+      onSecondaryLongPress: () {
         if (widget.onDrag != null) {
           widget.onDrag!(widget.event);
           setState(() {});

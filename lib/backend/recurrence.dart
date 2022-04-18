@@ -2,22 +2,33 @@
 class Break {
   Break({int year = 0, int month = 0, int week = 0, int day = 0, int hour = 0, int minute = 0}) {
     times = [year, month, week, day, hour, minute];
+    _removeNegatives();
+  }
+
+  Break.fromList(this.times) {
+    _removeNegatives();
+  }
+  Break.copy(Break other) {
+    for(int i = 0; i < other.times.length; i++) {
+      times[i] = other.times[i];
+    }
+  }
+
+  void _removeNegatives() {
+    for(int i in times) {
+      if(i < 0) {
+        i = 0;
+      }
+    }
   }
 
   bool isZero() {
-    for(int i in times) {
+    for(final int i in times) {
       if(i != 0) {
         return false;
       }
     }
     return true;
-  }
-
-  Break.fromList(this.times);
-  Break.copy(Break other) {
-    for(int i = 0; i < other.times.length; i++) {
-      times[i] = other.times[i];
-    }
   }
 
   static final List<String> timeStrs = ['Year', 'Month', 'Week', 'Day', 'Hour', 'Minute'];
@@ -46,9 +57,13 @@ class Recurrence {
     return spacing.add(now);
   }
 
+  bool isZero() {
+    return spacing.isZero();
+  }
+
   @override
   String toString() {
-    if(spacing.isZero()) {
+    if(isZero()) {
       return 'No recurrence';
     }
     final StringBuffer str = StringBuffer('Event recurs every ');

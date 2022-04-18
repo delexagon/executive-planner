@@ -1,4 +1,5 @@
 
+
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
@@ -141,6 +142,21 @@ class Event {
   }
 
   void update() {
+    final DateTime now = DateTime.now().toUtc();
+    if(date != null && date!.isBefore(now)) {
+      if(!isComplete) {
+
+        if(recur != null && !recur!.isZero()) {
+          print(name);
+          while(date!.isBefore(now)) {
+            date = recur!.getNextRecurrence(date!);
+          }
+        } else {
+          addTag('Overdue');
+        }
+      }
+    }
+    subevents.update();
   }
 
   void complete() {
@@ -225,7 +241,7 @@ class Event {
   }
 
   String timeString() {
-    if(date == null || date!.hour == 0 && date!.minute == 0) {
+    if(date == null || (date!.hour == 23 && date!.minute == 59)) {
       return '';
     }
     return timeFormat.format(date!.toLocal());
@@ -238,11 +254,7 @@ class Event {
     if (date == null) {
       return 'Reminder';
     } else {
-      if (date!.hour == 0 && date!.minute == 0) {
-        return dateFormat.format(date!.toLocal());
-      } else {
-        return '${dateFormat.format(date!.toLocal())} ${timeString()}';
-      }
+      return '${dateFormat.format(date!.toLocal())} ${timeString()}';
     }
   }
 
