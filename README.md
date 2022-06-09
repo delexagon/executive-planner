@@ -70,6 +70,6 @@ To add these packages:
 `flutter pub get`
 
 ## Immediate future plans  
-Bugfixing  
+Rewriting the master event list  
 Options menu  
 Leveling system  
