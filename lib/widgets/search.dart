@@ -1,4 +1,6 @@
-import 'package:executive_planner/backend/event_list.dart';
+
+import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';

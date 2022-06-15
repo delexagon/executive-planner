@@ -1,6 +1,7 @@
 import 'dart:collection';
 
-import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 

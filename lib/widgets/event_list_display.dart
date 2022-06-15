@@ -1,9 +1,9 @@
-// ignore_for_file: directives_ordering
 
-import 'package:flutter/material.dart';
 
+import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/widgets/event_tile.dart';
-import 'package:executive_planner/backend/event_list.dart';
+import 'package:flutter/material.dart';
 
 /// EventListDisplay displays all events in events in a list, surprise surprise.
 /// onLongPress will be called depending on which event tile is pressed, and will

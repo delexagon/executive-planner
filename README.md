@@ -28,9 +28,15 @@ Together, we will make working accessible, rewarding, and fun!
 
 ## Builds
 
+<<<<<<< HEAD
 Windows, Linux: 
 A precompiled executable is available at https://drive.google.com/drive/folders/133vc1G6YLBMPvDmW1OHYQ0aQpELW666M.  
 Note that Ubuntu or derivative users will manually have to set the XDG_DATA_HOME variable to some folder or other in the .bashrc file (just XDG_DATA_HOME="")
+=======
+Linux: 
+A precompiled executable is available at https://drive.google.com/drive/folders/133vc1G6YLBMPvDmW1OHYQ0aQpELW666M.  
+Note that Ubuntu users will manually have to set the XDG_DATA_HOME variable to some folder or other in the .bashrc file.
+>>>>>>> 85c2597 (split events and event list and put into new folder)
 
 ### Design Philosophy
 
@@ -63,13 +69,28 @@ Each functional component of the Executive Planner project is represented as a s
 
 This project requires the Flutter packages:    
 shared_preferences  
+<<<<<<< HEAD
 intl  
+=======
+intl
+>>>>>>> 85c2597 (split events and event list and put into new folder)
 table_calendar
 
 To add these packages:  
 `flutter pub get`
 
+<<<<<<< HEAD
 ## Immediate future plans  
 Rewriting the master event list  
 Options menu  
 Leveling system  
+=======
+## Notable issues  
+Subevents do not currently work  
+They'll take a while to implement, sorry
+
+## Immediate future plans  
+Bugfixing
+Options menu
+Leveling system
+>>>>>>> 85c2597 (split events and event list and put into new folder)

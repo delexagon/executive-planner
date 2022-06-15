@@ -1,4 +1,5 @@
-import 'package:executive_planner/backend/event_list.dart';
+
+import 'package:executive_planner/backend/events/event.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,6 +9,7 @@ class Tuple<T1, T2> {
   T2 second;
 }
 
+List<String> specialTags = ['Overdue', 'Displayed', 'Leading'];
 List<Color> priorityColors = [Colors.black, Colors.blue, Colors.green, Colors.orange, Colors.red.shade900,];
 
 Color getEventColor(Event e) {

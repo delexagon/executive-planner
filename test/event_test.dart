@@ -1,5 +1,6 @@
 // Import the test package and Counter class
-import 'package:executive_planner/backend/event_list.dart';
+import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // TODO: Add unit tests for the following methods:
