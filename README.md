@@ -63,28 +63,13 @@ Each functional component of the Executive Planner project is represented as a s
 
 This project requires the Flutter packages:    
 shared_preferences  
-<<<<<<< HEAD
 intl  
-=======
-intl
->>>>>>> 85c2597 (split events and event list and put into new folder)
 table_calendar
 
 To add these packages:  
 `flutter pub get`
 
-<<<<<<< HEAD
 ## Immediate future plans  
 Rewriting the master event list  
 Options menu  
 Leveling system  
-=======
-## Notable issues  
-Subevents do not currently work  
-They'll take a while to implement, sorry
-
-## Immediate future plans  
-Bugfixing
-Options menu
-Leveling system
->>>>>>> 85c2597 (split events and event list and put into new folder)
