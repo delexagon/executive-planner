@@ -8,7 +8,7 @@ A to-do list/calendar app, created for Software Design & Documentation in Spring
 
 
 ---
-**Team Members:** Zachary Love, Michael Kokkatt, Miriam Rundell, Kevin Scott
+**Team Members:** Sam DeMarrais, Zachary Love, Michael Kokkatt, Miriam Rundell, Kevin Scott
 
 
 [Documentation (In Progress)](https://executive-planner.readthedocs.io/en/latest/) 
