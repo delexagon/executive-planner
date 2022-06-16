@@ -145,7 +145,6 @@ class Event {
       if(!isComplete) {
 
         if(recur != null && !recur!.isZero()) {
-          print(name);
           while(date!.isBefore(now)) {
             date = recur!.getNextRecurrence(date!);
           }
