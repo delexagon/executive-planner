@@ -1,6 +1,7 @@
 
 import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/jason.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:intl/intl.dart';
@@ -27,19 +28,8 @@ class Event {
     }
   }
 
-  Event.copy(Event other) {
-    _name = other._name;
-    _description = other._description;
-    _priority = other._priority;
-    _completed = other._completed;
-    tags.mergeTagLists(other.tags, onAdd: onAdd);
-    subevents = other.subevents;
-    if(other.recur != null) {
-      recur = Recurrence.copy(other.recur!);
-    } else {
-      recur = null;
-    }
-    date = other._date;
+  factory Event.copy(Event other) {
+    return JasonEvent.fromJason(other.toJason());
   }
 
   bool _completed = false;
