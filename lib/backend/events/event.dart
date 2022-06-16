@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 enum Priority { none, low, medium, high, critical }
 
 class Event {
-
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
     Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.superevent,}) {

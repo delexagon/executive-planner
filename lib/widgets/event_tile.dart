@@ -6,7 +6,6 @@ import 'package:executive_planner/pages/home_page.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 
-// TODO: Taps are having a delayed response for some reason.
 /// An individual event tile. This class should only be called by [EventListDisplay].
 /// This class also calls more [EventListDisplay]s.
 class EventTile extends StatefulWidget {

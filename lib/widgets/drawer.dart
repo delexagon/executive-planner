@@ -30,7 +30,7 @@ class ExecutiveDrawer extends StatelessWidget {
   }
 
 
-  void exportData() {
+  void exportData([String loc = 'events']) {
     if(calledFromRoot) {
       Clipboard.setData(ClipboardData(text: masterList.toJason()));
     } else {
@@ -41,7 +41,6 @@ class ExecutiveDrawer extends StatelessWidget {
   void importData(BuildContext context) {
     Clipboard.getData('text/plain').then((ClipboardData? value) {
       if (value != null && value.text != null && value.text != '') {
-        masterList.clearManaged();
         Navigator.popUntil(context, ModalRoute.withName('/'));
         masterList.loadMaster(value.text!);
       }
@@ -115,6 +114,21 @@ class ExecutiveDrawer extends StatelessWidget {
             onLongPress: () => importData(context),
             onPressed: null,
             child: const Text('Import from clipboard'),
+          ),
+          const Divider(),
+          TextButton(
+            onLongPress: () => masterList.saveMaster(null, 'backup'),
+            onPressed: null,
+            child: const Text('Backup data'),
+          ),
+          TextButton(
+            onLongPress: () {
+              Navigator.popUntil(context, ModalRoute.withName('/'));
+              masterList.initMaster('backup');
+              update();
+            },
+            onPressed: null,
+            child: const Text('Restore backup'),
           ),
     ],),);
   }

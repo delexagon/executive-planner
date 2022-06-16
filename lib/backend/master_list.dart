@@ -5,7 +5,6 @@ import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
 import 'package:executive_planner/backend/file_io.dart';
 import 'package:executive_planner/backend/jason.dart';
-
 import 'package:executive_planner/pages/home_page.dart';
 
 
@@ -122,15 +121,16 @@ class masterList {
   }
 
   /// Initializes the masterList to whatever is stored locally.
-  static void initMaster() {
-    readString('events').then((jason) {
+  static void initMaster([String location = 'events']) {
+    readString(location).then((jason) {
       if (jason != null) {
         loadMaster(jason);
       }
     });
   }
 
-  static void loadMaster(String jason) {
+  static void loadMaster(String jason,) {
+    clearManaged();
     clear();
     _masterList = JasonSetEvent.fromJason(jason);
     for(final Event e in _masterList) {
@@ -145,9 +145,9 @@ class masterList {
     return _masterList.toJason();
   }
 
-  static void saveMaster([Event? e]) {
+  static void saveMaster([Event? e, String location = 'events']) {
     if(e == null || _masterList.contains(e)) {
-      write('events', toJason());
+      write(location, toJason());
     }
   }
 }
