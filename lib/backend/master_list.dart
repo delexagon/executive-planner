@@ -13,22 +13,26 @@ class masterList {
   /// Holds ALL EVENTS in the program.
   static Set<Event> _masterList = <Event>{};
   static final HashMap<String, int> _masterTagList = HashMap<String, int>();
-  static final HashMap<EventList, int> _eventListList = HashMap<EventList, int>();
-  static final ExecutiveHomePage rootWidget = ExecutiveHomePage(
-    title: 'Planner',
-    events: EventList(),
-    showCompleted: false,
-  );
+  static late final ExecutiveHomePage rootWidget;
+
+  static void init() {
+    final EventList allEvents = EventList();
+    rootWidget = ExecutiveHomePage(
+      title: 'Planner',
+      events: allEvents,
+      showCompleted: false,
+      onEventListChanged: () {
+        saveMaster();
+      },
+      headlist: allEvents,
+    );
+    masterList.initMaster();
+  }
 
   static void update() {
     for(final Event e in _masterList) {
       e.update();
     }
-  }
-
-  static void clearManaged() {
-    _eventListList.clear();
-    manageEventList(rootWidget.events);
   }
 
   static bool hasEvent(Event e) {
@@ -80,44 +84,23 @@ class masterList {
   }
 
   static void remove(Event e) {
+    e.removeThis();
+    e.headlist = null;
     for(final String tag in e.tags.asStringList()) {
       removeTag(tag, e);
     }
     _masterList.remove(e);
     saveMaster();
-    for(final EventList list in _eventListList.keys) {
-      list.remove(e);
-    }
   }
 
   static void clear() {
     rootWidget.events.clear();
     _masterList.clear();
     _masterTagList.clear();
-    clearManaged();
   }
 
   static EventList toEventList() {
     return _masterList.toEventList();
-  }
-
-  /// The masterList will automatically delete events in all managed lists throughout the program.
-  /// Make sure to use removeManagedEventList in any path returning from the page you use it in.
-  static void manageEventList(EventList e) {
-    if(!_eventListList.containsKey(e)) {
-      _eventListList[e] = 1;
-    } else {
-      _eventListList[e] = _eventListList[e]! + 1;
-    }
-  }
-
-  static void removeManagedEventList(EventList e) {
-    if(_eventListList.containsKey(e)) {
-      _eventListList[e] = _eventListList[e]! - 1;
-      if(_eventListList[e] == 0) {
-        _eventListList.remove(e);
-      }
-    }
   }
 
   /// Initializes the masterList to whatever is stored locally.
@@ -130,10 +113,10 @@ class masterList {
   }
 
   static void loadMaster(String jason,) {
-    clearManaged();
     clear();
     _masterList = JasonSetEvent.fromJason(jason);
     for(final Event e in _masterList) {
+      e.headlist = rootWidget.events;
       for(final String tag in e.tags.asStringList()) {
         addTag(tag, e);
       }
@@ -150,12 +133,6 @@ class masterList {
       write(location, toJason());
     }
   }
-}
-
-
-// ignore: avoid_classes_with_only_static_members, camel_case_types
-class optionsStorage {
-
 }
 
 extension Master on Set<Event> {

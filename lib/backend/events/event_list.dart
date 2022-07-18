@@ -1,31 +1,30 @@
 
 import 'package:executive_planner/backend/events/event.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 
 class EventList {
 
-  EventList({List<Event>? list, this.managed = false}) {
+  EventList({List<Event>? list}) {
     if(list != null) {
       this.list = list;
     }
-    if(managed) {
-      masterList.manageEventList(this);
-    }
   }
+
+  Function()? onChanged;
 
   List<Event> list = <Event>[];
   static Comparator<Event> sortFunc = Event.dateCompare;
-  bool managed;
 
   /// Add an event to the list.
   void add(Event e) {
     list.add(e);
     sort();
+    onChanged?.call();
   }
 
   void clear() {
     list.clear();
+    onChanged?.call();
   }
 
   EventList noDate() {
@@ -41,6 +40,14 @@ class EventList {
   /// Remove an event from the list.
   void remove(Event e) {
     list.remove(e);
+    onChanged?.call();
+  }
+
+  void update() {
+    for (final Event event in list) {
+      event.update();
+    }
+    onChanged?.call();
   }
 
   bool contains(Event e) {
@@ -73,6 +80,7 @@ class EventList {
       list.add(e[i]);
     }
     sort();
+    onChanged?.call();
     return this;
   }
 
@@ -84,6 +92,7 @@ class EventList {
     for(final Event e in other.list) {
       list.remove(e);
     }
+    onChanged?.call();
   }
 
   /// Adds all events in e to the current list, and returns it.
@@ -94,6 +103,7 @@ class EventList {
         list.remove(event);
       }
     }
+    onChanged?.call();
     return this;
   }
 
@@ -101,6 +111,7 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   EventList sort() {
     list.sort(sortFunc);
+    onChanged?.call();
     return this;
   }
 
@@ -193,12 +204,6 @@ class EventList {
       }
     }
     return part;
-  }
-
-  void update() {
-    for (final Event event in list) {
-      event.update();
-    }
   }
 
   /// Return an EventList containing the events that have a specific tag.

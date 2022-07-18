@@ -11,10 +11,12 @@ import 'package:table_calendar/table_calendar.dart';
 
 class CalendarView extends StatefulWidget {
   // Currently, the calendar will never show completed events.
-  CalendarView({required this.events, Key? key}) : super(key: key) {
-    masterList.manageEventList(events);
-  }
+  const CalendarView({required this.events, Key? key, required this.onEventListChanged, required this.headlist}) : super(key: key);
   final EventList events;
+
+  final Function() onEventListChanged;
+  // TODO: Make this structure have to carry over less data from page to page?
+  final EventList headlist;
 
   @override
   _CalendarState createState() => _CalendarState();
@@ -31,6 +33,12 @@ class _CalendarState extends State<CalendarView> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
+  void onEventListChanged() {
+    setState(() {
+      widget.onEventListChanged();
+    });
+  }
+
   late final ValueNotifier<List<Event>> _selectedEvents;
   // The events that are currently selected, as an EventList for EventListDisplay
 
@@ -41,6 +49,7 @@ class _CalendarState extends State<CalendarView> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
 
     _selectedEventsList = _getEventListForDay(_focusedDay);
+    _selectedEventsList.onChanged = onEventListChanged;
   }
 
   @override
@@ -83,6 +92,7 @@ class _CalendarState extends State<CalendarView> {
     if (!isSameDay(selectedDay, _selectedDay)) {
       setState(() {
         _selectedEventsList = widget.events.searchDate(selectedDay);
+        _selectedEventsList.onChanged = onEventListChanged;
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         _rangeStart = null;
@@ -104,12 +114,15 @@ class _CalendarState extends State<CalendarView> {
     // Since start and end dates could be null
     if (start != null && end != null) {
       _selectedEventsList = _getEventListForRange(start, end);
+      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     } else if (start != null) {
       _selectedEventsList = _getEventListForDay(start);
+      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     } else if (end != null) {
       _selectedEventsList = _getEventListForDay(end);
+      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     }
   }
@@ -176,7 +189,6 @@ class _CalendarState extends State<CalendarView> {
     widgets.add(
       IconButton(
         onPressed: () {
-          masterList.removeManagedEventList(widget.events);
           Navigator.pop(context);
         },
         icon: const Icon(Icons.list_alt),
@@ -200,7 +212,12 @@ class _CalendarState extends State<CalendarView> {
         centerTitle: false,
         title: title(),
       ),
-      drawer: ExecutiveDrawer(update: () => {setState(() {})}, events: widget.events),
+      drawer: ExecutiveDrawer(
+        update: () => {setState(() {})},
+        events: widget.events,
+        onEventListChanged: onEventListChanged,
+        headlist: widget.headlist,
+      ),
       body: Column(
             children: [
               SizedBox(
@@ -223,8 +240,8 @@ class _CalendarState extends State<CalendarView> {
                         }
                         if(_selectedDay != null) {
                           _selectedEventsList = widget.events.searchDate(_selectedDay!);
+                          _selectedEventsList.onChanged = onEventListChanged;
                         }
-                        setState(() {});
     });},),),),],),);
   }
 }

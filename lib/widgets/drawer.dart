@@ -8,10 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ExecutiveDrawer extends StatelessWidget {
-  const ExecutiveDrawer({required this.update, required this.events, this.calledFromRoot = false, Key? key,}) : super(key: key);
+  const ExecutiveDrawer({required this.update, required this.events, this.calledFromRoot = false, Key? key, required this.onEventListChanged, required this.headlist,}) : super(key: key);
   final EventList events;
   final Function() update;
   final bool calledFromRoot;
+
+  final Function() onEventListChanged;
+  // TODO: Make this structure have to carry over less data from page to page?
+  final EventList headlist;
 
   /// Loads new page when search results are submitted, generating a new
   /// [ExecutiveHomePage].
@@ -23,10 +27,11 @@ class ExecutiveDrawer extends StatelessWidget {
           title: 'Completed events',
           events: events.searchCompleted(),
           showCompleted: true,
+          onEventListChanged: onEventListChanged,
+          headlist: headlist,
         ),
       ),
     );
-    update();
   }
 
 
@@ -45,14 +50,12 @@ class ExecutiveDrawer extends StatelessWidget {
         masterList.loadMaster(value.text!);
       }
     });
-    update();
   }
 
   void setSort(Comparator<Event>? value) {
     if(value != null) {
       EventList.sortFunc = value;
       events.sort();
-      update();
     }
   }
 
@@ -125,7 +128,6 @@ class ExecutiveDrawer extends StatelessWidget {
             onLongPress: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
               masterList.initMaster('backup');
-              update();
             },
             onPressed: null,
             child: const Text('Restore backup'),

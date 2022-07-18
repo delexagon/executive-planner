@@ -1,7 +1,7 @@
 
 import 'package:executive_planner/backend/events/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/jason.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +13,7 @@ enum Priority { none, low, medium, high, critical }
 class Event {
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.superevent,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.headlist,}) {
     _name = name;
     _date = date;
     _description = description;
@@ -40,20 +40,22 @@ class Event {
 
   void setSubSupers() {
     for(int i = 0; i < subevents.length; i++) {
-      subevents[i].superevent = this;
+      subevents[i].headlist = subevents;
     }
   }
 
   void removeThis() {
-    superevent!.subevents.remove(this);
-    masterList.saveMaster();
+    if(headlist != null) {
+      headlist!.remove(this);
+      headlist = null;
+    }
   }
 
-  Event? superevent;
+  EventList? headlist;
 
   void addSubevent(Event e) {
     subevents.add(e);
-    e.superevent = this;
+    e.headlist = headlist;
     masterList.saveMaster();
   }
 

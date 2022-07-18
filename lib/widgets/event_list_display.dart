@@ -39,13 +39,17 @@ class _EventListDisplayState extends State<EventListDisplay> {
     final List<Widget> tiles = <Widget>[];
     if (widget.events.length != 0) {
       for (int i = 0; i < widget.events.length; i++) {
-        if(!widget.showCompleted && widget.events[i].isComplete) {
+        final Event e = widget.events[i];
+        if(!widget.showCompleted && e.isComplete) {
           continue;
+        }
+        if(e.headlist == null) {
+          widget.events.remove(e);
         }
         tiles.add(const Divider());
         tiles.add(
           EventTile(
-            event: widget.events[i],
+            event: e,
             onTap: widget.onTap,
             onLongPress: widget.onLongPress,
             showCompleted: widget.showCompleted,
@@ -65,7 +69,6 @@ class _EventListDisplayState extends State<EventListDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    widget.events.update();
     return SingleChildScrollView(child: Column(
       children: _buildPanel(),
     ),);

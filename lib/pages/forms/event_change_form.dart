@@ -35,7 +35,7 @@ class _EventChangeFormState extends EventFormState {
             alignment: Alignment.centerRight,
             child: padded(10,10,
               makeButton('Remove Event', backButtonColor, () {
-                if(widget.old!.superevent != null) {
+                if(widget.old!.headlist != null) {
                   widget.old!.removeThis();
                 }
                 Navigator.pop(context, widget.old);

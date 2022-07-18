@@ -1,5 +1,6 @@
 
 import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/home_page.dart';
@@ -53,6 +54,8 @@ class _EventTileState extends State<EventTile> {
           showCompleted: false,
           title: 'Subevents',
           events: widget.event.subevents,
+          onEventListChanged: () {masterList.saveMaster(); setState(() {});},
+          headlist: widget.event.subevents,
         ),
       ),
     );
