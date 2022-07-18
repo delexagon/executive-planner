@@ -29,7 +29,7 @@ class ExecutiveHomePage extends StatefulWidget {
   /// The title text, placed in the center of the appbar.
   final String title;
 
-  final Function() onEventListChanged;
+  final Function(Event? e) onEventListChanged;
   // TODO: Make this structure have to carry over less data from page to page?
   final EventList headlist;
 
@@ -66,10 +66,17 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     widget.events.onChanged = onEventListChanged;
   }
 
-  void onEventListChanged() {
+  void onEventListChanged(Event? e) {
+    if(e != null && widget.events.onChanged == null) {
+      if(widget.events.contains(e)) {
+        widget.events.remove(e);
+      } else {
+        widget.events.add(e);
+      }
+    }
     setState(() {
-      widget.onEventListChanged();
     });
+    widget.onEventListChanged(e);
   }
 
   EventList dailyTasks = EventList();
@@ -236,6 +243,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Make 'displayed' variable
     dailyTasks = widget.events.searchTags('Displayed').searchBefore(DateTime.now().add(const Duration(days:1)));
     return Scaffold(
       appBar: AppBar(

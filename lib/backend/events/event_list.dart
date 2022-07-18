@@ -10,7 +10,7 @@ class EventList {
     }
   }
 
-  Function()? onChanged;
+  Function(Event? e)? onChanged;
 
   List<Event> list = <Event>[];
   static Comparator<Event> sortFunc = Event.dateCompare;
@@ -19,12 +19,11 @@ class EventList {
   void add(Event e) {
     list.add(e);
     sort();
-    onChanged?.call();
+    onChanged?.call(e);
   }
 
   void clear() {
     list.clear();
-    onChanged?.call();
   }
 
   EventList noDate() {
@@ -40,14 +39,14 @@ class EventList {
   /// Remove an event from the list.
   void remove(Event e) {
     list.remove(e);
-    onChanged?.call();
+    onChanged?.call(e);
   }
 
   void update() {
     for (final Event event in list) {
       event.update();
     }
-    onChanged?.call();
+    onChanged?.call(null);
   }
 
   bool contains(Event e) {
@@ -75,12 +74,12 @@ class EventList {
 
   /// Adds all events in e to the current list, and returns it.
   /// This modifies the list you use it on!
-  EventList union(EventList e) {
+  EventList addAll(EventList e) {
     for (int i = 0; i < e.length; i++) {
       list.add(e[i]);
+      onChanged?.call(e[i]);
     }
     sort();
-    onChanged?.call();
     return this;
   }
 
@@ -90,9 +89,8 @@ class EventList {
       list = <Event>[];
     }
     for(final Event e in other.list) {
-      list.remove(e);
+      remove(e);
     }
-    onChanged?.call();
   }
 
   /// Adds all events in e to the current list, and returns it.
@@ -100,10 +98,12 @@ class EventList {
   EventList intersection(EventList e) {
     for(final Event event in list) {
       if(!e.contains(event)) {
-        list.remove(event);
+        final bool removed = list.remove(event);
+        if(removed) {
+          onChanged?.call(event);
+        }
       }
     }
-    onChanged?.call();
     return this;
   }
 
@@ -111,7 +111,7 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   EventList sort() {
     list.sort(sortFunc);
-    onChanged?.call();
+    onChanged?.call(null);
     return this;
   }
 

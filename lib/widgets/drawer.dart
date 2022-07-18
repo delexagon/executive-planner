@@ -13,7 +13,7 @@ class ExecutiveDrawer extends StatelessWidget {
   final Function() update;
   final bool calledFromRoot;
 
-  final Function() onEventListChanged;
+  final Function(Event? e) onEventListChanged;
   // TODO: Make this structure have to carry over less data from page to page?
   final EventList headlist;
 

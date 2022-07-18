@@ -14,7 +14,7 @@ class CalendarView extends StatefulWidget {
   const CalendarView({required this.events, Key? key, required this.onEventListChanged, required this.headlist}) : super(key: key);
   final EventList events;
 
-  final Function() onEventListChanged;
+  final Function(Event? e) onEventListChanged;
   // TODO: Make this structure have to carry over less data from page to page?
   final EventList headlist;
 
@@ -33,9 +33,9 @@ class _CalendarState extends State<CalendarView> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-  void onEventListChanged() {
+  void onEventListChanged(Event? e) {
     setState(() {
-      widget.onEventListChanged();
+      widget.onEventListChanged(e);
     });
   }
 

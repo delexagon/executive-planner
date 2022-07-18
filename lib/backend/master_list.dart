@@ -21,7 +21,7 @@ class masterList {
       title: 'Planner',
       events: allEvents,
       showCompleted: false,
-      onEventListChanged: () {
+      onEventListChanged: (Event? e) {
         saveMaster();
       },
       headlist: allEvents,
@@ -116,12 +116,12 @@ class masterList {
     clear();
     _masterList = JasonSetEvent.fromJason(jason);
     for(final Event e in _masterList) {
+      rootWidget.events.add(e);
       e.headlist = rootWidget.events;
       for(final String tag in e.tags.asStringList()) {
         addTag(tag, e);
       }
     }
-    rootWidget.events.union(_masterList.toEventList());
   }
 
   static String toJason() {

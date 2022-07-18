@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 ///
 /// Generates an [ExecutivePlanner] [StatelessWidget] which holds everything else.
 void main() {
+  // TODO: Update the eventlist every few minutes or something
   masterList.init();
   runApp(const ExecutivePlanner());
 }

@@ -54,7 +54,7 @@ class _EventTileState extends State<EventTile> {
           showCompleted: false,
           title: 'Subevents',
           events: widget.event.subevents,
-          onEventListChanged: () {masterList.saveMaster(); setState(() {});},
+          onEventListChanged: (Event? e) {masterList.saveMaster(); setState(() {});},
           headlist: widget.event.subevents,
         ),
       ),
