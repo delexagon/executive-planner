@@ -38,11 +38,9 @@ class ExecutiveHomePage extends StatefulWidget {
   final EventList events;
   final bool showCompleted;
 
-  /// Adds event to both current and masterList.
   void addEvent(Event e) {
-    masterList.add(e);
-    events.add(e);
     e.headlist = headlist;
+    events.add(e);
   }
 
   /// Removes event from both current and masterList.
