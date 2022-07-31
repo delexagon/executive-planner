@@ -32,6 +32,13 @@ class _EventTileState extends State<EventTile> {
   bool isExpanded = false;
   bool descMode = false;
 
+  // Just in case
+  @override
+  void dispose() {
+    super.dispose();
+    widget.event.subevents.removeFunc(this);
+  }
+
   /// Pads text a standard amount.
   Widget paddedText(String text) {
     return Padding(
@@ -101,6 +108,7 @@ class _EventTileState extends State<EventTile> {
         onPressed: () {
           isExpanded = true;
           setState(() {});
+          widget.event.subevents.addFunc(this, () {setState(() {});});
         },
       );
     } else {
@@ -109,6 +117,7 @@ class _EventTileState extends State<EventTile> {
           onPressed: () {
             isExpanded = false;
             setState(() {});
+            widget.event.subevents.removeFunc(this);
           },
       );
     }

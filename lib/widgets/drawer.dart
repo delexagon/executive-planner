@@ -29,7 +29,6 @@ class ExecutiveDrawer extends StatelessWidget {
     );
   }
 
-
   void exportData([String loc = 'events']) {
     Clipboard.setData(ClipboardData(text: Set<Event>.from(events.list).toJason()));
   }
