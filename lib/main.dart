@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/pages/home_page.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ void main() {
   // TODO: Update the EventList every few minutes or something
   ListObserver.top = ListObserver();
   ListObserver.top.notify(NotificationType.loadFile);
+  Timer.periodic(const Duration(minutes: 1), (timer) {ListObserver.top.notify(NotificationType.update);});
   runApp(const ExecutivePlanner());
 }
 

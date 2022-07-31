@@ -253,6 +253,7 @@ class ListObserver {
       _add(e);
     }
     // This is being called async; we have to make sure we save it here or data is lost
+    notify(NotificationType.update);
     save();
   }
 
