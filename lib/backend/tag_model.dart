@@ -11,12 +11,9 @@ class TagList {
       this.tags = tags;
     }
   }
-  TagList.copy(TagList other, {Function(String t)? onAdd}) {
+  TagList.copy(TagList other) {
     for(final String tag in other.tags) {
       tags.add(tag);
-      if(onAdd != null) {
-        onAdd(tag);
-      }
     }
   }
 

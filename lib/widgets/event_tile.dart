@@ -183,7 +183,6 @@ class _EventTileState extends State<EventTile> {
 
   @override
   Widget build(BuildContext context) {
-    widget.event.update();
     return _buildPanel();
   }
 }
