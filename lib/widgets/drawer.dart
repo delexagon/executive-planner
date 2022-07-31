@@ -11,7 +11,6 @@ class ExecutiveDrawer extends StatelessWidget {
   const ExecutiveDrawer({required this.events, Key? key, required this.headlist,}) : super(key: key);
   final EventList events;
 
-  // TODO: Make this structure have to carry over less data from page to page?
   final ListObserver headlist;
 
   /// Loads new page when search results are submitted, generating a new

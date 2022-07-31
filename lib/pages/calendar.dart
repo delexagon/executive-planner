@@ -18,7 +18,7 @@ class CalendarView extends StatefulWidget {
   _CalendarState createState() => _CalendarState();
 }
 
-// TODO: This may not update because the selected day list keeps changing
+// TODO: This may not update because the selected day list keeps changing. Check this
 class _CalendarState extends State<CalendarView> {
   late EventList _selectedEventsList;
 
@@ -190,6 +190,9 @@ class _CalendarState extends State<CalendarView> {
   // TODO: Stop this trash from throwing errors whenever you change the size of the calendar
   @override
   Widget build(BuildContext context) {
+    // We manually set the height of the calendar container, because apparently there's
+    // no way to check this during run time. Otherwise, the scrollable size would be
+    // infinite and it wouldn't render.
     double calendarHeight = 350;
     if(_calendarFormat == CalendarFormat.twoWeeks) {
       calendarHeight = 200;

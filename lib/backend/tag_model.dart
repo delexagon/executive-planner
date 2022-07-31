@@ -1,8 +1,4 @@
 
-// TODO: Add a mapping between Events and Tags, so we can search Events by their Tag and vice versa.
-// Currently, the only way to get to a tag is through a search or an Event.
-
-
 /// Stores a collection of EventTag objects
 /// This class should only add existing EventTags, not construct new ones.
 class TagList {

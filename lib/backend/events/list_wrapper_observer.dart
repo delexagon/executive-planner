@@ -122,7 +122,8 @@ class ListObserver {
 
   int get length => _head.length;
 
-  static final specialTags = {'Leading',};
+  // 'Overdue' is also special, but we don't want to suggest this to the user.
+  static final specialTags = {'Leading','Displayed',};
 
   // Returns a list of Tags matching a partial string query
   Set<String> queryTags(String str) {
@@ -178,7 +179,6 @@ class ListObserver {
       if(event.observer != null && event.observer != this) {
         event.observer!._remove(event);
       }
-      // TODO: Make this tracked in just one place somehow.
       event.observer = this;
       event.subevents.supervisor = this;
       _head.add(event);
@@ -206,7 +206,8 @@ class ListObserver {
   }
 
   void _addTag(String? tag) {
-    if(tag != null) {
+    // Don't keep track of reserved tags
+    if(tag != null && !specialTags.contains(tag)) {
       if (_tags.containsKey(tag)) {
         _tags[tag] = _tags[tag]! + 1;
       } else {

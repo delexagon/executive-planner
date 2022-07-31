@@ -22,7 +22,6 @@ class EventMassForm extends EventForm {
 class _EventMassFormState extends EventFormState {
   TagList tags = TagList(tags: {});
 
-  // TODO: Add an "are you sure" overlay
   @override
   Widget bottomButtons() {
     return SizedBox(

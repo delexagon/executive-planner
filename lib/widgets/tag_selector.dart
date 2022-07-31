@@ -66,16 +66,15 @@ class _TagSelectorState extends State<TagSelector> {
     _searchTextEditingController.dispose();
   }
 
-  // Displays tag suggestions according to queries from incomplete text being typed in
-  // searchTextEditingController sends over the text being typed in, which searches for matching tags in the master tag list in event_list.dart.
-  // TODO: Find a way for the master tag list to persist through reloads. Can maybe link to EventList in some way?
+  /// Displays tag suggestions according to queries from incomplete text being typed in
+  /// searchTextEditingController sends over the text being typed in, which searches for matching tags in the master tag list in event_list.dart
   Widget _buildSuggestionWidget() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text('Suggestions'),
       Wrap(
         children: _filterSearchResultList()
             .where((tagModel) =>
-            widget.headlist.hasTag(tagModel) && !widget.tags.contains(tagModel),)
+            !widget.tags.contains(tagModel),)
             .map((tagModel) => tagChip(
           tagModel: tagModel,
           onTap: () => {
@@ -220,7 +219,6 @@ class _TagSelectorState extends State<TagSelector> {
     );
   }
 
-  // TODO: Let the user collapse features which are used less often.
   @override
   Widget build(BuildContext context) {
     return tagPicker();

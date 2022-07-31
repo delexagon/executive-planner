@@ -190,7 +190,6 @@ class Event {
   /// A list of tags of this event.
   /// Tags will be automatically formatted with toTitleCase when added to this list;
   /// make sure you are aware of this when modifying functions in Event!
-  // TODO: Make this just a set of strings.
   TagList tags = TagList(tags: {});
 
   Recurrence? _recur;
@@ -246,7 +245,6 @@ class Event {
   }
 
   /// The string of the tags.
-  // TODO: Remove the TagModel class
   String tagsString() {
     return tags.asString();
   }

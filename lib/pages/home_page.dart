@@ -29,7 +29,6 @@ class ExecutiveHomePage extends StatefulWidget {
   /// The title text, placed in the center of the appbar.
   final String title;
 
-  // TODO: Make this structure have to carry over less data from page to page?
   final ListObserver headlist;
 
   /// Holds the events considered by this particular HomePage.
@@ -202,6 +201,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   }
 
   /// Our wonderful "Title"
+  /// (and surrounding icon buttons)
   Widget definitelyATitle() {
     final List<Widget> widgets = <Widget>[];
     if(widget != ExecutivePlanner.top) {
