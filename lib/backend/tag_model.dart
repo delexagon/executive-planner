@@ -39,30 +39,17 @@ class TagList {
   }
 
   // Adds a new tag to the tag list
-  bool addTag(String title, {Function(String t)? onAdd}) {
+  bool addTag(String title) {
     final String tag = title;
     final bool added = tags.add(tag);
-    if(added && onAdd != null) {
-      onAdd(tag);
-    }
     return added;
   }
 
-  void mergeTagLists(TagList other, {Function(String t)? onAdd}) {
-    for(final String tag in other.tags) {
-      if(!tags.contains(tag) && onAdd != null) {
-        onAdd(tag);
-      }
-    }
+  void mergeTagLists(TagList other) {
     tags.addAll(other.tags);
   }
 
-  void removeAllTags(TagList other, {Function(String t)? onRemove}) {
-    for(final String tag in other.tags) {
-      if(tags.contains(tag) && onRemove != null) {
-        onRemove(tag);
-      }
-    }
+  void removeAllTags(TagList other) {
     tags.removeAll(other.tags);
   }
 
@@ -70,22 +57,12 @@ class TagList {
     return tags.contains(title);
   }
 
-  void clear({Function(String t)? onRemove}) {
-    for(final String tag in tags) {
-      if(onRemove != null) {
-        onRemove(tag);
-      }
-    }
+  void clear() {
     tags.clear();
   }
 
   // Removes a tag from the tag list
-  bool removeTag(String tag, {Function(String t)? onRemove}) {
-    if(tags.contains(tag)) {
-      if(onRemove != null) {
-        onRemove(tag);
-      }
-    }
+  bool removeTag(String tag) {
     return tags.remove(tag);
   }
 

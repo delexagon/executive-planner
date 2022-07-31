@@ -38,8 +38,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
   List<Widget> _buildPanel() {
     final List<Widget> tiles = <Widget>[];
     if (widget.events.length != 0) {
-      for (int i = 0; i < widget.events.length; i++) {
-        final Event e = widget.events[i];
+      for (final e in widget.events.list) {
         if(!widget.showCompleted && e.isComplete) {
           continue;
         }

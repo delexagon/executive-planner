@@ -144,8 +144,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         if (searchTypesEnabled[i] == true) {
           final EventList? toAdd = searchByString(i, strs[index]);
           if (toAdd != null) {
-            for (int qq = 0; qq < toAdd.length; qq++) {
-              currentEvents.add(toAdd[qq]);
+            for (final e in toAdd.list) {
+              currentEvents.add(e);
             }
           }
         }
@@ -157,8 +157,8 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
         if(searchTypesEnabled[i] == null) {
           final EventList? toRemove = searchByString(i, strs[index]);
           if(toRemove != null) {
-            for(int qq = 0; qq < toRemove.length; qq++) {
-              currentEvents.remove(toRemove[qq]);
+            for(final e in toRemove.list) {
+              currentEvents.remove(e);
             }
           }
         }

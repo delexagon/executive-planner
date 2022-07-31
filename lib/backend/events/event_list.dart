@@ -2,7 +2,7 @@
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/misc.dart';
 
-/// A class to display events. Should not be used for event handling.
+/// A class to display events. Use a ListObserver object to .
 class EventList {
 
   EventList({List<Event>? list}) {

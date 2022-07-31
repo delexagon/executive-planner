@@ -46,7 +46,7 @@ class ExecutiveHomePage extends StatefulWidget {
     // Just in case, because infinite loops are bad
     if(headlist.hasList(events)) {
       while(events.length > 0) {
-        headlist.notify(NotificationType.eventRemove, event: events[0]);
+        headlist.notify(NotificationType.eventRemove, event: events.list.first);
       }
     }
   }
@@ -166,8 +166,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   Widget showDailyTasks() {
     const double buttonDiameter = 110;
     final List<Widget> widgets = <Widget>[];
-    for(int i = 0; i < dailyTasks.length; i++) {
-      if(dailyTasks[i].isComplete) {
+    for(final e in dailyTasks.list) {
+      if(e.isComplete) {
         continue;
       }
       widgets.add(
@@ -178,17 +178,17 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
-              primary: getEventColor(dailyTasks[i],), // <-- Button color
+              primary: getEventColor(e,), // <-- Button color
               onPrimary: Theme.of(context).canvasColor, // <-- Splash color
             ),
             onPressed: () {
-              dailyTasks[i].complete();
+              e.complete();
               widget.events.sort();
-              if(dailyTasks[i].date != null && dailyTasks[i].date!.isAfter(DateTime.now().add(const Duration(days: 1)))) {
-                dailyTasks.remove(dailyTasks[i]);
+              if(e.date != null && e.date!.isAfter(DateTime.now().add(const Duration(days: 1)))) {
+                dailyTasks.remove(e);
               }
             },
-            child: Text('${dailyTasks[i].name} ${dailyTasks[i].timeString()}', style: TextStyle (
+            child: Text('${e.name} ${e.timeString()}', style: TextStyle (
               color: Theme.of(context).canvasColor,
     ),),),),),);}
     return SingleChildScrollView(
@@ -299,8 +299,8 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                       widget.clearEvents();
                     } else {
                       widget.headlist.preserve();
-                      for(int i = 0; i < widget.events.length; i++) {
-                        widget.events[i].integrate(e);
+                      for(final event in widget.events.list) {
+                        event.integrate(e);
                       }
                       widget.headlist.unpreserve();
                     }

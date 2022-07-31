@@ -36,6 +36,7 @@ class _CalendarState extends State<CalendarView> {
   @override
   void initState() {
     super.initState();
+    widget.headlist.addFunc(this, () {setState(() {});});
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
 
@@ -44,6 +45,7 @@ class _CalendarState extends State<CalendarView> {
 
   @override
   void dispose() {
+    widget.headlist.removeFunc(this);
     _selectedEvents.dispose();
     super.dispose();
   }
