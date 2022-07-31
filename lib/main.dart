@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 void main() {
   // TODO: Update the EventList every few minutes or something
   ListObserver.top = ListObserver();
-  ListObserver.top.notify(NotificationType.load);
+  ListObserver.top.notify(NotificationType.loadFile);
   runApp(const ExecutivePlanner());
 }
 

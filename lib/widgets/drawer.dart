@@ -39,7 +39,7 @@ class ExecutiveDrawer extends StatelessWidget {
     Clipboard.getData('text/plain').then((ClipboardData? value) {
       if (value != null && value.text != null && value.text != '') {
         Navigator.popUntil(context, ModalRoute.withName('/'));
-        headlist.loadJason(value.text!);
+        headlist.notify(NotificationType.loadJason, fileStr: value.text);
       }
     });
   }
@@ -119,7 +119,7 @@ class ExecutiveDrawer extends StatelessWidget {
           TextButton(
             onLongPress: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
-              headlist.notify(NotificationType.load, fileStr: 'backup');
+              headlist.notify(NotificationType.loadFile, fileStr: 'backup');
             },
             onPressed: null,
             child: const Text('Restore backup'),

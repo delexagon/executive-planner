@@ -18,7 +18,8 @@ enum NotificationType {
   eventsChanged,
   // Recursive
   update,
-  load,
+  loadFile,
+  loadJason,
 }
 
 /// Moved all code to here.
@@ -46,6 +47,8 @@ class ListObserver {
 
   ListObserver? supervisor;
   final Set<Event> _head = <Event>{};
+  // TODO: Make sure that lists are being created and destroyed correctly everywhere.
+  // There should be one for each exposed eventlist where events can change.
   final Set<EventList> _lists = <EventList>{};
   final HashMap<Object, Function()> updateFuncs = HashMap<Object, Function()>();
   final HashMap<String, int> _tags = HashMap<String, int>();
@@ -71,11 +74,16 @@ class ListObserver {
       case NotificationType.listClear:
         _clear();
         break;
-      case NotificationType.load:
+      case NotificationType.loadFile:
         if(fileStr != null) {
           _loadFile(fileStr);
         } else {
           _loadFile();
+        }
+        break;
+      case NotificationType.loadJason:
+        if(fileStr != null) {
+          _loadJason(fileStr);
         }
         break;
       case NotificationType.eventRemoveTag:
@@ -233,17 +241,19 @@ class ListObserver {
   void _loadFile([String location = 'events']) {
     readString(location).then((jason) {
       if(jason != null) {
-        loadJason(jason);
+        _loadJason(jason);
       }
     });
   }
 
-  void loadJason(String jason) {
+  void _loadJason(String jason) {
     _clear();
     final events = JasonSetEvent.fromJason(jason);
     for(final e in events) {
       _add(e);
     }
+    // This is being called async; we have to make sure we save it here or data is lost
+    save();
   }
 
   void save([String location = 'events']) {
