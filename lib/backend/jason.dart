@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 
@@ -169,8 +170,8 @@ extension JasonEvent on Event {
         tags: JasonTagList.fromJason(strings[4]),
         recur: JasonRecurrence.fromJason(strings[5]),
         completed: JasonBool.fromJason(strings[6]),
-        subevents: JasonEventList.fromJason(strings[7]),);
-    event.setSubSupers();
+        subevents: ListObserver.jason(strings[7]),
+    );
     return event;
   }
 }

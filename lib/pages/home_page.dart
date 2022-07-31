@@ -1,8 +1,9 @@
 
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
+import 'package:executive_planner/main.dart';
 import 'package:executive_planner/pages/calendar.dart';
 import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/forms/event_change_form.dart';
@@ -22,16 +23,14 @@ class ExecutiveHomePage extends StatefulWidget {
     required this.showCompleted,
     required this.title,
     required this.events,
-    required this.onEventListChanged,
     required this.headlist,
   }) : super(key: key);
 
   /// The title text, placed in the center of the appbar.
   final String title;
 
-  final Function(Event? e) onEventListChanged;
   // TODO: Make this structure have to carry over less data from page to page?
-  final EventList headlist;
+  final ListObserver headlist;
 
   /// Holds the events considered by this particular HomePage.
   /// Necessary to consider and selectively show searches.
@@ -39,16 +38,17 @@ class ExecutiveHomePage extends StatefulWidget {
   final bool showCompleted;
 
   void addEvent(Event e) {
-    e.headlist = headlist;
-    events.add(e);
+    headlist.notify(NotificationType.eventAdd, event: e);
   }
 
-  /// Removes event from both current and masterList.
+  /// Removes all events in this displayed list from the headlist.
   void clearEvents() {
-    while(events.length > 0) {
-      masterList.remove(events[0]);
+    // Just in case, because infinite loops are bad
+    if(headlist.hasList(events)) {
+      while(events.length > 0) {
+        headlist.notify(NotificationType.eventRemove, event: events[0]);
+      }
     }
-    masterList.saveMaster();
   }
 
   @override
@@ -61,20 +61,15 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   @override
   void initState() {
     super.initState();
-    widget.events.onChanged = onEventListChanged;
+    widget.headlist.addList(widget.events);
+    widget.headlist.addFunc(this, () {setState(() {});});
   }
 
-  void onEventListChanged(Event? e) {
-    if(e != null && widget.events.onChanged == null) {
-      if(widget.events.contains(e)) {
-        widget.events.remove(e);
-      } else {
-        widget.events.add(e);
-      }
-    }
-    setState(() {
-    });
-    widget.onEventListChanged(e);
+  @override
+  void dispose() {
+    super.dispose();
+    widget.headlist.removeList(widget.events);
+    widget.headlist.removeFunc(this);
   }
 
   EventList dailyTasks = EventList();
@@ -100,7 +95,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
           title: 'Search results',
           events: events,
           // Recursively update every search widget.
-          onEventListChanged: onEventListChanged,
           headlist: widget.headlist,
         ),
       ),
@@ -127,7 +121,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   decoration:
                       BoxDecoration(color: Theme.of(context).canvasColor),
                   child: AdvancedSearch(
-                    events: masterList.rootWidget == widget ? masterList.toEventList() : widget.events,
+                    events: widget.events,
                     onSubmit: (EventList e, bool showCompleted) {
                       _goToSearchPage(context, e, showCompleted);
                       removeOverlayEntry();
@@ -146,7 +140,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventChangeForm(event: event),
+        builder: (context) => EventChangeForm(headlist: widget.headlist, event: event),
       ),
     );
   }
@@ -155,7 +149,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventAddForm(),
+        builder: (context) => EventAddForm(headlist: widget.headlist),
       ),
     );
   }
@@ -164,7 +158,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventMassForm(),
+        builder: (context) => EventMassForm(headlist: widget.headlist),
       ),
     );
   }
@@ -210,7 +204,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
   /// Our wonderful "Title"
   Widget definitelyATitle() {
     final List<Widget> widgets = <Widget>[];
-    if(widget != masterList.rootWidget) {
+    if(widget != ExecutivePlanner.top) {
       widgets.add(
         IconButton(
           onPressed: () {
@@ -229,7 +223,6 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
             MaterialPageRoute(
               builder: (context) => CalendarView(
                 events: widget.events,
-                onEventListChanged: onEventListChanged,
                 headlist: widget.headlist,
               ),),);},
         icon: const Icon(Icons.calendar_today),
@@ -253,9 +246,7 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
       ),
       // Hamburger :)
       drawer: ExecutiveDrawer(
-        update: () => {setState(() {})},
         events: widget.events,
-        onEventListChanged: onEventListChanged,
         headlist: widget.headlist,
       ),
       body: SingleChildScrollView(
@@ -270,18 +261,15 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                   if(copy == null) {
                     return;
                   } else if (copy == e) {
-                    masterList.remove(e);
+
                   } else {
                     e.copy(copy);
                     widget.events.sort();
                   }
-                  setState(() {});
                 });
               },
               onDrag: (Event e) {
                 e.complete();
-                widget.events.sort();
-                setState(() {});
       },)],),),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -310,12 +298,12 @@ class _ExecutiveHomePageState extends State<ExecutiveHomePage> {
                     if(e.markForDeletion) {
                       widget.clearEvents();
                     } else {
+                      widget.headlist.preserve();
                       for(int i = 0; i < widget.events.length; i++) {
                         widget.events[i].integrate(e);
                       }
+                      widget.headlist.unpreserve();
                     }
-                    masterList.saveMaster();
-                    setState(() {});
                   }
                 });
               },

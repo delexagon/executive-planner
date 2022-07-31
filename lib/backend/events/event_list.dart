@@ -2,6 +2,7 @@
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/misc.dart';
 
+/// A class to display events. Should not be used for event handling.
 class EventList {
 
   EventList({List<Event>? list}) {
@@ -10,8 +11,6 @@ class EventList {
     }
   }
 
-  Function(Event? e)? onChanged;
-
   List<Event> list = <Event>[];
   static Comparator<Event> sortFunc = Event.dateCompare;
 
@@ -19,7 +18,6 @@ class EventList {
   void add(Event e) {
     list.add(e);
     sort();
-    onChanged?.call(e);
   }
 
   void clear() {
@@ -37,16 +35,14 @@ class EventList {
   }
 
   /// Remove an event from the list.
-  void remove(Event e) {
+  void remove(Event? e) {
     list.remove(e);
-    onChanged?.call(e);
   }
 
   void update() {
     for (final Event event in list) {
       event.update();
     }
-    onChanged?.call(null);
   }
 
   bool contains(Event e) {
@@ -77,7 +73,6 @@ class EventList {
   EventList addAll(EventList e) {
     for (int i = 0; i < e.length; i++) {
       list.add(e[i]);
-      onChanged?.call(e[i]);
     }
     sort();
     return this;
@@ -98,10 +93,7 @@ class EventList {
   EventList intersection(EventList e) {
     for(final Event event in list) {
       if(!e.contains(event)) {
-        final bool removed = list.remove(event);
-        if(removed) {
-          onChanged?.call(event);
-        }
+        list.remove(event);
       }
     }
     return this;
@@ -111,7 +103,6 @@ class EventList {
   /// class. Should be called automatically when the list is modified.
   EventList sort() {
     list.sort(sortFunc);
-    onChanged?.call(null);
     return this;
   }
 

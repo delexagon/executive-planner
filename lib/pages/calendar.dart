@@ -1,27 +1,24 @@
 
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/pages/forms/event_change_form.dart';
 import 'package:executive_planner/widgets/drawer.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
 class CalendarView extends StatefulWidget {
   // Currently, the calendar will never show completed events.
-  const CalendarView({required this.events, Key? key, required this.onEventListChanged, required this.headlist}) : super(key: key);
+  const CalendarView({required this.events, Key? key, required this.headlist}) : super(key: key);
   final EventList events;
-
-  final Function(Event? e) onEventListChanged;
-  // TODO: Make this structure have to carry over less data from page to page?
-  final EventList headlist;
+  final ListObserver headlist;
 
   @override
   _CalendarState createState() => _CalendarState();
 }
 
+// TODO: This may not update because the selected day list keeps changing
 class _CalendarState extends State<CalendarView> {
   late EventList _selectedEventsList;
 
@@ -33,12 +30,6 @@ class _CalendarState extends State<CalendarView> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-  void onEventListChanged(Event? e) {
-    setState(() {
-      widget.onEventListChanged(e);
-    });
-  }
-
   late final ValueNotifier<List<Event>> _selectedEvents;
   // The events that are currently selected, as an EventList for EventListDisplay
 
@@ -49,7 +40,6 @@ class _CalendarState extends State<CalendarView> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
 
     _selectedEventsList = _getEventListForDay(_focusedDay);
-    _selectedEventsList.onChanged = onEventListChanged;
   }
 
   @override
@@ -63,6 +53,7 @@ class _CalendarState extends State<CalendarView> {
       context,
       MaterialPageRoute(
         builder: (context) => EventChangeForm(
+          headlist: widget.headlist,
           event: event,
         ),
       ),
@@ -92,7 +83,6 @@ class _CalendarState extends State<CalendarView> {
     if (!isSameDay(selectedDay, _selectedDay)) {
       setState(() {
         _selectedEventsList = widget.events.searchDate(selectedDay);
-        _selectedEventsList.onChanged = onEventListChanged;
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         _rangeStart = null;
@@ -114,15 +104,12 @@ class _CalendarState extends State<CalendarView> {
     // Since start and end dates could be null
     if (start != null && end != null) {
       _selectedEventsList = _getEventListForRange(start, end);
-      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     } else if (start != null) {
       _selectedEventsList = _getEventListForDay(start);
-      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     } else if (end != null) {
       _selectedEventsList = _getEventListForDay(end);
-      _selectedEventsList.onChanged = onEventListChanged;
       _selectedEvents.value = _selectedEventsList.asList();
     }
   }
@@ -213,9 +200,7 @@ class _CalendarState extends State<CalendarView> {
         title: title(),
       ),
       drawer: ExecutiveDrawer(
-        update: () => {setState(() {})},
         events: widget.events,
-        onEventListChanged: onEventListChanged,
         headlist: widget.headlist,
       ),
       body: Column(
@@ -232,15 +217,13 @@ class _CalendarState extends State<CalendarView> {
                     onLongPress: (Event e) {
                       _changeEventForm(context, event: e).then((Event? copy) {
                         if(copy == null) {
-                          masterList.remove(e);
-                        } else if (e == copy) {
-                        } else {
+                          widget.headlist.notify(NotificationType.eventRemove, event: e);
+                        } else if (e != copy) {
                           e.copy(copy);
                           widget.events.sort();
                         }
                         if(_selectedDay != null) {
                           _selectedEventsList = widget.events.searchDate(_selectedDay!);
-                          _selectedEventsList.onChanged = onEventListChanged;
                         }
     });},),),),],),);
   }

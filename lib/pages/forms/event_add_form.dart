@@ -1,5 +1,6 @@
 
 import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/forms/event_form.dart';
 import 'package:executive_planner/widgets/tag_selector.dart';
@@ -8,8 +9,10 @@ import 'package:flutter/material.dart';
 /// Allows a user to modify an existing event or add a new event.
 class EventAddForm extends EventForm {
   EventAddForm({
-    Key? key,})
-      : super(key: key, old: null, title: 'Add new event', event: Event());
+    Key? key,
+    required ListObserver headlist,
+  })
+      : super(key: key, old: null, headlist: headlist, title: 'Add new event', event: Event());
 
   @override
   _EventAddFormState createState() => _EventAddFormState();
@@ -47,7 +50,7 @@ class _EventAddFormState extends EventFormState {
               paddedText('Event description:'),
               descriptionField(),
               paddedText('Select tags:'),
-              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, headlist: widget.headlist, onRemove: (String t) {widget.event.removeTag(t);}),
               paddedText('Change date:'),
               datePicker(),
               paddedText('Change priority:'),

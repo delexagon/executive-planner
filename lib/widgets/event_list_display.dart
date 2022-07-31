@@ -43,9 +43,6 @@ class _EventListDisplayState extends State<EventListDisplay> {
         if(!widget.showCompleted && e.isComplete) {
           continue;
         }
-        if(e.headlist == null) {
-          widget.events.remove(e);
-        }
         tiles.add(const Divider());
         tiles.add(
           EventTile(
@@ -54,10 +51,7 @@ class _EventListDisplayState extends State<EventListDisplay> {
             onLongPress: widget.onLongPress,
             showCompleted: widget.showCompleted,
             onDrag: (Event e) {
-              if (widget.onDrag != null) {
-                widget.onDrag!(e);
-                setState(() {});
-              }
+              widget.onDrag?.call(e);
             },
             setToColor: widget.setToColor,
           ),

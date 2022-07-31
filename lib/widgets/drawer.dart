@@ -1,21 +1,18 @@
 
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/jason.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ExecutiveDrawer extends StatelessWidget {
-  const ExecutiveDrawer({required this.update, required this.events, this.calledFromRoot = false, Key? key, required this.onEventListChanged, required this.headlist,}) : super(key: key);
+  const ExecutiveDrawer({required this.events, Key? key, required this.headlist,}) : super(key: key);
   final EventList events;
-  final Function() update;
-  final bool calledFromRoot;
 
-  final Function(Event? e) onEventListChanged;
   // TODO: Make this structure have to carry over less data from page to page?
-  final EventList headlist;
+  final ListObserver headlist;
 
   /// Loads new page when search results are submitted, generating a new
   /// [ExecutiveHomePage].
@@ -27,7 +24,6 @@ class ExecutiveDrawer extends StatelessWidget {
           title: 'Completed events',
           events: events.searchCompleted(),
           showCompleted: true,
-          onEventListChanged: onEventListChanged,
           headlist: headlist,
         ),
       ),
@@ -36,18 +32,14 @@ class ExecutiveDrawer extends StatelessWidget {
 
 
   void exportData([String loc = 'events']) {
-    if(calledFromRoot) {
-      Clipboard.setData(ClipboardData(text: masterList.toJason()));
-    } else {
-      Clipboard.setData(ClipboardData(text: Set<Event>.from(events.list).toJason()));
-    }
+    Clipboard.setData(ClipboardData(text: Set<Event>.from(events.list).toJason()));
   }
 
   void importData(BuildContext context) {
     Clipboard.getData('text/plain').then((ClipboardData? value) {
       if (value != null && value.text != null && value.text != '') {
         Navigator.popUntil(context, ModalRoute.withName('/'));
-        masterList.loadMaster(value.text!);
+        headlist.loadJason(value.text!);
       }
     });
   }
@@ -120,14 +112,14 @@ class ExecutiveDrawer extends StatelessWidget {
           ),
           const Divider(),
           TextButton(
-            onLongPress: () => masterList.saveMaster(null, 'backup'),
+            onLongPress: () => headlist.save('backup'),
             onPressed: null,
             child: const Text('Backup data'),
           ),
           TextButton(
             onLongPress: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
-              masterList.initMaster('backup');
+              headlist.notify(NotificationType.load, fileStr: 'backup');
             },
             onPressed: null,
             child: const Text('Restore backup'),

@@ -1,5 +1,6 @@
 
 import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/forms/event_form.dart';
 import 'package:executive_planner/widgets/tag_selector.dart';
@@ -9,8 +10,9 @@ import 'package:flutter/material.dart';
 class EventChangeForm extends EventForm {
   EventChangeForm({
     required Event event,
+    required ListObserver headlist,
     Key? key,})
-      : super(key: key, old: event, event: Event.copy(event), title: 'Change ${event.name}');
+      : super(key: key, old: event, headlist: headlist, event: Event.copy(event), title: 'Change ${event.name}');
 
   @override
   _EventChangeFormState createState() => _EventChangeFormState();
@@ -35,9 +37,7 @@ class _EventChangeFormState extends EventFormState {
             alignment: Alignment.centerRight,
             child: padded(10,10,
               makeButton('Remove Event', backButtonColor, () {
-                if(widget.old!.headlist != null) {
-                  widget.old!.removeThis();
-                }
+                widget.old!.observer?.notify(NotificationType.eventRemove, event: widget.old);
                 Navigator.pop(context, widget.old);
               }),),),],),);
   }
@@ -57,7 +57,7 @@ class _EventChangeFormState extends EventFormState {
               paddedText('Event description:'),
               descriptionField(),
               paddedText('Select tags:'),
-              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}, headlist: widget.headlist,),
               paddedText('Change date:'),
               datePicker(),
               paddedText('Change priority:'),

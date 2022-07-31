@@ -1,7 +1,7 @@
 
 import 'package:executive_planner/backend/events/event.dart';
 import 'package:executive_planner/backend/events/event_list.dart';
-import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/widgets/event_list_display.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class AdvancedSearch extends StatefulWidget {
     if(events != null) {
       this.events = events;
     } else {
-      this.events = masterList.toEventList();
+      this.events = ListObserver.top.makeList();
     }
   }
 
@@ -222,7 +222,7 @@ class _AdvancedSearchState extends State<AdvancedSearch> {
     return Expanded(
       child: SingleChildScrollView(
         child: EventListDisplay(
-          events: currentEvents.toEventList().sort(),
+          events: EventList(list: currentEvents.toList()).sort(),
           showCompleted: searchTypesEnabled[searchTypesEnabled.length-2] == true,
           setToColor: selectedEvents,
           onTap: (Event e) {

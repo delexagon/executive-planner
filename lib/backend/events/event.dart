@@ -1,7 +1,6 @@
 
-import 'package:executive_planner/backend/events/event_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/jason.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:intl/intl.dart';
@@ -11,9 +10,10 @@ import 'package:intl/intl.dart';
 enum Priority { none, low, medium, high, critical }
 
 class Event {
+  /// Create an event. Subevents are NOT added here; do so manually
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, EventList? subevents, this.headlist,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, ListObserver? subevents,}) {
     _name = name;
     _date = date;
     _description = description;
@@ -22,90 +22,59 @@ class Event {
     _completed = completed;
     if(subevents != null) {
       this.subevents = subevents;
+    } else {
+      this.subevents = ListObserver();
     }
     if(tags != null) {
       this.tags = tags;
     }
   }
 
+  /// Get a new event that's a copy of the first one, including subevents
   factory Event.copy(Event other) {
     return JasonEvent.fromJason(other.toJason());
   }
 
+  /// Determines whether the event is marked as completed
   bool _completed = false;
 
+  /// Get whether the event is completed
+  // TODO: Migrate this to a more general 'hide' marker'
   bool get isComplete {
     return _completed;
   }
 
-  void setSubSupers() {
-    for(int i = 0; i < subevents.length; i++) {
-      subevents[i].headlist = subevents;
-    }
-  }
+  /// Do not touch this manually, it should only be modified in ListObserver code
+  ListObserver? observer;
 
-  void removeThis() {
-    if(headlist != null) {
-      headlist!.remove(this);
-      headlist = null;
-    }
-  }
-
-  EventList? headlist;
-
+  /// Adds a subevent to this event
   void addSubevent(Event e) {
-    subevents.add(e);
-    e.headlist = headlist;
-    masterList.saveMaster();
+    subevents.notify(NotificationType.eventAdd, event: e);
   }
 
-  void onAdd(String tag) {
-    masterList.addTag(tag, this);
-  }
-
-  void onRemove(String tag) {
-    masterList.removeTag(tag, this);
-  }
-
-  String subtitleString({bool descMode = false}) {
-    final StringBuffer subtitleString = StringBuffer();
-    if(!descMode) {
-      subtitleString.write(dateString());
-      if(recur != null) {
-        subtitleString.write('\n${recur!.toString()}');
-      }
-      if(tags.isNotEmpty) {
-        subtitleString.write('\nTags: ${tagsString()}');
-      }
-    } else {
-      subtitleString.write(description);
-    }
-    if(_completed) {
-      subtitleString.write('\nCompleted');
-    }
-    return subtitleString.toString();
-  }
-
+  /// Copies another event into an event that already exists.
   void copy(Event other) {
     _name = other._name;
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
     _completed = other._completed;
+
+    observer?.unsetTags(this);
     final TagList newTags = TagList();
-    for(final String tag in tags.asSet()) {
-      onRemove(tag);
-    }
     tags = newTags;
-    tags.mergeTagLists(other.tags, onAdd: onAdd);
+    tags.mergeTagLists(other.tags);
+    observer?.resetTags(this);
+
     if(other.recur != null) {
       recur = Recurrence.copy(other.recur!);
     } else {
       recur = null;
     }
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged);
   }
 
+  /// Integrates a MassEditor object into an event, including removing and adding tags.
   void integrate(MassEditor other) {
     if(other.changes[0]) {
       _name = other._name;
@@ -126,16 +95,17 @@ class Event {
         recur = null;
       }
     }
-    tags.removeAllTags(other.tagsRemove, onRemove: onRemove);
-    tags.mergeTagLists(other.tags, onAdd: onAdd);
-    masterList.saveMaster(this);
+    observer?.unsetTags(this);
+    tags.removeAllTags(other.tagsRemove);
+    tags.mergeTagLists(other.tags);
+    observer?.resetTags(this);
+    observer?.notify(NotificationType.eventsChanged);
   }
 
   void update() {
     final DateTime now = DateTime.now().toUtc();
     if(date != null && date!.isBefore(now)) {
       if(!isComplete) {
-
         if(recur != null && !recur!.isZero()) {
           while(date!.isBefore(now)) {
             date = recur!.getNextRecurrence(date!);
@@ -145,7 +115,7 @@ class Event {
         }
       }
     }
-    subevents.update();
+    subevents.notify(NotificationType.update);
   }
 
   void complete() {
@@ -154,7 +124,7 @@ class Event {
     } else {
       date = recur!.getNextRecurrence(date!);
     }
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged, orderChange: false);
   }
 
   /// List of possible priorities for events; should have the same order and
@@ -177,7 +147,7 @@ class Event {
   String _name = 'Unnamed Event';
   set name(String name) {
     _name = name;
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged);
   }
   String get name {
     return _name;
@@ -187,7 +157,7 @@ class Event {
   DateTime? _date;
   set date(DateTime? date) {
     _date = date;
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged);
   }
   DateTime? get date {
     return _date;
@@ -197,7 +167,7 @@ class Event {
   String _description = 'No description';
   set description(String description) {
     _description = description;
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged, orderChange: false);
   }
   String get description {
     return _description;
@@ -207,28 +177,33 @@ class Event {
   Priority _priority = Priority.none;
   set priority(Priority priority) {
     _priority = priority;
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged);
   }
   Priority get priority {
     return _priority;
   }
-  // TODO: Add JSON for subevents
-  EventList subevents = EventList();
+
+  /// The observer for the subevents. Use this when changing subevents, do not modify
+  /// events directly.
+  late ListObserver subevents;
 
   /// A list of tags of this event.
   /// Tags will be automatically formatted with toTitleCase when added to this list;
   /// make sure you are aware of this when modifying functions in Event!
+  // TODO: Make this just a set of strings.
   TagList tags = TagList(tags: {});
 
   Recurrence? _recur;
   set recur(Recurrence? recurrence) {
     _recur = recurrence;
-    masterList.saveMaster(this);
+    observer?.notify(NotificationType.eventsChanged, orderChange: false);
   }
   Recurrence? get recur {
     return _recur;
   }
 
+  /// The time string displayed on the event.
+  /// Minutes are not displayed on the default time; 11:59 PM.
   String timeString() {
     if(date == null || (date!.hour == 23 && date!.minute == 59)) {
       return '';
@@ -248,10 +223,21 @@ class Event {
   }
 
   /// Add a tag to the event
-  bool addTag(String tag) {
-    final bool ret = tags.addTag(tag, onAdd: onAdd);
-    masterList.saveMaster(this);
-    return ret;
+  void addTag(String tag) {
+    if(observer != null) {
+      observer!.notify(NotificationType.eventAddTag, event: this, tag: tag);
+    } else {
+      tags.addTag(tag);
+    }
+  }
+
+  /// Remove a tag from the event, and returns whether the event was correctly removed or not.
+  void removeTag(String tag) {
+    if(observer != null) {
+      observer!.notify(NotificationType.eventRemoveTag, event: this, tag: tag);
+    } else {
+      tags.removeTag(tag);
+    }
   }
 
   /// Returns if a particular tag is stored in this event
@@ -259,19 +245,30 @@ class Event {
     return tags.hasTag(tag);
   }
 
-  /// Remove a tag from the event, and returns whether the event was correctly removed or not.
-  bool removeTag(String tag) {
-    final bool ret = tags.removeTag(tag, onRemove: onRemove);
-    masterList.saveMaster(this);
-    return ret;
-  }
-
+  /// The string of the tags.
+  // TODO: Remove the TagModel class
   String tagsString() {
     return tags.asString();
   }
 
-  TagList getTags() {
-    return tags;
+  /// Get the subtitle string that this event has when printing to the app.
+  String subtitleString({bool descMode = false}) {
+    final StringBuffer subtitleString = StringBuffer();
+    if(!descMode) {
+      subtitleString.write(dateString());
+      if(recur != null) {
+        subtitleString.write('\n${recur!.toString()}');
+      }
+      if(tags.isNotEmpty) {
+        subtitleString.write('\nTags: ${tagsString()}');
+      }
+    } else {
+      subtitleString.write(description);
+    }
+    if(_completed) {
+      subtitleString.write('\nCompleted');
+    }
+    return subtitleString.toString();
   }
 
   /// Sorts events by date, then priority, then name. Events with a null date are placed after

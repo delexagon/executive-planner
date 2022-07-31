@@ -1,5 +1,5 @@
 
-import 'package:executive_planner/backend/master_list.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +9,10 @@ class TagSelector extends StatefulWidget {
     required this.tags,
     required this.onAdd,
     required this.onRemove,
+    required this.headlist,
     Key? key,}) : super(key: key);
 
+  final ListObserver headlist;
   final TagList tags;
   final Function(String t) onAdd;
   final Function(String t) onRemove;
@@ -73,7 +75,7 @@ class _TagSelectorState extends State<TagSelector> {
       Wrap(
         children: _filterSearchResultList()
             .where((tagModel) =>
-            masterList.hasTag(tagModel) && !widget.tags.contains(tagModel),)
+            widget.headlist.hasTag(tagModel) && !widget.tags.contains(tagModel),)
             .map((tagModel) => tagChip(
           tagModel: tagModel,
           onTap: () => {
@@ -104,9 +106,9 @@ class _TagSelectorState extends State<TagSelector> {
   // Queries the master tag list based on the text being typed in.
   Iterable<String> _filterSearchResultList() {
     if (_searchText.isEmpty) {
-      return masterList.tags();
+      return widget.headlist.tags().followedBy(ListObserver.specialTags);
     }
-    return masterList.queryTags(_searchText);
+    return widget.headlist.queryTags(_searchText);
   }
 
   // Defines how each tag will appear in the tag widget

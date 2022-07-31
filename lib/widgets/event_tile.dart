@@ -1,6 +1,5 @@
 
 import 'package:executive_planner/backend/events/event.dart';
-import 'package:executive_planner/backend/master_list.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/pages/forms/event_add_form.dart';
 import 'package:executive_planner/pages/home_page.dart';
@@ -53,8 +52,7 @@ class _EventTileState extends State<EventTile> {
         builder: (context) => ExecutiveHomePage(
           showCompleted: false,
           title: 'Subevents',
-          events: widget.event.subevents,
-          onEventListChanged: (Event? e) {masterList.saveMaster(); setState(() {});},
+          events: widget.event.subevents.makeList(),
           headlist: widget.event.subevents,
         ),
       ),
@@ -66,7 +64,7 @@ class _EventTileState extends State<EventTile> {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventAddForm(),
+        builder: (context) => EventAddForm(headlist: widget.event.observer!),
       ),
     );
   }
@@ -116,7 +114,7 @@ class _EventTileState extends State<EventTile> {
     }
     final TextStyle titleColor = TextStyle(color: getEventColor(widget.event));
     final int length = widget.event.subevents.length;
-    final String title = length == 0 ? widget.event.name : '${widget.event.name} (${widget.event.subevents.length})';
+    final String title = length == 0 ? widget.event.name : '${widget.event.name} ($length)';
     tile = GestureDetector(
       onSecondaryLongPress: () {
         if (widget.onDrag != null) {
@@ -170,7 +168,7 @@ class _EventTileState extends State<EventTile> {
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
             child: EventListDisplay(
-              events: widget.event.subevents,
+              events: widget.event.subevents.makeList().sort(),
               onLongPress: widget.onLongPress,
               showCompleted: widget.showCompleted,
               onDrag: widget.onDrag,

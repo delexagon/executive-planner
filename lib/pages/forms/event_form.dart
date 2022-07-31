@@ -1,5 +1,6 @@
 
 import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/recurrence.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,11 @@ abstract class EventForm extends StatefulWidget {
     required this.event,
     required this.old,
     required this.title,
+    required this.headlist,
     Key? key,})
       : super(key: key);
 
+  final ListObserver headlist;
   final Event event;
   final Event? old;
   final String title;

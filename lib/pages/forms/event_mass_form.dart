@@ -1,5 +1,6 @@
 
 import 'package:executive_planner/backend/events/event.dart';
+import 'package:executive_planner/backend/events/list_wrapper_observer.dart';
 import 'package:executive_planner/backend/misc.dart';
 import 'package:executive_planner/backend/tag_model.dart';
 import 'package:executive_planner/pages/forms/event_form.dart';
@@ -9,9 +10,11 @@ import 'package:flutter/material.dart';
 /// Allows a user to modify an existing event or add a new event.
 class EventMassForm extends EventForm {
   EventMassForm({
+    required ListObserver headlist,
     Key? key,})
-      : super(key: key, old: null, title: 'Change all events', event: MassEditor());
+      : super(key: key, old: null, headlist: headlist, title: 'Change all events', event: MassEditor());
 
+  
   @override
   _EventMassFormState createState() => _EventMassFormState();
 }
@@ -84,9 +87,9 @@ class _EventMassFormState extends EventFormState {
               paddedText('Event description:'),
               descriptionField(),
               paddedText('Select tags to add:'),
-              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}),
+              TagSelector(tags: widget.event.tags, onAdd: (String t) {widget.event.addTag(t);}, onRemove: (String t) {widget.event.removeTag(t);}, headlist: widget.headlist,),
               paddedText('Select tags to remove:'),
-              TagSelector(tags: tags, onAdd: (String t) {tags.addTag(t);}, onRemove: (String t) {tags.removeTag(t);}),
+              TagSelector(tags: tags, onAdd: (String t) {tags.addTag(t);}, onRemove: (String t) {tags.removeTag(t);}, headlist: widget.headlist,),
               paddedText('Change date:'),
               datePicker(),
               paddedText('Change priority:'),
