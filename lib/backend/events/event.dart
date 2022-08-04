@@ -13,13 +13,13 @@ class Event {
   /// Create an event. Subevents are NOT added here; do so manually
   Event({
     String name = 'Unnamed Event', DateTime? date, String description = 'No description',
-    Priority priority = Priority.none, TagList? tags, Recurrence? recur, bool completed = false, ListObserver? subevents,}) {
+    Priority priority = Priority.none, TagList? tags, Recurrence? recur, DateTime? completed, ListObserver? subevents,}) {
     _name = name;
     _date = date;
     _description = description;
     _priority = priority;
     _recur = recur;
-    _completed = completed;
+    _completedDate = completed;
     if(subevents != null) {
       this.subevents = subevents;
     } else {
@@ -36,12 +36,16 @@ class Event {
   }
 
   /// Determines whether the event is marked as completed
-  bool _completed = false;
+  DateTime? _completedDate;
+
+  DateTime? get completedDate {
+    return _completedDate;
+  }
 
   /// Get whether the event is completed
   // TODO: Migrate this to a more general 'hide' marker'
   bool get isComplete {
-    return _completed;
+    return _completedDate != null;
   }
 
   /// Do not touch this manually, it should only be modified in ListObserver code
@@ -58,7 +62,7 @@ class Event {
     _date = other._date;
     _description = other._description;
     _priority = other._priority;
-    _completed = other._completed;
+    _completedDate = other._completedDate;
 
     observer?.unsetTags(this);
     final TagList newTags = TagList();
@@ -113,6 +117,10 @@ class Event {
         } else {
           addTag('Overdue');
         }
+      } else {
+        if(_completedDate!.add(const Duration(days: 7)).isBefore(DateTime.now())) {
+          observer?.notify(NotificationType.eventRemove, event: this);
+        }
       }
     }
     subevents.notify(NotificationType.update);
@@ -120,7 +128,11 @@ class Event {
 
   void complete() {
     if(recur == null || date == null) {
-      _completed = !_completed;
+      if(_completedDate != null) {
+        _completedDate = null;
+      } else {
+        _completedDate = DateTime.now();
+      }
     } else {
       date = recur!.getNextRecurrence(date!);
     }
@@ -263,7 +275,7 @@ class Event {
     } else {
       subtitleString.write(description);
     }
-    if(_completed) {
+    if(isComplete) {
       subtitleString.write('\nCompleted');
     }
     return subtitleString.toString();

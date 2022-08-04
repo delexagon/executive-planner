@@ -136,10 +136,10 @@ extension JasonDateTime on DateTime? {
   }
 
   static DateTime? fromJason(String jason) {
-    if(jason == 'null') {
-      return null;
-    } else {
+    try {
       return DateTime.parse(jason);
+    } on FormatException {
+      return null;
     }
   }
 }
@@ -158,7 +158,7 @@ extension JasonEvent on Event {
   String toJason() {
     return '{${name.toJason()}}{${date.toJason()}}{${description
         .toJason()}}{${priority.toJason()}}{${tags.toJason()}}{${recur
-        .toJason()}}{${isComplete.toJason()}}{${subevents.toJason()}}';
+        .toJason()}}{${completedDate.toJason()}}{${subevents.toJason()}}';
   }
 
   static Event fromJason(String jason) {
@@ -169,7 +169,7 @@ extension JasonEvent on Event {
         priority: JasonPriority.fromJason(strings[3]),
         tags: JasonTagList.fromJason(strings[4]),
         recur: JasonRecurrence.fromJason(strings[5]),
-        completed: JasonBool.fromJason(strings[6]),
+        completed: JasonDateTime.fromJason(strings[6]),
         subevents: ListObserver.jason(strings[7]),
     );
     return event;
